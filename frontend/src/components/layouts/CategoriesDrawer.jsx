@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Typography,
@@ -9,8 +10,16 @@ import {
   Link as MuiLink,
 } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useDispatch, useSelector } from "react-redux";
+import { getCategories } from "../../features/category/categorySlice";
 
 const CategoriesDrawer = ({ anchorEl, setAnchorEl, cats }) => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(getCategories(1));
+  }, [dispatch]);
+
+  const { categories } = useSelector((state) => state.category);
   return (
     <Box
       sx={{
@@ -31,7 +40,7 @@ const CategoriesDrawer = ({ anchorEl, setAnchorEl, cats }) => {
       }}
     >
       <Stack>
-        {cats.map((cat) => (
+        {categories.map((cat) => (
           <Box
             sx={{
               "&:hover": {
@@ -50,21 +59,22 @@ const CategoriesDrawer = ({ anchorEl, setAnchorEl, cats }) => {
               }}
               onClick={() => setAnchorEl()}
             >
-              {cat.children && cat.children.length > 0 ? (
+              {/* {cat.children && cat.children.length > 0 ? (
                 <Typography flex={1}>{cat.name}</Typography>
-              ) : (
+              ) : ( */}
                 <MuiLink
                   component={Link}
-                  to={"/"}
+                  to={`/${cat._id}`}
                   underline="none"
                   color="#4B566B"
                   fontSize="15px"
+                  width="100%"
                   onClick={() => setAnchorEl()}
                 >
                   {cat.name}
                 </MuiLink>
-              )}
-              {cat.children && cat.children.length > 0 && <ChevronRightIcon />}
+              {/* )}
+              {cat.children && cat.children.length > 0 && <ChevronRightIcon />} */}
             </MenuItem>
 
             <Box
@@ -121,7 +131,7 @@ const CategoriesDrawer = ({ anchorEl, setAnchorEl, cats }) => {
                           <Stack spacing={1}>
                             <MuiLink
                               component={Link}
-                              to={"/"}
+                              to={`/${child._id}`}
                               underline="none"
                               color="#4B566B"
                               variant={
@@ -147,7 +157,7 @@ const CategoriesDrawer = ({ anchorEl, setAnchorEl, cats }) => {
                               child.children.map((grandchild) => (
                                 <MuiLink
                                   component={Link}
-                                  to={"/"}
+                                  to={`/${grandchild._id}`}
                                   underline="none"
                                   color="#4B566B"
                                   variant="subtitle2"

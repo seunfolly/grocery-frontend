@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Paper,
@@ -9,14 +9,17 @@ import {
   Typography,
   Button,
   Checkbox,
+  IconButton,
   FormControlLabel,
 } from "@mui/material";
+import axios from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import AddIcon from "@mui/icons-material/Add";
 import { useParams } from "react-router-dom";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-
+import { base_url } from "../../utils/baseUrl";
 import {
   getCategories,
   getCategory,
@@ -24,9 +27,10 @@ import {
   updateCategory,
   resetState,
 } from "../../features/category/categorySlice";
+import CloseIcon from "@mui/icons-material/Close";
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
-
+import Dropdown from "./DropDown";
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     borderRadius: "8px",
@@ -39,6 +43,8 @@ const CustomTextField = styled(TextField)({
 const AddCategory = () => {
   const { id } = useParams();
   const isNonMobile = useMediaQuery("(min-width:600px)");
+  const [categoryLevels, setCategoryLevels] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const dispatch = useDispatch();
   const categoryState = useSelector((state) => state.category);
   const {
@@ -54,7 +60,7 @@ const AddCategory = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(getCategories());
+    dispatch(getCategories(1));
   }, [dispatch]);
 
   useEffect(() => {
@@ -67,9 +73,13 @@ const AddCategory = () => {
   useEffect(() => {
     if (isSuccess && createdCategory) {
       makeToast("success", "Category Added Sucessfully!");
+      setCategoryLevels([]);
+      setSelectedCategories([]);
       resetFormRef.current();
       dispatch(resetState());
-      dispatch(getCategories());
+      dispatch(getCategories(1));
+
+      // window.location.reload();
     }
     if (isSuccess && updatedCategory) {
       makeToast("success", "Category Updated Successfullly!");
@@ -79,14 +89,19 @@ const AddCategory = () => {
     if (isError) {
       makeToast("error", "Something went wrong");
       dispatch(resetState());
-      dispatch(getCategories());
+      dispatch(getCategories(1));
     }
-  }, [isSuccess, isError, isLoading]);
+  }, [isSuccess, isLoading]);
   const initialValues = {
-    name: categoryData?.name || "",
-    isFeatured: categoryData?.isFeatured || false,
-    parent: categoryData?.parent || "",
+    name: "",
+    parent: "",
   };
+  useEffect(() => {
+    if (categories.length > 0) {
+      setCategoryLevels([categories]);
+    }
+  }, [categories]);
+
   return (
     <Box
       bgcolor="background.paper"
@@ -116,29 +131,36 @@ const AddCategory = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values, { resetForm }) => {
-              if (id !== "create") {
-                const data = {
-                  id: id,
-                  categoryData: {
-                    name: values.name,
-                    isFeatured: values.isFeatured,
-                  },
-                };
-                if (values.parent) {
-                  data.categoryData.parent = values.parent;
-                }
-                dispatch(updateCategory(data));
-              } else {
-                const categoryData = {
-                  name: values.name,
-                  isFeatured: values.isFeatured,
-                };
-                if (values.parent) {
-                  categoryData.parent = values.parent;
-                }
-                dispatch(createCategory(categoryData));
-                resetFormRef.current = resetForm;
+              const categoryData = { name: values.name };
+              if (values.parent) {
+                categoryData.parent = values.parent;
               }
+              dispatch(createCategory(categoryData));
+              resetFormRef.current = resetForm;
+
+              // if (id !== "create") {
+              //   const data = {
+              //     id: id,
+              //     categoryData: {
+              //       name: values.name,
+              //       isFeatured: values.isFeatured,
+              //     },
+              //   };
+              //   if (values.parent) {
+              //     data.categoryData.parent = values.parent;
+              //   }
+              //   dispatch(updateCategory(data));
+              // } else {
+              //   const categoryData = {
+              //     name: values.name,
+              //     isFeatured: values.isFeatured,
+              //   };
+              // if (values.parent) {
+              //   categoryData.parent = values.parent;
+              // }
+              // dispatch(createCategory(categoryData));
+              // resetFormRef.current = resetForm;
+              // }
             }}
           >
             {({
@@ -160,19 +182,19 @@ const AddCategory = () => {
                   gap: "10px",
                 }}
               >
-                <Box
-                  display="grid"
-                  gap="20px"
-                  rowGap="30px"
-                  gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                  sx={{
-                    "& > div": {
-                      gridColumn: isNonMobile ? undefined : "span 4",
-                    },
-                  }}
-                >
-                  <CustomTextField
-                    fullWidth
+                <Box display="flex" gap="20px" flexWrap="wrap">
+                 
+                  <Dropdown
+                    setCategoryLevels={setCategoryLevels}
+                    setSelectedCategories={setSelectedCategories}
+                    setFieldValue={setFieldValue}
+                    categoryLevels={categoryLevels}
+                    selectedCategories={selectedCategories}
+                    field="parent"
+
+
+                  />
+                   <CustomTextField
                     variant="outlined"
                     type="text"
                     label="Name"
@@ -182,67 +204,14 @@ const AddCategory = () => {
                     name="name"
                     error={!!touched.name && !!errors.name}
                     helperText={touched.name && errors.name}
-                    sx={{
-                      gridColumn: "span 2",
-                    }}
                     InputLabelProps={{
                       style: { fontSize: "15px" },
+                    }}
+                    sx={{
+                      width: "250px",
                     }}
                   />
-                  <CustomTextField
-                    select
-                    label="Select Parent Category"
-                    fullWidth
-                    variant="outlined"
-                    onChange={(event) => {
-                      const selectedCategoryId = event.target.value;
-                      setFieldValue("parent", selectedCategoryId);
-                    }}
-                    value={values.parent}
-                    name="parent"
-                    sx={{
-                      gridColumn: "span 2",
-                    }}
-                    InputLabelProps={{
-                      style: { fontSize: "15px" },
-                    }}
-                  >
-                    {categories.map((option) => (
-                      <MenuItem key={option._id} value={option._id}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </CustomTextField>
                 </Box>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={values.isFeatured}
-                      onChange={(e) => {
-                        setFieldValue("isFeatured", e.target.checked);
-                      }}
-                      name="isFeatured"
-                      sx={{
-                        fontSize: "16px",
-                        "&.Mui-checked": {
-                          color: "#4e97fd",
-                        },
-                        "&:hover": {
-                          color: "#4e97fd",
-                        },
-                        "& .MuiSvgIcon-root": { fontSize: 25 },
-                        "& .MuiTypography-body1": {
-                          fontSize: "16px",
-                        },
-                      }}
-                    />
-                  }
-                  label={
-                    <Typography component="span" sx={{ fontSize: "15px" }}>
-                      Featured Category
-                    </Typography>
-                  }
-                />
                 <Button
                   type="submit"
                   sx={{

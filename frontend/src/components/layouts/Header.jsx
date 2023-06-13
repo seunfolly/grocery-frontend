@@ -88,7 +88,7 @@ const Header = () => {
                 height: "45px",
               }}
             >
-              <StyledBadge badgeContent={products.length} >
+              <StyledBadge badgeContent={products.reduce((sum, product) => sum + product.count, 0)} >
                 <ShoppingBagOutlinedIcon />
               </StyledBadge>
             </IconButton>

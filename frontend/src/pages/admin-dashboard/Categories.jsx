@@ -23,10 +23,10 @@ const Categories = () => {
     };
     fetchData();
   }, []);
-
+  
   const categoryState = useSelector((state) => state.category);
   const { isSuccess, isError, isLoading, deletedCategory } = categoryState;
-
+  console.log(categoryState.categories[0])
   useEffect(() => {
     if (deletedCategory) {
       makeToast("success", "Category deleted successfully!");
@@ -45,10 +45,10 @@ const Categories = () => {
     id: category.categoryId,
     name: category.name,
     level: category.level,
-    featured: category.isFeatured,
+    // featured: category.isFeatured,
     action: null,
   }));
-  
+
   return (
     <Stack spacing={3} bgcolor="background.paper" py={3}>
       <Header
@@ -62,11 +62,15 @@ const Categories = () => {
         <DataGrid
           rows={categories}
           columns={[
-            { field: "id", headerName: "ID", width: 250 },
+            { field: "id", headerName: "ID", flex: 1,headerAlign: "center",
+            align: "center", },
             {
               field: "name",
               headerName: "Name",
-              width: 150,
+              flex: 1,
+              headerAlign: "center",
+              align: "center",
+
               renderCell: ({ value }) => (
                 <Chip label={value} sx={{ height: "25px" }} />
               ),
@@ -74,37 +78,10 @@ const Categories = () => {
             {
               field: "level",
               headerName: "Level",
-              width: 150,
+              flex: 1,
+
               headerAlign: "center",
               align: "center",
-            },
-            {
-              field: "featured",
-              headerName: "Featured",
-              width: 120,
-              renderCell: ({ value, row }) => {
-                const [checked, setChecked] = useState(value);
-
-                const handleSwitchChange = () => {
-                  const updatedRow = { ...row, publish: !checked };
-                  setChecked(!checked);
-                };
-
-                return (
-                  <Switch
-                    checked={checked}
-                    onChange={handleSwitchChange}
-                    sx={{
-                      "& .MuiSwitch-thumb": {
-                        color: "#2756b6",
-                      },
-                      "& .Mui-checked+.MuiSwitch-track": {
-                        backgroundColor: "#4e97fd !important",
-                      },
-                    }}
-                  />
-                );
-              },
             },
 
             {
@@ -114,22 +91,15 @@ const Categories = () => {
               headerAlign: "center",
               align: "center",
               renderCell: ({ row }) => (
-                <Stack direction="row">
-                  <Link to={`/admin/category/${row._id}`}>
-                    <IconButton aria-label="Edit">
-                      <EditIcon />
-                    </IconButton>
-                  </Link>
-                  <IconButton
-                    aria-label="Delete"
-                    disabled={isLoading}
-                    onClick={() => {
-                      dispatch(deleteCategory(row._id));
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
+                <IconButton
+                  aria-label="Delete"
+                  disabled={isLoading}
+                  onClick={() => {
+                    dispatch(deleteCategory(row._id));
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
               ),
             },
           ]}

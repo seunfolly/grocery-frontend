@@ -28,7 +28,8 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
     image: {
-      type: String,
+      public_id: String,
+      url: String,
     },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     role: {

@@ -32,9 +32,10 @@ const createCategory = asyncHandler(async (req, res) => {
 const getallCategory = asyncHandler(async (req, res) => {
   const { level } = req.query;
   try {
-    const getallCategory = await Category.find(level ? { level } : {}).populate(
-      "children"
-    );
+    const query = level ? { level } : {};
+    const getallCategory = await Category.find(query).lean();
+    const populatePromises = getallCategory.map(populateChildren);
+    await Promise.all(populatePromises);
     res.json(getallCategory);
   } catch (error) {
     throw new Error(error);
@@ -53,17 +54,16 @@ const updateCategory = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+
 const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
   try {
     const deletedCategory = await Category.findById(id);
-    if (deletedCategory.parent) {
-      const parentCategory = await Category.findById(deletedCategory.parent);
-      parentCategory.children.pull(id);
-      await parentCategory.save();
+    if (!deletedCategory) {
+      return res.status(404).json({ message: 'Category not found' });
     }
-    await Category.deleteMany({ $or: [{ _id: id }, { parent: id }] });
+    await deleteCategoryAndDescendants(deletedCategory);
     res.json(deletedCategory);
   } catch (error) {
     throw new Error(error);
@@ -74,7 +74,7 @@ const getCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
   try {
-    const getaCategory = await Category.findById(id);
+    const getaCategory = await Category.findById(id).populate("children parent");
     res.json(getaCategory);
   } catch (error) {
     throw new Error(error);
@@ -88,3 +88,34 @@ module.exports = {
   getCategory,
   getallCategory,
 };
+
+
+const populateChildren = async (category) => {
+  const populatedChildren = await Category.find({ parent: category._id }).lean();
+  category.children = populatedChildren;
+
+  if (category.children.length > 0) {
+    const childPromises = category.children.map(populateChildren);
+    await Promise.all(childPromises);
+  }
+};
+
+async function deleteCategoryAndDescendants(category) {
+  // Delete category
+  await Category.deleteOne({ _id: category._id });
+  // Delete descendants recursively
+  for (const childId of category.children) {
+    const childCategory = await Category.findById(childId);
+    if (childCategory) {
+      await deleteCategoryAndDescendants(childCategory);
+    }
+  }
+  // Remove from parent's children array if applicable
+  if (category.parent) {
+    const parentCategory = await Category.findById(category.parent);
+    if (parentCategory) {
+      parentCategory.children.pull(category._id);
+      await parentCategory.save();
+    }
+  }
+}

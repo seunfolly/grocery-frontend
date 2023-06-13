@@ -1,4 +1,5 @@
 const express = require("express");
+const {Multer,uploadImages} = require("../middlewares/uploadImage")
 
 const {
   createUser,
@@ -31,7 +32,7 @@ router.post("/login", login);
 router.post("/forgot-password", forgotPasswordToken);
 router.put("/reset-password/:token", resetPassword);
 router.get("/", authMiddleware, getLoggedInUserProfile);
-router.put("/", authMiddleware, updatedUserProfile);
+router.put("/", authMiddleware, Multer.single("image"), uploadImages, updatedUserProfile);
 router.get("/get-users", authMiddleware, isAdmin, getAllUser);
 router.get("/wishlist", authMiddleware, getWishlist);
 router.post("/cart", authMiddleware, userCart);

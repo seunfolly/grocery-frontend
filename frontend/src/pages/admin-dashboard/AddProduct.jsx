@@ -24,6 +24,7 @@ import {
 import { getCategories } from "../../features/category/categorySlice";
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
+import Dropdown from "./DropDown";
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     borderRadius: "8px",
@@ -37,8 +38,10 @@ const AddProduct = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const isNonMobile = useMediaQuery("(min-width:600px)");
+  const [categoryLevels, setCategoryLevels] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const newProduct = useSelector((state) => state.product);
-  const categoriesState = useSelector((state) => state.category.categories);
+  const categories = useSelector((state) => state.category.categories);
   const {
     isSuccess,
     isError,
@@ -51,7 +54,7 @@ const AddProduct = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(getCategories());
+    dispatch(getCategories(1));
   }, []);
 
   useEffect(() => {
@@ -65,8 +68,11 @@ const AddProduct = () => {
   useEffect(() => {
     if (isSuccess && createdProduct) {
       makeToast("success", "Product Added Sucessfully!");
+      setCategoryLevels([]);
+      setSelectedCategories([]);
       resetFormRef.current();
       dispatch(resetState());
+      dispatch(getCategories(1));
     }
     if (isSuccess && updatedProduct) {
       makeToast("success", "Product Updated Successfullly!");
@@ -85,10 +91,15 @@ const AddProduct = () => {
     stock: productData?.stock || 0,
     regularPrice: productData?.regularPrice || 0,
     salePrice: productData?.salePrice || 0,
-     tags: productData?.tags || [],
+    tags: productData?.tags || [],
     category: productData?.category?._id || "",
     images: [],
   };
+  useEffect(() => {
+    if (categories.length > 0) {
+      setCategoryLevels([categories]);
+    }
+  }, [categories]);
 
   return (
     <Box bgcolor="background.paper" p={4}>
@@ -143,25 +154,42 @@ const AddProduct = () => {
                     },
                   }}
                 >
-                  <CustomTextField
-                    fullWidth
-                    variant="outlined"
-                    type="text"
-                    label="Name"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.name}
-                    name="name"
-                    error={!!touched.name && !!errors.name}
-                    helperText={touched.name && errors.name}
+                  <Box
                     sx={{
-                      gridColumn: "span 2",
+                      gridColumn: "span 4",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "20px",
                     }}
-                    InputLabelProps={{
-                      style: { fontSize: "15px" },
-                    }}
-                  />
-                  <CustomTextField
+                  >
+                    <CustomTextField
+                      // fullWidth
+                      variant="outlined"
+                      type="text"
+                      label="Name"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.name}
+                      name="name"
+                      error={!!touched.name && !!errors.name}
+                      helperText={touched.name && errors.name}
+                      sx={{
+                        width: "250px",
+                      }}
+                      InputLabelProps={{
+                        style: { fontSize: "15px" },
+                      }}
+                    />
+                    <Dropdown
+                      setCategoryLevels={setCategoryLevels}
+                      setSelectedCategories={setSelectedCategories}
+                      setFieldValue={setFieldValue}
+                      categoryLevels={categoryLevels}
+                      selectedCategories={selectedCategories}
+                      field="category"
+                    />
+                  </Box>
+                  {/* <CustomTextField
                     select
                     label="Select Category"
                     fullWidth
@@ -187,7 +215,7 @@ const AddProduct = () => {
                         {option.name}
                       </MenuItem>
                     ))}
-                  </CustomTextField>
+                  </CustomTextField> */}
                   <CustomTextField
                     fullWidth
                     variant="outlined"
@@ -245,11 +273,14 @@ const AddProduct = () => {
                     onBlur={handleBlur}
                     onChange={(event) => {
                       const value = event.target.value;
-                      const tagsArray = value.split(",").map((tag) => tag.trim());
+                      const tagsArray = value
+                        .split(",")
+                        .map((tag) => tag.trim());
                       setFieldValue("tags", tagsArray);
                     }}
-                    value={Array.isArray(values.tags) ? values.tags.join(",") : ""}
-                  
+                    value={
+                      Array.isArray(values.tags) ? values.tags.join(",") : ""
+                    }
                     name="tags"
                     error={!!touched.tags && !!errors.tags}
                     helperText={touched.tags && errors.tags}
@@ -304,7 +335,10 @@ const AddProduct = () => {
 
                   sx={{
                     textTransform: "none",
-                    bgcolor: !isValid ||(!dirty && id === "create") || isLoading ? "#0000001f" : "#4e97fd",
+                    bgcolor:
+                      !isValid || (!dirty && id === "create") || isLoading
+                        ? "#0000001f"
+                        : "#4e97fd",
                     color: isLoading ? "#00000042" : "white",
                     fontSize: "14px",
                     paddingX: "15px",
@@ -339,13 +373,17 @@ const productSchema = yup.object().shape({
     .string()
     .required("required")
     .min(8, "Name must be at least 8 characters"),
-  stock: yup.number().min(1,'Regular price must be greater than zero').required("required"),
-  regularPrice: yup.number().min(1,'Regular price must be greater than zero').required("required"),
-  salePrice: yup.number().min(1,'Regular price must be greater than zero'),
+  stock: yup
+    .number()
+    .min(1, "Regular price must be greater than zero")
+    .required("required"),
+  regularPrice: yup
+    .number()
+    .min(1, "Regular price must be greater than zero")
+    .required("required"),
+  salePrice: yup.number().min(1, "Regular price must be greater than zero"),
   // tags: yup.string().required("required"),
   category: yup.string().required("category must contain at least 1 item"),
- 
 });
-
 
 export default AddProduct;

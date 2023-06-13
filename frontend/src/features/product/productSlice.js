@@ -83,7 +83,7 @@ export const getProduct = createAsyncThunk(
   }
 );
 
-export const resetState = createAction("Reset_all");
+export const resetState = createAction("Reset_all_ProductState");
 
 const initialState = {
   products: [],

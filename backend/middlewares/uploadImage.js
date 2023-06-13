@@ -15,10 +15,11 @@ const multerFilter = (req, file, cb) => {
 const Multer = multer({
   storage: storage,
   fileFilter: multerFilter,
-  limits: { fileSize: 1000000 },
+  limits: { fileSize: 2000000 },
 });
 
 const uploadImages = asyncHandler(async (req, res, next) => {
+  console.log(req.file)
   try {
     const uploader = (path) => cloudinaryUploadImg(path, "romax");
     const urls = [];

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
 import {
   Box,
   Button,
@@ -6,18 +8,57 @@ import {
   TextField,
   Typography,
   Avatar,
+  IconButton,
 } from "@mui/material";
+import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
-
-// import { Formik } from "formik";
-// import * as yup from "yup";
+import { Formik } from "formik";
+import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PersonIcon from "@mui/icons-material/Person";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { updateProfile, resetUpdatedFlag } from "../../features/auth/authSlice";
+import { Link, useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
 
+  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const auth = useSelector((state) => state.auth);
+  const { isSuccess, isError, user, isLoading, userUpdated } = auth;
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    setProfilePictureFile(file)
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setProfilePicture(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  useEffect(() => {
+    if (isSuccess && userUpdated ) {
+      navigate("/user/profile")
+      dispatch(resetUpdatedFlag())
+    }
+    if (isError) {
+      makeToast("error", "Something went wrong");
+      // dispatch(resetState())
+    }
+  }, [isSuccess,userUpdated,isError]);
+  const initialValues = {
+    fullName: user?.fullName,
+    email: user?.email,
+    phone: user?.phone,
+    dob: user?.dob,
+    image: user?.image
+  };
   return (
     <Stack spacing={3}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -67,116 +108,195 @@ const EditProfile = () => {
           paddingY: 4,
         }}
       >
-        <Avatar
-          alt="profile-picture"
-          src="https://bazaar.ui-lib.com/assets/images/faces/ralph.png"
-          sx={{ width: 64, height: 64, mb: 3 }}
-        />
-        <Box
-          display="grid"
-          gap="20px"
-          gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-          sx={{
-            "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+        <Formik
+          enableReinitialize={true}
+          onSubmit={(values) => {
+            // console.log({...values,image:profilePictureFile});
+            dispatch(updateProfile({...values,image:profilePictureFile}));
+            // navigate("/user/profile");
           }}
+          initialValues={initialValues}
+          validationSchema={editSchema}
         >
-          <TextField
-            fullWidth
-            variant="outlined"
-            type="text"
-            label="First Name"
-            size="small"
-            sx={{
-              gridColumn: "span 2",
-              "& .MuiInputBase-root": {
-                fontSize: "15px",
-              },
-            }}
-            InputLabelProps={{
-              style: { fontSize: "14px" },
-            }}
-          />
-          <TextField
-            fullWidth
-            variant="outlined"
-            type="text"
-            label="Last Name"
-            size="small"
-            sx={{
-              gridColumn: "span 2",
-              "& .MuiInputBase-root": {
-                fontSize: "15px",
-              },
-            }}
-            InputLabelProps={{
-              style: { fontSize: "14px" },
-            }}
-          />
-          <TextField
-            fullWidth
-            variant="outlined"
-            type="text"
-            label="Email"
-            size="small"
-            sx={{
-              gridColumn: "span 2",
-              "& .MuiInputBase-root": {
-                fontSize: "15px",
-              },
-            }}
-            InputLabelProps={{
-              style: { fontSize: "14px" },
-            }}
-          />
-          <TextField
-            fullWidth
-            variant="outlined"
-            type="text"
-            label="Phone"
-            size="small"
-            sx={{
-              gridColumn: "span 2",
-              "& .MuiInputBase-root": {
-                fontSize: "15px",
-              },
-            }}
-            InputLabelProps={{
-              style: { fontSize: "14px" },
-            }}
-          />{" "}
-          <DatePicker
-            fullWidth
-            label="Birth Date"
-            slotProps={{ textField: { size: 'small' } }}
-            sx={{
-              gridColumn: "span 2",
-              "& .MuiInputBase-root": {
-                fontSize: "15px",
-              },
-            }}
-          />
-        </Box>
-        <Button
-          sx={{
-            mt: 4,
-            textTransform: "none",
-            bgcolor: "primary.main",
-            color: "white",
-            fontSize: "14px",
-            paddingX: "20px",
-            fontWeight: 500,
-            paddingY: "8px",
-            alignSelf: "start",
-            "&:hover": {
-              backgroundColor: "#E3364E",
-            },
-          }}
-        >
-          Save Changes
-        </Button>
+          {({
+            values,
+            errors,
+            touched,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+
+            isValid,
+            dirty,
+          }) => (
+            <form onSubmit={handleSubmit}>
+              <Box display="flex" alignItems="flex-end" mb={3}>
+                <Avatar
+                  alt="profile-picture"
+                  src={
+                    profilePicture ||
+                    user?.image
+                  }
+                  sx={{ width: 64, height: 64 }}
+                />
+                <Box ml="-15px">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: "none" }}
+                    id="profilePictureInput"
+                  />
+                  <label htmlFor="profilePictureInput">
+                    <IconButton
+                      component="span"
+                      sx={{
+                        backgroundColor: "#e3e9ef !important",
+                        color: "#0F3460 !important",
+                        padding: "7px",
+                        "&:hover": {
+                          backgroundColor: "#0f34600a !important",
+                          
+                        }
+                      }}
+                    >
+                      <CameraEnhanceIcon sx={{
+                        fontSize:"1.2rem"
+                      }}/>
+                    </IconButton>
+                  </label>
+                </Box>
+              </Box>
+
+              <Box
+                display="grid"
+                gap="20px"
+                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                sx={{
+                  "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                }}
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  label="Full Name"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.fullName}
+                  name="fullName"
+                  error={!!touched.fullName && !!errors.fullName}
+                  helperText={touched.fullName && errors.fullName}
+                  sx={{
+                    gridColumn: "span 2",
+                    "& .MuiInputBase-root": {
+                      fontSize: "15px",
+                    },
+                  }}
+                  InputLabelProps={{
+                    style: { fontSize: "14px" },
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  type="email"
+                  label="Email"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.email}
+                  name="email"
+                  error={!!touched.email && !!errors.email}
+                  helperText={touched.email && errors.email}
+                  sx={{
+                    gridColumn: "span 2",
+                    "& .MuiInputBase-root": {
+                      fontSize: "15px",
+                    },
+                  }}
+                  InputLabelProps={{
+                    style: { fontSize: "14px" },
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  label="Phone"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.phone}
+                  name="phone"
+                  error={!!touched.phone && !!errors.phone}
+                  helperText={touched.phone && errors.phone}
+                  sx={{
+                    gridColumn: "span 2",
+                    "& .MuiInputBase-root": {
+                      fontSize: "15px",
+                    },
+                  }}
+                  InputLabelProps={{
+                    style: { fontSize: "14px" },
+                  }}
+                />{" "}
+                <DatePicker
+                  fullWidth
+                  label="Birth Date"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={dayjs(values.dob)}
+                  name="dob"
+                  error={!!touched.dob && !!errors.dob}
+                  helperText={touched.dob && errors.dob}
+                  slotProps={{ textField: { size: "small" } }}
+                  sx={{
+                    gridColumn: "span 2",
+                    "& .MuiInputBase-root": {
+                      fontSize: "15px",
+                    },
+                  }}
+                />
+              </Box>
+              <Button
+                type="submit"
+                disabled={!isValid || isLoading}
+                sx={{
+                  mt: 4,
+                  textTransform: "none",
+                  bgcolor: "primary.main",
+                  color: "white",
+                  fontSize: "14px",
+                  paddingX: "20px",
+                  fontWeight: 500,
+                  paddingY: "8px",
+                  alignSelf: "start",
+                  "&:hover": {
+                    backgroundColor: "#E3364E",
+                  },
+                }}
+              >
+                Save Changes
+              </Button>
+            </form>
+          )}
+        </Formik>
       </Paper>
     </Stack>
   );
 };
+const phoneRegExp =
+  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
+const editSchema = yup.object().shape({
+  fullName: yup.string().required("required"),
+  email: yup.string().email("invalid email").required("required"),
+  phone: yup
+    .string()
+    .matches(phoneRegExp, "Phone number is not valid")
+    .required("required"),
+  dob: yup.date().required("required"),
+});
 export default EditProfile;

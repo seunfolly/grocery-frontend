@@ -100,7 +100,8 @@ const cats = [
   },
   {
     name: "Music",
-  },{
+  },
+  {
     name: "Pet",
   },
   {
@@ -108,7 +109,8 @@ const cats = [
   },
   {
     name: "Automotive",
-  },{
+  },
+  {
     name: "Baby Toys",
   },
 ];
@@ -159,13 +161,19 @@ const Categories = () => {
                 <Typography variant="subtitle1">Categories</Typography>
               </Stack>
 
-              <ChevronRightIcon   sx={{
-                transition: "transform 250ms ease-in-out 0s",
-                transform: anchorEl ? "rotate(90deg)" : "rotate(0deg)",
-              }}/>
+              <ChevronRightIcon
+                sx={{
+                  transition: "transform 250ms ease-in-out 0s",
+                  transform: anchorEl ? "rotate(90deg)" : "rotate(0deg)",
+                }}
+              />
             </Button>
 
-             <CategoriesDrawer anchorEl={anchorEl} setAnchorEl={setAnchorEl} cats={cats} />
+            <CategoriesDrawer
+              anchorEl={anchorEl}
+              setAnchorEl={setAnchorEl}
+              cats={cats}
+            />
           </Box>
 
           <Link
@@ -195,3 +203,44 @@ const Categories = () => {
 };
 
 export default Categories;
+
+// {
+//   categoryName: "Electronics",
+//   subCategoryName: {
+//     name: "HeadPhones",
+//     subCategoryName:{
+//       name: "Wireless-Headset",
+//       subCategoryName:{
+//         name: "Bluetooth Headset",
+//       }
+//     }
+//   }
+
+// }
+
+// const a = {
+//   categoryName: "Fashion",
+//   subCategories: [
+//     {
+//       name: "Men",
+//       subCategories: [
+//         {
+//           name: "Tshirt",
+//           subCategories: [
+//             { name: "BMen",
+//              subCategories: [{
+//               name: "CMen",
+//              subCategories:[]
+//              }]
+//              }],
+//         },
+//         {
+//           name: "Plain Shirt",
+//         },
+//         {
+//           name: "Long Sleeve Shirt",
+//         },
+//       ],
+//     },
+//   ],
+// };

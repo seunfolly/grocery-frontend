@@ -3,9 +3,9 @@ import categoryService from "./categoryService";
 
 export const getCategories = createAsyncThunk(
   "category/get-categories",
-  async (thunkAPI) => {
+  async (level,thunkAPI) => {
     try {
-      return await categoryService.getCategories();
+      return await categoryService.getCategories(level);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }

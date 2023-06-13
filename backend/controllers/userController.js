@@ -8,23 +8,27 @@ const { generateToken } = require("../config/jwtToken");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const sendEmail = require("./emailContoller");
 const { v4: uuidv4 } = require("uuid");
+const { cloudinaryDeleteImg } = require("../utils/cloudinary");
 
 
 const createUser = asyncHandler(async (req, res) => {
   const email = req.body.email;
-  
+
   const findUser = await User.findOne({ email: email });
 
   if (!findUser) {
     const newUser = await User.create(req.body);
-    res
-      .status(201)
-      .json({
-        _id: newUser?._id,
-        fullName: newUser?.firstName,
-        role: newUser?.role,
-        token: generateToken(newUser?._id),
-      });
+    res.status(201).json({
+      _id: newUser?._id,
+      fullName: newUser?.fullName,
+      role: newUser?.role,
+      dob: newUser?.dob,
+      email: newUser?.email,
+      phone: newUser?.phone,
+      orders: newUser?.orderCount,
+      image: newUser?.image.url,
+      token: generateToken(newUser?._id),
+    });
   } else {
     /**
      * TODO:if user found then thow an error: User already exists
@@ -36,14 +40,21 @@ const createUser = asyncHandler(async (req, res) => {
 
 // Login a user
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { emailOrPhone, password } = req.body;
   // check if user exists or not
-  const findUser = await User.findOne({ email });
+  const findUser = await User.findOne({
+    $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+  });
   if (findUser && (await findUser.isPasswordMatched(password))) {
     res.json({
       _id: findUser?._id,
       fullName: findUser?.fullName,
       role: findUser?.role,
+      dob: findUser?.dob,
+      email: findUser?.email,
+      phone: findUser?.phone,
+      orders: findUser?.orderCount,
+      image: findUser?.image.url,
       token: generateToken(findUser?._id),
     });
   } else {
@@ -108,18 +119,19 @@ const getLoggedInUserProfile = asyncHandler(async (req, res) => {
 const updatedUserProfile = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
-
+  
   try {
+    const user = await User.findById(_id)
+    const updateObject = { ...req.body };
+    if (req.images) {
+      updateObject.image = req.images[0];
+      await cloudinaryDeleteImg(user.image.public_id);
+    }
     const updatedUser = await User.findByIdAndUpdate(
       _id,
-      {
-        firstName: req?.body?.firstName,
-        lastName: req?.body?.lastName,
-        email: req?.body?.email,
-        phone: req?.body?.phone,
-        dob: req?.body?.dob,
-        image: req?.body?.image,
-      },
+
+      updateObject,
+
       {
         new: true,
       }
@@ -197,6 +209,7 @@ const deleteAUser = asyncHandler(async (req, res) => {
 });
 
 const getWishlist = asyncHandler(async (req, res) => {
+  console.log("l");
   const { _id } = req.user;
   try {
     const findUser = await User.findById(_id).populate("wishlist");

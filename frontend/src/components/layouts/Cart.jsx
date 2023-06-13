@@ -24,6 +24,7 @@ import {
 const Cart = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const { products, cartTotal } = useSelector((state) => state.cart);
+  const count = products.reduce((sum, product) => sum + product.count, 0)
   return (
     <Drawer
       open={open}
@@ -65,7 +66,7 @@ const Cart = ({ open, onClose }) => {
               alignItems="center"
             >
               <ShoppingBagOutlinedIcon />
-              <Typography variant="subtitle1">{`${products.length} ${products.length <= 1 ? "item" : "items"}` }</Typography>
+              <Typography variant="subtitle1">{`${count} ${count <= 1 ? "item" : "items"}` }</Typography>
             </Stack>
             <IconButton onClick={onClose}>
               <ClearIcon />

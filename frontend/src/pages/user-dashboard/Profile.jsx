@@ -9,7 +9,10 @@ import {
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 const Profile = () => {
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
   return (
     <Stack spacing={3}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -26,7 +29,7 @@ const Profile = () => {
           </Typography>
         </Stack>
         <Link
-          to={`/user/profile/2345555`}
+          to={`/user/profile/${user?._id}`}
           style={{
             textDecoration: "none",
           }}
@@ -56,7 +59,7 @@ const Profile = () => {
             elevation={0}
             sx={{
               paddingY: 2,
-              paddingX: 5,
+              paddingX: 3,
               bgcolor: "white",
               display: "flex",
               justifyContent: "space-between",
@@ -66,14 +69,20 @@ const Profile = () => {
             <Stack direction="row" spacing={2} alignItems="center">
               <Avatar
                 alt="profile-picture"
-                src="https://bazaar.ui-lib.com/assets/images/faces/ralph.png"
+                src={user?.image || ""}
                 sx={{ width: 64, height: 64 }}
               />
-              <Typography variant="subtitle1">Ayra Starr</Typography>
+              <Typography
+                color="rgb(125, 135, 156)"
+                letterSpacing={4}
+                textTransform="uppercase"
+              >
+                {user?.fullName}
+              </Typography>
             </Stack>
-            <Typography color="rgb(125, 135, 156)" letterSpacing={4}>
+            {/* <Typography color="rgb(125, 135, 156)" letterSpacing={4}>
               SILVER USER
-            </Typography>
+            </Typography> */}
           </Paper>
         </Grid>
 
@@ -92,7 +101,7 @@ const Profile = () => {
             }}
           >
             <Typography color="primary.main" variant="h6">
-              16
+              {user?.orders}
             </Typography>
             <Typography
               variant="subtitle2"
@@ -130,7 +139,9 @@ const Profile = () => {
           >
             First Name
           </small>
-          <Typography variant="subtitle2">Jude</Typography>
+          <Typography variant="subtitle2" textTransform="capitalize">
+            {user?.fullName.split(" ")[0]}
+          </Typography>
         </Box>
         <Box
           sx={{
@@ -147,7 +158,9 @@ const Profile = () => {
           >
             Last Name
           </small>
-          <Typography variant="subtitle2">Micheal</Typography>
+          <Typography variant="subtitle2" textTransform="capitalize">
+            {user?.fullName.split(" ")[1]}
+          </Typography>
         </Box>
         <Box
           sx={{
@@ -164,7 +177,7 @@ const Profile = () => {
           >
             Email
           </small>
-          <Typography variant="subtitle2">judemicheal@gmail.com</Typography>
+          <Typography variant="subtitle2">{user?.email}</Typography>
         </Box>
         <Box
           sx={{
@@ -181,7 +194,7 @@ const Profile = () => {
           >
             Phone
           </small>
-          <Typography variant="subtitle2">+234 345 678 9900</Typography>
+          <Typography variant="subtitle2">{user?.phone}</Typography>
         </Box>
         <Box
           sx={{
@@ -198,7 +211,15 @@ const Profile = () => {
           >
             Birth Date
           </small>
-          <Typography variant="subtitle2">25 Apr, 1996</Typography>
+          <Typography variant="subtitle2">
+            {" "}
+            {user?.dob &&
+              new Date(user.dob).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+          </Typography>
         </Box>
       </Paper>
     </Stack>

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect,useRef } from "react";
 import {
   Typography,
   Box,
@@ -11,8 +10,14 @@ import {
   Rating,
   styled,
 } from "@mui/material";
+import { Formik } from "formik";
+import * as yup from "yup";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { signup,resetState } from "../../features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import makeToast from "../../utils/toaster";
+
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     fontSize: "14px",
@@ -27,6 +32,7 @@ const CustomTextField = styled(TextField)({
 });
 
 const Signup = () => {
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -37,6 +43,25 @@ const Signup = () => {
   const handleToggleConfirmPassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+  const auth = useSelector((state) => state.auth);
+  const { isSuccess, isError, isLoading, user } = auth;
+  const navigate = useNavigate();
+  const resetFormRef = useRef();
+
+  useEffect(() => {
+    console.log(user)
+    if (isSuccess && user) {
+      makeToast("success", "Signing up was Sucessful!");
+      // resetFormRef.current();
+      navigate("/");
+
+    }
+    if (isError) {
+      makeToast("error", "Something went wrong");
+      dispatch(resetState())
+    }
+  }, [isSuccess, isLoading, user]);
+
   return (
     <Box
       sx={{
@@ -58,152 +83,225 @@ const Signup = () => {
           boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
         }}
       >
-        <form>
-          <img
-            src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
-            alt="bazaar logo"
-            style={{
-              margin: "0 auto",
-              display: "block",
-            }}
-          />
-          <Typography variant="body2" mt={1} mb={4} textAlign="center">
-            Create Your Account
-          </Typography>
-          <Box mb={2}>
-            <Typography
-              variant="subtitle1"
-              fontSize="12px"
-              color="#4b566b"
-              mb={1.5}
-            >
-              Full Name
-            </Typography>
-            <CustomTextField
-              fullWidth
-              variant="outlined"
-              type="text"
-              placeholder="Alakija Vincent"
-              size="small"
-            />
-          </Box>
-          <Box mb={2}>
-            <Typography
-              variant="subtitle1"
-              fontSize="12px"
-              color="#4b566b"
-              mb={1.5}
-            >
-              Email
-            </Typography>
-            <CustomTextField
-              fullWidth
-              variant="outlined"
-              type="email"
-              placeholder="maria@romax.com"
-              size="small"
-            />
-          </Box>
-          <Box mb={2}>
-            <Typography
-              variant="subtitle1"
-              fontSize="12px"
-              color="#4b566b"
-              mb={1.5}
-            >
-              Password
-            </Typography>
-            <CustomTextField
-              fullWidth
-              variant="outlined"
-              type={showPassword ? "text" : "password"}
-              placeholder="*********"
-              size="small"
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={handleTogglePassword}
-                    edge="end"
-                    sx={{ padding: 0, marginRight: "10px" }}
-                  >
-                    {showPassword ? (
-                      <Visibility
-                        sx={{
-                          fontSize: "20px",
-                        }}
-                      />
-                    ) : (
-                      <VisibilityOff
-                        sx={{
-                          fontSize: "20px",
-                          color: "#DAE1E7",
-                        }}
-                      />
-                    )}
-                  </IconButton>
-                ),
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <Typography
-              variant="subtitle1"
-              fontSize="12px"
-              color="#4b566b"
-              mb={1.5}
-            >
-              Confirm Password
-            </Typography>
-            <CustomTextField
-              fullWidth
-              variant="outlined"
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="*********"
-              size="small"
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    onClick={handleToggleConfirmPassword}
-                    edge="end"
-                    sx={{ padding: 0, marginRight: "10px" }}
-                  >
-                    {showConfirmPassword ? (
-                      <Visibility
-                        sx={{
-                          fontSize: "20px",
-                        }}
-                      />
-                    ) : (
-                      <VisibilityOff
-                        sx={{
-                          fontSize: "20px",
-                          color: "#DAE1E7",
-                        }}
-                      />
-                    )}
-                  </IconButton>
-                ),
-              }}
-            />
-          </Box>
-          <Button
-            sx={{
-              textTransform: "none",
-              bgcolor: "primary.main",
-              color: "white",
-              fontSize: "14px",
-              paddingY: "10px",
-              fontWeight: 600,
-              width: "100%",
-              marginTop: "50px",
-              "&:hover": {
-                backgroundColor: "#E3364E",
-              },
-            }}
-          >
-            Create Account
-          </Button>
-        </form>
+        <Formik
+          onSubmit={(values, { resetForm }) => {
+            const { confirmPassword, ...updatedValues } = values;
+            dispatch(signup(updatedValues));
+            resetFormRef.current = resetForm;
+          }}
+          
+          initialValues={initialValues}
+          validationSchema={userSchema}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+         
+            isValid,
+            dirty,
+          }) => (
+            <form onSubmit={handleSubmit}>
+              <img
+                src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
+                alt="bazaar logo"
+                style={{
+                  margin: "0 auto",
+                  display: "block",
+                }}
+              />
+              <Typography variant="body2" mt={1} mb={4} textAlign="center">
+                Create Your Account
+              </Typography>
+              <Box mb={2}>
+                <Typography
+                  variant="subtitle1"
+                  fontSize="12px"
+                  color="#4b566b"
+                  mb={1.5}
+                >
+                  Full Name
+                </Typography>
+                <CustomTextField
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  placeholder="Alakija Vincent"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.fullName}
+                  name="fullName"
+                  error={!!touched.fullName && !!errors.fullName}
+                  helperText={touched.fullName && errors.fullName}
+                />
+              </Box>
+              <Box mb={2}>
+                <Typography
+                  variant="subtitle1"
+                  fontSize="12px"
+                  color="#4b566b"
+                  mb={1.5}
+                >
+                  Email
+                </Typography>
+                <CustomTextField
+                  fullWidth
+                  variant="outlined"
+                  type="email"
+                  placeholder="maria@romax.com"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.email}
+                  name="email"
+                  error={!!touched.email && !!errors.email}
+                  helperText={touched.email && errors.email}
+                />
+              </Box>
+              <Box mb={2}>
+                <Typography
+                  variant="subtitle1"
+                  fontSize="12px"
+                  color="#4b566b"
+                  mb={1.5}
+                >
+                  Phone number
+                </Typography>
+                <CustomTextField
+                  fullWidth
+                  variant="outlined"
+                  type="text"
+                  placeholder="09080000000"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.phone}
+                  name="phone"
+                  error={!!touched.phone && !!errors.phone}
+                  helperText={touched.phone && errors.phone}
+                />
+              </Box>
+              <Box mb={2}>
+                <Typography
+                  variant="subtitle1"
+                  fontSize="12px"
+                  color="#4b566b"
+                  mb={1.5}
+                >
+                  Password
+                </Typography>
+                <CustomTextField
+                  fullWidth
+                  variant="outlined"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="*********"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.password}
+                  name="password"
+                  error={!!touched.password && !!errors.password}
+                  helperText={touched.password && errors.password}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton
+                        onClick={handleTogglePassword}
+                        edge="end"
+                        sx={{ padding: 0, marginRight: "10px" }}
+                      >
+                        {showPassword ? (
+                          <Visibility
+                            sx={{
+                              fontSize: "20px",
+                            }}
+                          />
+                        ) : (
+                          <VisibilityOff
+                            sx={{
+                              fontSize: "20px",
+                              color: "#DAE1E7",
+                            }}
+                          />
+                        )}
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </Box>
+              <Box mb={2}>
+                <Typography
+                  variant="subtitle1"
+                  fontSize="12px"
+                  color="#4b566b"
+                  mb={1.5}
+                >
+                  Confirm Password
+                </Typography>
+                <CustomTextField
+                  fullWidth
+                  variant="outlined"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="*********"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.confirmPassword}
+                  name="confirmPassword"
+                  error={!!touched.confirmPassword && !!errors.confirmPassword}
+                  helperText={touched.confirmPassword && errors.confirmPassword}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton
+                        onClick={handleToggleConfirmPassword}
+                        edge="end"
+                        sx={{ padding: 0, marginRight: "10px" }}
+                      >
+                        {showConfirmPassword ? (
+                          <Visibility
+                            sx={{
+                              fontSize: "20px",
+                            }}
+                          />
+                        ) : (
+                          <VisibilityOff
+                            sx={{
+                              fontSize: "20px",
+                              color: "#DAE1E7",
+                            }}
+                          />
+                        )}
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </Box>
+              <Button
+                type="submit"
+                disabled={!isValid || !dirty}
+                sx={{
+                  textTransform: "none",
+                  bgcolor: "primary.main",
+                  color: "white",
+                  fontSize: "14px",
+                  paddingY: "10px",
+                  fontWeight: 600,
+                  width: "100%",
+                  marginTop: "50px",
+                  "&:hover": {
+                    backgroundColor: "#E3364E",
+                  },
+                }}
+              >
+                Create Account
+              </Button>
+            </form>
+          )}
+        </Formik>
+
         <Stack direction="row" spacing={1} justifyContent="center" mt={2}>
           <Typography variant="subtitle2">Already have an account?</Typography>
           <Link to={"/login"} style={{ textDecoration: "none" }}>
@@ -221,6 +319,38 @@ const Signup = () => {
       </Paper>
     </Box>
   );
+};
+
+const phoneRegExp =
+  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
+
+const userSchema = yup.object().shape({
+  fullName: yup.string().required("required"),
+  email: yup.string().email("invalid email").required("required"),
+  phone: yup
+    .string()
+    .matches(phoneRegExp, "Phone number is not valid")
+    .required("required"),
+    password: yup
+    .string()
+    .required("required")
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+      "Password must contain at least 8 characters, including letters and numbers"
+    ),
+  confirmPassword: yup
+    .string()
+    .required("required")
+    .test("passwords-match", "Passwords must match", function (value) {
+      return this.parent.password === value;
+    }),
+});
+const initialValues = {
+  fullName: "",
+  email: "",
+  phone: "",
+  password: "",
+  confirmPassword: "",
 };
 
 export default Signup;

@@ -1,30 +1,60 @@
 import axios from "axios";
 import { config } from "../../utils/axiosconfig";
 import { base_url } from "../../utils/baseUrl";
+
 const signup = async (user) => {
   const response = await axios.post(`${base_url}user/register`, user);
-  if (response.data) {
-    localStorage.setItem("user", JSON.stringify(response.data));
-  }
-  return response.data;
+  const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000; 
+  const userData = {
+      ...response.data,
+      expirationTime: expirationTime,
+    }
+  localStorage.setItem("user", JSON.stringify(userData));
+  return userData;
 };
+
 const login = async (user) => {
   const response = await axios.post(`${base_url}user/login`, user);
-  if (response.data) {
-    localStorage.setItem("user", JSON.stringify(response.data));
-  }
-  return response.data;
+  const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000; 
+  const userData = {
+      ...response.data,
+      expirationTime: expirationTime,
+    };
+  localStorage.setItem("user", JSON.stringify(userData));
+  return userData;
 };
+
 const userCart = async (cart) => {
   // console.log(cart)
   const response = await axios.post(`${base_url}user/cart`, { cart }, config);
   return response.data;
 };
 
+const editProfile = async (userData) => {
+  const response = await axios.put(
+    `${base_url}user`,
+    userData,
+    config
+  );
+  const data = {
+    _id: response.data._id,
+    fullName: response.data.fullName,
+    role: response.data.role,
+    email: response.data.email,
+    phone: response.data.phone,
+    dob: response.data.dob,
+    orders: response.data.orderCount,
+    image: response.data.image.url
+  }
+  return data;
+};
+
 const authService = {
   login,
   signup,
   userCart,
+  editProfile
 };
 
 export default authService;
+

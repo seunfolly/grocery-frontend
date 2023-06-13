@@ -1,107 +1,96 @@
-import { useState } from "react";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {
-  Box,
-  Stack,
-  Typography,
-  Container,
-  Button,
-  Link as MuiLink,
-} from "@mui/material";
-import { Link } from "react-router-dom";
 
-const testArray = ["Vegetable", "Cotton", "Organic", "Eggs"];
-const cats = [
-  {
-    name: "Fashion",
-    children: [
-      {
-        name: "Men",
-        children: [
-          {
-            name: "Tshirt",
-          },
-          {
-            name: "Plain Shirt",
-          },
-          {
-            name: "Long Sleeve Shirt",
-          },
-        ],
-      },
-      {
-        name: "Women",
-      },
-      {
-        name: "Children",
-      },
-    ],
-  },
-  {
-    name: "Electronics",
-    children: [
-      {
-        name: "Phones",
-      },
-    ],
-  },
-  {
-    name: "Organic",
-  },
-  {
-    name: "Breakfast",
-  },
-  {
-    name: "Canned Food",
-  },
-  {
-    name: "Beauty",
-    children: [
-      {
-        name: "Men",
-        children: [
-          {
-            name: "Tshirt",
-          },
-          {
-            name: "Plain Shirt",
-          },
-          {
-            name: "Long Sleeve Shirt",
-          },
-        ],
-      },
-      {
-        name: "Women",
-      },
-      {
-        name: "Children",
-      },
-    ],
-  },
-];
+import React, { useState, useEffect } from "react";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { Box, Stack, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getCategories } from "../../features/category/categorySlice";
 
 const Category = () => {
-  const [showChildren, setShowChildren] = useState(
-    Array(cats.length).fill(false)
-  );
+  const dispatch = useDispatch();
 
-  const toggleChildren = (index) => {
-    setShowChildren((prevShowChildren) => {
-      const updatedShowChildren = [...prevShowChildren];
-      updatedShowChildren[index] = !updatedShowChildren[index];
-      return updatedShowChildren;
+  useEffect(() => {
+    dispatch(getCategories(1));
+  }, [dispatch]);
+
+  const { categories } = useSelector((state) => state.category);
+
+  const [expandedCategories, setExpandedCategories] = useState([]);
+
+  const toggleCategory = (categoryId) => {
+    setExpandedCategories((prevExpandedCategories) => {
+      if (prevExpandedCategories.includes(categoryId)) {
+        return prevExpandedCategories.filter((id) => id !== categoryId);
+      } else {
+        return [...prevExpandedCategories, categoryId];
+      }
     });
+  };
+
+  const isCategoryExpanded = (categoryId) => {
+    return expandedCategories.includes(categoryId);
+  };
+
+  const renderCategory = (category, topLevel) => {
+    const hasChildren = category.children && category.children.length > 0;
+    const isExpanded = isCategoryExpanded(category._id);
+
+
+    return (
+      <Box key={category._id}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          paddingY={topLevel? 1: 0.7}
+          sx={{ cursor: "pointer" }}
+          onClick={() => toggleCategory(category._id)}
+        >
+          <Link
+            to={`/categories/${category._id}`}
+            style={{ textDecoration: "none", width: "100%" }}
+          >
+            <Typography
+              color="#4B566B"
+              fontSize= {topLevel? "16px": "14.5px"}
+              sx={{
+                "&:hover": {
+                  color: "#D23F57",
+                },
+              }}
+            >
+              {category.name}
+            </Typography>
+          </Link>
+          {hasChildren && (
+            <ChevronRightIcon
+              sx={{
+                transition: "transform 250ms ease-in-out 0s",
+                transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
+              }}
+            />
+          )}
+        </Stack>
+        {hasChildren && isExpanded && (
+          <Box marginLeft={2}>
+            {category.children.map((subcategory) =>
+              renderCategory(subcategory)
+            )}
+          </Box>
+        )}
+      </Box>
+    );
   };
 
   return (
     <Box
       bgcolor="white"
-      p={3}
+      py={3}
+      px={2.2}
       borderRadius="5px"
       sx={{
-        width: "250px",
-        minWidth: "250px",
+        width: "278px",
+        minWidth: "278px",
         height: "calc(100vh - 180px)",
         boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
         position: "sticky",
@@ -119,110 +108,12 @@ const Category = () => {
         },
       }}
     >
-      <Box>
-        <Stack spacing={1}>
-          {cats.map((item, index) => (
-            <Box
-              key={index}
-              onClick={() => toggleChildren(index)}
-              sx={{
-                cursor: "pointer",
-                height:
-                  showChildren[index] &&
-                  item.children &&
-                  item.children.length > 0
-                    ? `auto`
-                    : "33px",
-                overflow: "hidden",
-                transition: "height 250ms ease-in-out 0s",
-              }}
-            >
-              <Stack direction="row" justifyContent="space-between">
-                {item.children && item.children.length > 0 ? (
-                  <Typography>{item.name}</Typography>
-                ) : (
-                  <Link style={{ textDecoration: "none", width: "100%" }}>
-                    <Typography
-                      color="#4B566B"
-                      sx={{
-                        "&:hover": {
-                          color: "#D23F57",
-                        },
-                      }}
-                    >
-                      {item.name}
-                    </Typography>
-                  </Link>
-                )}
-
-                {item.children && item.children.length > 0 && (
-                  <ChevronRightIcon
-                    sx={{
-                      transition: "transform 250ms ease-in-out 0s",
-                      transform: showChildren[index]
-                        ? "rotate(90deg)"
-                        : "rotate(0deg)",
-                    }}
-                  />
-                )}
-              </Stack>
-              {item.children &&
-                item.children.length > 0 &&
-                showChildren[index] && (
-                  <Box marginLeft={2}>
-                    {item.children.map((child, childIndex) => (
-                      <Stack spacing={1} key={childIndex}>
-                        <Link style={{ textDecoration: "none" }}>
-                          <Typography
-                            variant="subtitle2"
-                            color="#4B566B"
-                            py={1}
-                            sx={{
-                              "&:hover": {
-                                color: "#D23F57",
-                              },
-                            }}
-                          >
-                            {child.name}
-                          </Typography>
-                        </Link>
-                        <Stack
-                          sx={{
-                            marginLeft: "10px !important",
-                            marginTop: "0 !important",
-                          }}
-                        >
-                          {child.children && child.children.length > 0 ? (
-                            child.children.map((item) => (
-                              <Link style={{ textDecoration: "none" }}>
-                                <Typography
-                                  variant="subtitle2"
-                                  color="#4B566B"
-                                  py={1}
-                                  sx={{
-                                    "&:hover": {
-                                      color: "#D23F57",
-                                    },
-                                  }}
-                                >
-                                  {item.name}
-                                </Typography>
-                              </Link>
-                            ))
-                          ) : (
-                            <></>
-                          )}{" "}
-                        </Stack>
-                      </Stack>
-                    ))}
-                  </Box>
-                )}
-            </Box>
-          ))}
-        </Stack>
-      </Box>
+      {categories.map((category) => renderCategory(category,true))}
     </Box>
   );
 };
 
 export default Category;
+
+
+

@@ -25,6 +25,8 @@ const ICard = ({ images, name, regularPrice, salePrice, star, _id, cart }) => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.cart);
   const product = products.find((product) => product.id === _id);
+  const auth = useSelector((state) => state.auth);
+  const {  user } = auth;
   const handleAddToCart = () => {
     dispatch(
       addToCart({
@@ -45,15 +47,15 @@ const ICard = ({ images, name, regularPrice, salePrice, star, _id, cart }) => {
     axios
       .put(`${base_url}product/wishlist/${_id}`, null, {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NWZjYjY0N2E0NjAwZmY3ODdkMzVlYSIsImlhdCI6MTY4NTkwMTgyMywiZXhwIjoxNjg1OTg4MjIzfQ.PKKRF6IAhg5h60BNswWjoEfc5eioGvBQoAzB9i8OP7M`,
+          Authorization: `Bearer ${user?.token}`,
         },
       })
       .then((response) => {
-        makeToast("success", "Product Added to WishList");
+        // makeToast("success", "Product Added to WishList");
         setToggle(!toggle);
       })
       .catch((error) => {
-        makeToast("error", "Something went wrong, Please try again");
+        makeToast("error", "Login to Add Product to WishList");
       });
   };
   return (

@@ -130,28 +130,51 @@ const getAllProduct = asyncHandler(async (req, res) => {
       query = query.where("brand").equals(brandId);
     }
 
+    //Filter by Rating 
+    const rating = req.query.rating
+    if(rating) {
+      query = query.find({
+        ratings: { $elemMatch: { star: rating } },
+      });
+    }
     // Filter by maxPrice and/or minPrice
     const maxPrice = req.query.maxPrice;
     const minPrice = req.query.minPrice;
+    
     if (maxPrice && minPrice) {
-      query = query.where("price").gte(minPrice).lte(maxPrice);
+      query = query.or([
+        { regularPrice: { $gte: minPrice, $lte: maxPrice } },
+        { salePrice: { $gte: minPrice, $lte: maxPrice } }
+      ]);
     } else if (maxPrice) {
-      query = query.where("price").lte(maxPrice);
+      query = query.or([
+        { regularPrice: { $lte: maxPrice } },
+        { salePrice: { $lte: maxPrice } }
+      ]);
     } else if (minPrice) {
-      query = query.where("price").gte(minPrice);
+      query = query.or([
+        { regularPrice: { $gte: minPrice } },
+        { salePrice: { $gte: minPrice } }
+      ]);
     }
 
     // Sorting
-
     if (req.query.sort) {
-      const sortBy = req.query.sort.split(",").join(" ");
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort("-createdAt");
+    const { sort } = req.query;
+    let sortBy = "-createdAt";
+    if (sort === "relevance") {
+      //TODO::::: Add relevance sorting logic based on your app's requirements
+    } else if (sort === "date") {
+      sortBy = "-createdAt";
+    } else if (sort === "price_low_high") {
+      sortBy = "salePrice regularPrice";
+    } else if (sort === "price_high_low") {
+      sortBy = "-salePrice -regularPrice";
     }
-
+    query = query.sort(sortBy);
+    }
+    
     // limiting the fields
-
     if (req.query.fields) {
       const fields = req.query.fields.split(",").join(" ");
       query = query.select(fields);
@@ -186,7 +209,6 @@ const searchProduct = asyncHandler(async (req, res) => {
         { description: { $regex: query, $options: "i" } },
       ],
     });
-
     res.json(products);
   } catch (error) {
     throw new Error(error);

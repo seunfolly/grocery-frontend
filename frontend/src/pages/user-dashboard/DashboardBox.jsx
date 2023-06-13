@@ -1,27 +1,37 @@
-import { Typography,Box,Stack,Link as MuiLink } from "@mui/material";
+import { Typography, Box, Stack, Button, Link as MuiLink } from "@mui/material";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import HeadsetMicIcon from "@mui/icons-material/HeadsetMic";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PaymentIcon from "@mui/icons-material/Payment";
-import { Link, useLocation } from "react-router-dom";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
 
 const dashboards = [
   { text: "Orders", no: 5, Icon: <ShoppingBagOutlinedIcon />, url: "orders" },
-  { text: "Wishlist", no: 19, Icon: <FavoriteBorderIcon /> , url: "wishlist" },
+  { text: "Wishlist", no: 19, Icon: <FavoriteBorderIcon />, url: "wishlist" },
   { text: "Support", no: 11, Icon: <HeadsetMicIcon />, url: "support" },
 ];
 
 const account = [
-  { text: "Profile Info", no: 4, Icon: <PersonOutlineOutlinedIcon />, url: "profile"  },
+  {
+    text: "Profile Info",
+    no: 4,
+    Icon: <PersonOutlineOutlinedIcon />,
+    url: "profile",
+  },
   { text: "Addresses", no: 39, Icon: <LocationOnIcon />, url: "addresses" },
-  { text: "Payment Method", no: 9, Icon: <PaymentIcon />, url: "payments"},
+  { text: "Payment Method", no: 9, Icon: <PaymentIcon />, url: "payments" },
 ];
 
 const ILink = ({ text, no, Icon, url }) => {
   const location = useLocation();
-  const isActive = location.pathname === `/user/${url}` || location.pathname.startsWith(`/user/${url}/`);
+  const isActive =
+    location.pathname === `/user/${url}` ||
+    location.pathname.startsWith(`/user/${url}/`);
   return (
     <MuiLink
       component={Link}
@@ -29,7 +39,7 @@ const ILink = ({ text, no, Icon, url }) => {
       underline="none"
       variant="subtitle2"
       color={isActive ? "primary.main" : "text.primary"}
-      borderLeft = "4px solid"
+      borderLeft="4px solid"
       borderColor={isActive ? "primary.main" : "transparent"}
       pr={2}
       pl={3.5}
@@ -43,12 +53,7 @@ const ILink = ({ text, no, Icon, url }) => {
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack direction="row" alignItems="center" spacing={1}>
           {Icon}
-          <Typography
-            variant="subtitle2"
-           
-          >
-            {text}
-          </Typography>
+          <Typography variant="subtitle2">{text}</Typography>
         </Stack>
 
         <Typography>{no}</Typography>
@@ -58,6 +63,8 @@ const ILink = ({ text, no, Icon, url }) => {
 };
 
 const DashboardBox = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   return (
     <Box
       bgcolor="#fff"
@@ -87,6 +94,31 @@ const DashboardBox = () => {
               <ILink key={index} {...dashboard} />
             ))}
           </Stack>
+
+          <Button
+            variant="text"
+            onClick={()=> {
+              dispatch(logout())
+              navigate("/")
+            }}
+            sx={{
+              textTransform: "none",
+              // bgcolor: "#FCE9EC",
+              color: "primary.main",
+              paddingX: "40px",
+              fontWeight: 600,
+              paddingY: "6px",
+              gap: "5px",
+              // marginTop: "50px !important",
+              "&:hover": {
+                backgroundColor: "rgba(210, 63, 87, 0.04)",
+              },
+            }}
+          >
+            <LogoutIcon/>
+            <Typography variant="subtitle2">LOGOUT</Typography>
+            
+          </Button>
         </Stack>
       </Stack>
     </Box>

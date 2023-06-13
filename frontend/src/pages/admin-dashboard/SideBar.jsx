@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton } from "@mui/material";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
@@ -10,10 +10,13 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import BookIcon from "@mui/icons-material/Book";
 import CategoryIcon from "@mui/icons-material/Category";
 import AppsIcon from "@mui/icons-material/Apps";
+import { useDispatch } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
 
 const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   return (
     <Box
       sx={{
@@ -177,7 +180,10 @@ const SideBar = () => {
             Customer List{" "}
           </MenuItem>
 
-          <MenuItem icon={<LogoutIcon />}> Logout</MenuItem>
+          <MenuItem icon={<LogoutIcon />} onClick={()=> {
+            dispatch(logout())
+            navigate("/")
+          }}> Logout</MenuItem>
         </Menu>
       </Sidebar>
     </Box>

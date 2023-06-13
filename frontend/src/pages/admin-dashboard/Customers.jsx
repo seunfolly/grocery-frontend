@@ -57,7 +57,7 @@ const Customers = () => {
   }, [deletedCustomer]);
   const customers = customerState.customers.map((customer) => ({
     id: customer?._id,
-    name: `${customer?.firstName} ${customer?.lastName}`,
+    name: customer?.fullName,
     email: customer?.email,
     phone: customer?.phone,
     image: "https://bazaar.ui-lib.com/assets/images/avatars/002-woman.svg",
