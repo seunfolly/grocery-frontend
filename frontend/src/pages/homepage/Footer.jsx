@@ -76,6 +76,7 @@ const Footer = () => {
               <Stack justifyContent="space-between">
                 {arrayLinks.map((link, index) => (
                   <MuiLink
+                    key={index}
                     component={Link}
                     to={link.url}
                     underline="none"

@@ -1,30 +1,17 @@
+import { useEffect } from "react";
 import { Typography, Stack, Button, Paper, IconButton } from "@mui/material";
 import PlaceIcon from "@mui/icons-material/Place";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteAddress,
+  getAddresses,
+} from "../../features/address/addressSlice";
 
-const addresses = [
-  {
-    id: Math.floor(Math.random() * 100000),
-    name: "Office",
-    address: "34 Lekki Phase 1 Lagos State",
-    phone: "+2345679044",
-  },
-  {
-    id: Math.floor(Math.random() * 100000),
-    name: "Office",
-    address: "34 Lekki Phase 1 Lagos State",
-    phone: "+2345679044",
-  },
-  {
-    id: Math.floor(Math.random() * 100000),
-    name: "Office",
-    address: "34 Lekki Phase 1 Lagos State",
-    phone: "+2345679044",
-  },
-];
-const Address = ({ id, name, address, phone }) => {
+const Address = ({ _id, fullName, address, phone, state }) => {
+  const dispatch = useDispatch();
   return (
     <Paper
       elevation={0}
@@ -35,23 +22,27 @@ const Address = ({ id, name, address, phone }) => {
         bgcolor: "white",
         borderRadius: "10px",
         alignItems: "center",
+        textTransform: "capitalize",
         // justifyContent: "space-between"
       }}
     >
       <Typography variant="subtitle2" flex="1 1 0">
-        {name}
+        {fullName}
       </Typography>
 
-      <Typography variant="subtitle2" flex="1 1 200px">
-        {address}
-      </Typography>
       <Typography variant="subtitle2" flex="1 1 0">
         {phone}
       </Typography>
 
-      <Stack direction="row" flex="1 1 0" justifyContent="end">
+      <Typography variant="subtitle2" flex="1 1 170px">
+        {address}
+      </Typography>
+      <Typography variant="subtitle2" flex="1 1 0">
+        {state}
+      </Typography>
+      <Stack direction="row" justifyContent="end">
         <Link
-          to={`/user/addresses/${id}`}
+          to={`/user/addresses/${_id}`}
           style={{
             textDecoration: "none",
           }}
@@ -65,7 +56,11 @@ const Address = ({ id, name, address, phone }) => {
           </IconButton>
         </Link>
 
-        <IconButton>
+        <IconButton
+          onClick={() => {
+            dispatch(deleteAddress(_id));
+          }}
+        >
           <DeleteIcon
             sx={{
               fontSize: "1.3rem",
@@ -78,6 +73,15 @@ const Address = ({ id, name, address, phone }) => {
 };
 
 const Addresses = () => {
+  const dispatch = useDispatch();
+  const { addresses, deletedAddress } = useSelector((state) => state.address);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(getAddresses());
+    };
+    fetchData();
+  }, [deletedAddress]);
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">

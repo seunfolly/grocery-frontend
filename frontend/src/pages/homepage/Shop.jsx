@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Stack, Grid, Typography} from "@mui/material";
+import { Box, Stack, Grid, Typography, CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../features/product/productSlice";
@@ -53,7 +53,23 @@ const Shop = () => {
   useEffect(() => {
     dispatch(getProducts());
   }, []);
-  const productState = useSelector((state) => state.product.products);
+  const { products, isLoading } = useSelector((state) => state.product);
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Stack spacing={6}>
@@ -75,10 +91,13 @@ const Shop = () => {
             ))}
           </Grid>
         </Stack>
-        <Carousel title={"Featured Item"} productList={productState} />
-        <Carousel title={"Best Selling in Your Area"} productList={productState}/>
+        <Carousel title={"Featured Item"} productList={products} />
+        <Carousel title={"Best Selling in Your Area"} productList={products} />
         <Carousel1 />
-        <Carousel title={"Snacks, Drinks, Dairy & More"} productList={productState}/>
+        <Carousel
+          title={"Snacks, Drinks, Dairy & More"}
+          productList={products}
+        />
         <Comment />
         <Footer />
       </Stack>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Stack, Typography, IconButton, Chip, Switch } from "@mui/material";
+import { Stack, Tooltip, IconButton, Chip, Switch } from "@mui/material";
 import { Link } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -8,6 +8,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import Table from "./Table";
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
+import { base_url } from "../../utils/baseUrl";
+import axios from "axios";
 import {
   getCategories,
   deleteCategory,
@@ -19,18 +21,19 @@ const Categories = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(getCategories());
+      dispatch(getCategories(1));
     };
     fetchData();
   }, []);
-  
+
   const categoryState = useSelector((state) => state.category);
   const { isSuccess, isError, isLoading, deletedCategory } = categoryState;
-  console.log(categoryState.categories[0])
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
   useEffect(() => {
     if (deletedCategory) {
       makeToast("success", "Category deleted successfully!");
-      dispatch(getCategories());
+      dispatch(getCategories(1));
     }
     if (isError) {
       makeToast("error", "Something went wrong");
@@ -45,10 +48,26 @@ const Categories = () => {
     id: category.categoryId,
     name: category.name,
     level: category.level,
-    // featured: category.isFeatured,
+    visible: category.visible,
     action: null,
   }));
 
+  const updateVisibility = (id, visible) => {
+    axios
+      .put(
+        `${base_url}category/visible/${id}`,
+        { visible: visible },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      )
+      .then((response) => {
+        dispatch(getCategories(1));
+      })
+      .catch((error) => console.log(error));
+  };
   return (
     <Stack spacing={3} bgcolor="background.paper" py={3}>
       <Header
@@ -62,8 +81,13 @@ const Categories = () => {
         <DataGrid
           rows={categories}
           columns={[
-            { field: "id", headerName: "ID", flex: 1,headerAlign: "center",
-            align: "center", },
+            {
+              field: "id",
+              headerName: "ID",
+              flex: 1,
+              headerAlign: "center",
+              align: "center",
+            },
             {
               field: "name",
               headerName: "Name",
@@ -83,7 +107,34 @@ const Categories = () => {
               headerAlign: "center",
               align: "center",
             },
+            {
+              field: "visible",
+              headerName: "Visible",
+              flex: 1,
+              headerAlign: "center",
+              align: "center",
+              renderCell: ({ value, row }) => {
+                const handleSwitchChange = (event) => {
+                  const inputValue = event.target.checked;
+                  updateVisibility(row._id, inputValue);
+                };
 
+                return (
+                  <Switch
+                    checked={value}
+                    onChange={handleSwitchChange}
+                    sx={{
+                      "& .MuiSwitch-thumb": {
+                        color: "#2756b6",
+                      },
+                      "& .Mui-checked+.MuiSwitch-track": {
+                        backgroundColor: "#4e97fd !important",
+                      },
+                    }}
+                  />
+                );
+              },
+            },
             {
               field: "action",
               headerName: "Action",
@@ -91,15 +142,24 @@ const Categories = () => {
               headerAlign: "center",
               align: "center",
               renderCell: ({ row }) => (
-                <IconButton
-                  aria-label="Delete"
-                  disabled={isLoading}
-                  onClick={() => {
-                    dispatch(deleteCategory(row._id));
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                <Stack direction="row">
+                  {/* <Link to={`/admin/category/${row._id}`}>
+                    <IconButton aria-label="Edit">
+                      <EditIcon />
+                    </IconButton>
+                  </Link> */}
+                  <Tooltip title="Delete">
+                    <IconButton
+                      aria-label="Delete"
+                      disabled={isLoading}
+                      onClick={() => {
+                        dispatch(deleteCategory(row._id));
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
               ),
             },
           ]}

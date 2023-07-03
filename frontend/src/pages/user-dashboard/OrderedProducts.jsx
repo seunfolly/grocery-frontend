@@ -1,6 +1,5 @@
-import { Typography,Box,Stack, IconButton, TextField } from "@mui/material";
+import { Typography, Box, Stack, IconButton, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 
 export const reviews = [
   {
@@ -26,12 +25,12 @@ export const reviews = [
   },
 ];
 
-export const IReview = ({ img, pName, pAmount, pReview, pProperties,icon }) => {
+export const IReview = ({ image, product, price, count, icon }) => {
   return (
     <Stack direction="row" alignItems="center" width="100%">
       <Stack direction="row" spacing={2} flexGrow={1} alignItems="center">
         <img
-          src={img}
+          src={image}
           style={{
             width: "70px",
             height: "70px",
@@ -40,37 +39,47 @@ export const IReview = ({ img, pName, pAmount, pReview, pProperties,icon }) => {
 
         <Stack>
           <Typography variant="subtitle1" color="text.primary">
-            {pName}
+            {product?.name}
           </Typography>
-          { icon ? 
-          (<Stack direction="row" spacing={1} alignItems="center">
+          {icon ? (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography color="text.secondary" variant="subtitle2">
+                {price}
+              </Typography>
+              <TextField
+                type="number"
+                size="small"
+                defaultValue={4}
+                sx={{
+                  width: "60px",
+                }}
+              />
+            </Stack>
+          ) : (
             <Typography color="text.secondary" variant="subtitle2">
-            {pAmount}
-          </Typography>
-           <TextField type="number" size="small" defaultValue={4} sx={{
-            width: "60px"
-           }} />
-             </Stack> ): (<Typography color="text.secondary" variant="subtitle2">
-            {pAmount}
-          </Typography> )}
+              {`₦ ${price} X ${count}`}
+            </Typography>
+          )}
         </Stack>
       </Stack>
 
       <Typography flexGrow={1} variant="subtitle2" color="text.secondary">
-        {pProperties}
+        {product?.description}
       </Typography>
-     { pReview && <Typography flexGrow={1} variant="subtitle2" color="primary.main">
-        {pReview}
-      </Typography>}
+      <Typography flexGrow={1} variant="subtitle2" color="primary.main">
+      Write A Review
+      </Typography>
 
-     { icon && <IconButton aria-label="Delete">
+      {icon && (
+        <IconButton aria-label="Delete">
           <DeleteIcon />
-        </IconButton>}
+        </IconButton>
+      )}
     </Stack>
   );
 };
 
-const OrderedProducts = () => {
+const OrderedProducts = ({ order }) => {
   return (
     <Box
       mt={5}
@@ -100,7 +109,7 @@ const OrderedProducts = () => {
                 color: "text.primary",
               }}
             >
-              f0ba538b-c8f3-45ce-b6c1-209cf07ba5f8
+              {order?.orderId}
             </Typography>
           </Stack>
           <Stack direction="row">
@@ -113,7 +122,11 @@ const OrderedProducts = () => {
                 color: "text.primary",
               }}
             >
-              10 Nov, 2022
+              {new Date(order?.orderDate).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </Typography>
           </Stack>
         </Stack>
@@ -128,7 +141,11 @@ const OrderedProducts = () => {
               color: "text.primary",
             }}
           >
-            05 Apr, 2023
+            {new Date(order?.deliveryDate).toLocaleDateString("en-US", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
           </Typography>
         </Stack>
       </Stack>
@@ -143,7 +160,7 @@ const OrderedProducts = () => {
           borderBottomLeftRadius: "11px",
         }}
       >
-        {reviews.map((review, index) => (
+        {order?.products.map((review, index) => (
           <IReview key={index} {...review} />
         ))}
       </Stack>

@@ -54,14 +54,13 @@ const Products = () => {
   useEffect(() => {
     if (deletedProduct) {
       makeToast("success", "Product deleted successfully!");
-      dispatch(resetState())
+      dispatch(resetState());
       dispatch(getProducts());
     }
     if (isError) {
       makeToast("error", "Something went wrong");
     }
-
-  }, [deletedProduct,isError]);
+  }, [deletedProduct, isError]);
 
   const products = productState.products.map((product) => ({
     _id: product._id,

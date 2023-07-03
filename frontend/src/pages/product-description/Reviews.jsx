@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Typography,
   Avatar,
@@ -11,64 +11,69 @@ import {
 import { base_url } from "../../utils/baseUrl";
 import makeToast from "../../utils/toaster";
 import axios from "axios";
-import { arrivalData } from "../homepage/Carousel";
-import ICard from "../../components/ui-elements/Card";
+import { useSelector, useDispatch } from "react-redux";
+import { getProduct } from "../../features/product/productSlice";
 
-const Reviews = ({ product }) => {
+const Reviews = ({ id }) => {
+  const dispatch = useDispatch();
   const [value, setValue] = useState({ star: 0, comment: "" });
+  const auth = useSelector((state) => state.auth);
+  const { productData } = useSelector((state) => state.product);
+
+  const { user } = auth;
   const addComment = (event) => {
     event.preventDefault();
     axios
-      .put(`${base_url}product/rating/${product._id}`, value, {
+      .put(`${base_url}product/rating/${id}`, value, {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NWZjYjY0N2E0NjAwZmY3ODdkMzVlYSIsImlhdCI6MTY4NjA0NDI0OSwiZXhwIjoxNjg2MTMwNjQ5fQ.RwpMI0F-0UnJ5Ml5tlPrK_rGf09yAZKILlTiAAc6VFU`,
+          Authorization: `Bearer ${user?.token}`,
         },
       })
       .then((response) => {
         makeToast("success", "Thank you for your review!");
         setValue({ star: 0, comment: "" });
+        dispatch(getProduct(id));
       })
       .catch((error) => {
         makeToast("error", "Something went wrong, Please try again");
       });
   };
 
+  useEffect(() => {
+    dispatch(getProduct(id));
+  }, []);
+
   return (
     <Stack spacing={6}>
       <Stack spacing={5} maxWidth="600px">
-         {
-          product.ratings.map((rating,index) => (
-            <Stack spacing={1} >
-          <Stack direction="row" spacing={2}>
-            <Avatar
-              src="https://bazaar.ui-lib.com/assets/images/faces/7.png"
-              sx={{
-                height: "50px",
-                width: "50px",
-              }}
-            />
-            <Stack>
-              <Typography fontSize="16px" fontWeight="500">
-                {`${rating?.postedby?.firstName} ${rating?.postedby?.lastName}`}
-              </Typography>
-              <Rating
-                value={rating?.star}
+        {productData?.ratings.map((rating, index) => (
+          <Stack spacing={1}>
+            <Stack direction="row" spacing={2}>
+              <Avatar
+                src={rating?.postedby.image.url}
                 sx={{
-                  fontSize: "20px",
+                  height: "50px",
+                  width: "50px",
                 }}
               />
+              <Stack>
+                <Typography fontSize="16px" fontWeight="500">
+                  {`${rating?.postedby?.fullName} `}
+                </Typography>
+                <Rating
+                  value={rating?.star}
+                  readOnly
+                  sx={{
+                    fontSize: "20px",
+                  }}
+                />
+              </Stack>
             </Stack>
+            <Typography fontSize="13px" color="#4B566B">
+              {rating?.comment}
+            </Typography>
           </Stack>
-          <Typography fontSize="13px" color="#4B566B">
-          {rating?.comment}
-
-          </Typography>
-        </Stack>
-
-          ))
-         }
-        
-
+        ))}
       </Stack>
 
       <Stack spacing={1.5}>
@@ -112,10 +117,13 @@ const Reviews = ({ product }) => {
           </Stack>
           <Button
             type="submit"
-            disabled={!value.star || !value.comment} 
+            disabled={!value.star || !value.comment || !user}
             sx={{
               textTransform: "none",
-              bgcolor: !value.star || !value.comment? "#0000001f" : "primary.main",
+              bgcolor:
+                !value.star || !value.comment || !user
+                  ? "#0000001f"
+                  : "primary.main",
               color: "white",
               fontSize: "14px",
               paddingX: "20px",

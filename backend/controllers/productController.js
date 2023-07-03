@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const Category = require("../models/categoryModel");
 const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
@@ -16,7 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
     if (req.body.name) {
       req.body.slug = slugify(req.body.name);
     }
-    console.log(req.images);
+    // console.log(req.images);
     const newProduct = await Product.create({
       ...req.body,
       productId: generateRandomHex(),
@@ -29,7 +30,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  console.log(req.body.tags);
+  // console.log(req.body.tags);
   const { id } = req.params;
   validateMongoDbId(id);
   try {
@@ -71,7 +72,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   validateMongoDbId(id);
   try {
     const product = await Product.findById(id);
-    console.log(product._id);
+    // console.log(product._id);
     const imagesToDelete = product.images;
     for (const image of imagesToDelete) {
       await cloudinaryDeleteImg(image.public_id);
@@ -100,6 +101,7 @@ const getaProduct = asyncHandler(async (req, res) => {
 const getAllProduct = asyncHandler(async (req, res) => {
   try {
     // Filtering
+    // console.log(req.query);
     const queryObj = { ...req.query };
     const excludeFields = [
       "page",
@@ -108,72 +110,67 @@ const getAllProduct = asyncHandler(async (req, res) => {
       "fields",
       "minPrice",
       "maxPrice",
-    ];
+      "brands",
+      "sales",
+      "featured",
+      "stock",
+    ]; 
     excludeFields.forEach((el) => delete queryObj[el]);
-    if (req.query.name) {
-      queryObj.name = { $regex: req.query.name, $options: "i" };
-    }
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
     let query = Product.find(JSON.parse(queryStr));
-
-    // Filter by category id
-    const categoryId = req.query.categoryId;
-    if (categoryId) {
-      query = query.where("category").equals(categoryId);
+    const brands = req.query.brands; 
+    const stock = req.query.stock;
+    const featured = req.query.featured;
+    const sales = req.query.sales;
+    if (brands) {
+      const brandIds = brands.split(",").map((brandId) => brandId.trim());
+      query = query.where("brand").in(brandIds);
     }
+    if (featured && featured.toLowerCase() === "true")
+      query = query.where("isFeatured").equals(true);
+    if (stock && stock.toLowerCase() === "true")
+      query = query.where("stock").gt(0);
+    if (sales && sales.toLowerCase() === "true")
+      query = query.where("salePrice").gt(0);
 
-    // Filter by brand id
-    const brandId = req.query.brandId;
-    if (brandId) {
-      query = query.where("brand").equals(brandId);
-    }
-
-    //Filter by Rating 
-    const rating = req.query.rating
-    if(rating) {
-      query = query.find({
-        ratings: { $elemMatch: { star: rating } },
-      });
-    }
     // Filter by maxPrice and/or minPrice
     const maxPrice = req.query.maxPrice;
     const minPrice = req.query.minPrice;
-    
+
     if (maxPrice && minPrice) {
       query = query.or([
         { regularPrice: { $gte: minPrice, $lte: maxPrice } },
-        { salePrice: { $gte: minPrice, $lte: maxPrice } }
+        { salePrice: { $gte: minPrice, $lte: maxPrice } },
       ]);
     } else if (maxPrice) {
       query = query.or([
         { regularPrice: { $lte: maxPrice } },
-        { salePrice: { $lte: maxPrice } }
+        { salePrice: { $lte: maxPrice } },
       ]);
     } else if (minPrice) {
       query = query.or([
         { regularPrice: { $gte: minPrice } },
-        { salePrice: { $gte: minPrice } }
+        { salePrice: { $gte: minPrice } },
       ]);
     }
 
     // Sorting
     if (req.query.sort) {
-    const { sort } = req.query;
-    let sortBy = "-createdAt";
-    if (sort === "relevance") {
-      //TODO::::: Add relevance sorting logic based on your app's requirements
-    } else if (sort === "date") {
-      sortBy = "-createdAt";
-    } else if (sort === "price_low_high") {
-      sortBy = "salePrice regularPrice";
-    } else if (sort === "price_high_low") {
-      sortBy = "-salePrice -regularPrice";
+      const { sort } = req.query;
+      let sortBy = "-createdAt";
+      if (sort === "relevance") {
+        //TODO::::: Add relevance sorting logic
+      } else if (sort === "new_arrivals") {
+        sortBy = "-createdAt";
+      } else if (sort === "price_low_high") {
+        sortBy = "regularPrice";
+      } else if (sort === "price_high_low") {
+        sortBy = "-regularPrice";
+      }
+      query = query.sort(sortBy);
     }
-    query = query.sort(sortBy);
-    }
-    
+
     // limiting the fields
     if (req.query.fields) {
       const fields = req.query.fields.split(",").join(" ");
@@ -191,7 +188,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
       const productCount = await Product.countDocuments();
       if (skip >= productCount) throw new Error("This Page does not exists");
     }
-    query = query.populate("category").populate("brand");
+    query = query.populate("category brand ratings.postedby");
 
     const products = await query;
     res.json(products);
@@ -219,6 +216,8 @@ const rating = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { star, comment } = req.body;
   const { prodId } = req.params;
+
+  const maxRate = 100;
   try {
     const product = await Product.findById(prodId);
     let alreadyRated = product.ratings.find(
@@ -259,13 +258,16 @@ const rating = asyncHandler(async (req, res) => {
       .map((item) => item.star)
       .reduce((prev, curr) => prev + curr, 0);
     let actualRating = Math.round(ratingsum / totalRating);
+    let val = Math.round(((actualRating / maxRate) * 5 * 10) / 10);
     let finalproduct = await Product.findByIdAndUpdate(
       prodId,
       {
         totalrating: actualRating,
+        totalstar: val <= 5 ? val : 5,
       },
       { new: true }
     );
+
     res.json(finalproduct);
   } catch (error) {
     throw new Error(error);
@@ -308,6 +310,24 @@ const addToWishlist = asyncHandler(async (req, res) => {
   }
 });
 
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
+  try {
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    const productIds = await getNestedCategoryProductIds(category);
+    const products = await Product.find({ _id: { $in: productIds } })
+      .lean()
+      .populate("brand category");
+    res.json(products);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createProduct,
   getaProduct,
@@ -317,4 +337,25 @@ module.exports = {
   searchProduct,
   rating,
   addToWishlist,
+  getProductsByCategory,
 };
+
+async function getNestedCategoryProductIds(category) {
+  let productIds = [];
+  const categoryProducts = await Product.find({
+    category: category._id,
+  }).lean();
+  productIds = productIds.concat(
+    categoryProducts.map((product) => product._id)
+  );
+  for (const childId of category.children) {
+    const childCategory = await Category.findById(childId);
+    if (childCategory) {
+      const childCategoryProductIds = await getNestedCategoryProductIds(
+        childCategory
+      );
+      productIds = productIds.concat(childCategoryProductIds);
+    }
+  }
+  return productIds;
+}

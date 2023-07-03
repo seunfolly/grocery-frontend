@@ -19,7 +19,7 @@ const Multer = multer({
 });
 
 const uploadImages = asyncHandler(async (req, res, next) => {
-  console.log(req.file)
+  // console.log(req.file);
   try {
     const uploader = (path) => cloudinaryUploadImg(path, "romax");
     const urls = [];

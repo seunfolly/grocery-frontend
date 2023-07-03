@@ -16,6 +16,12 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { Link } from "react-router-dom";
 import { base_url } from "../../utils/baseUrl";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  increaseQuantity,
+  addToCart,
+  decreaseQuantity,
+} from "../../features/cart/cartSlice";
 import makeToast from "../../utils/toaster";
 
 const ProductCard = ({
@@ -23,11 +29,30 @@ const ProductCard = ({
   name,
   regularPrice,
   salePrice,
-  star,
-  cart,
   _id,
+  totalstar,
 }) => {
   const [toggle, setToggle] = useState(false);
+  const dispatch = useDispatch();
+  const { products } = useSelector((state) => state.cart);
+  const product = products.find((product) => product.id === _id);
+  const auth = useSelector((state) => state.auth);
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        id: _id,
+        image: images[0].url,
+        price: salePrice ? salePrice : regularPrice,
+        name: name,
+      })
+    );
+    makeToast("success", "Added to Cart");
+  };
+
+  const handleRemoveCart = () => {
+    dispatch(decreaseQuantity(_id));
+    makeToast("error", "Remove from Cart");
+  };
   const addToWishList = () => {
     axios
       .put(`${base_url}product/wishlist/${_id}`, null, {
@@ -40,7 +65,7 @@ const ProductCard = ({
         setToggle(!toggle);
       })
       .catch((error) => {
-        makeToast("error", "Something went wrong, Please try again");
+        makeToast("error",error.response.data.message);
       });
   };
   return (
@@ -66,24 +91,21 @@ const ProductCard = ({
         {toggle ? <FavoriteIcon /> : <FavoriteBorderIcon />}
       </IconButton>
 
-      <Link
-        to={`/product/${_id}`}
-        style={{
-          textDecoration: "none",
-        }}
-      >
-        <Grid container alignItems="center">
-          <Grid item sm={3}>
+      <Grid container alignItems="center">
+        <Grid item sm={3}>
+          <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
             <Box width="195px" height="195px">
               <img src={images[0].url} alt={name} style={{ width: "100%" }} />
             </Box>
-          </Grid>
-          <Grid item sm={9}>
-            <Stack spacing={1.1}>
+          </Link>
+        </Grid>
+        <Grid item sm={9}>
+          <Stack spacing={1.1}>
+            <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
               <Typography variant="subtitle1" color="#373F50">
                 {name}
               </Typography>
-              <Rating name="simple-controlled" value={5} readOnly />
+              <Rating value={totalstar || 0} readOnly />
               <Stack spacing={1} direction="row">
                 <Typography
                   color="primary.main"
@@ -100,7 +122,11 @@ const ProductCard = ({
                   <del>{salePrice ? `₦  ${regularPrice}` : ""}</del>
                 </Typography>
               </Stack>
+            </Link>
+
+            {product?.count > 0 ? null : (
               <Button
+                onClick={() => handleAddToCart()}
                 sx={{
                   textTransform: "none",
                   bgcolor: "primary.main",
@@ -117,8 +143,11 @@ const ProductCard = ({
               >
                 Add To Cart
               </Button>
-              <Stack alignItems="center" direction="row" spacing={2}>
+            )}
+            <Stack alignItems="center" direction="row" spacing={2}>
+              {product?.count > 0 && (
                 <Button
+                  onClick={() => handleRemoveCart()}
                   variant="outlined"
                   sx={{
                     padding: "1px",
@@ -129,9 +158,13 @@ const ProductCard = ({
                 >
                   <RemoveIcon />
                 </Button>
-                <Typography>3</Typography>
-
+              )}
+              {product?.count && product?.count > 0 ? (
+                <Typography>{product?.count}</Typography>
+              ) : null}
+              {product?.count > 0 && (
                 <Button
+                  onClick={() => handleAddToCart()}
                   variant="outlined"
                   sx={{
                     padding: "1px",
@@ -140,11 +173,11 @@ const ProductCard = ({
                 >
                   <AddIcon />
                 </Button>
-              </Stack>
+              )}
             </Stack>
-          </Grid>
+          </Stack>
         </Grid>
-      </Link>
+      </Grid>
     </Paper>
   );
 };

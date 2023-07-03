@@ -37,7 +37,7 @@ const cloudinaryDeleteImg = async (fileToDelete) => {
         if (error) {
           reject(error);
         } else {
-          console.log(result);
+          // console.log(result);
           // Check if the image was successfully deleted
           if (result.result === "ok") {
             resolve(true);

@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import { Box, Stack, Avatar, Grid, Container, IconButton } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Footer from "../../components/layouts/Footer";
-import Categories from "../../components/layouts/Categories";
 import DashboardBox from "./DashboardBox";
 import Profile from "./Profile";
 import WishList from "./Wishlist";
@@ -14,13 +13,10 @@ import EditProfile from "./Edit-Profile";
 import Payments from "./Payments";
 import Payment from "./Payment";
 
-
-
 const UserDashBoard = () => {
   return (
     <>
       <Header />
-      <Categories />
       <Box
         sx={{
           bgcolor: "#F6F9FC",

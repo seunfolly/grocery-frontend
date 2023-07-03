@@ -1,7 +1,7 @@
 const mongoose = require("mongoose"); 
 
 var addressSchema = new mongoose.Schema({
-  name: {
+  fullName: {
     type: String,
     required: true,
     lowercase: true,
@@ -11,12 +11,24 @@ var addressSchema = new mongoose.Schema({
     required: true,
     lowercase: true,
   },
-
+  state: {
+    type: String,
+    required: true,
+    lowercase: true,
+  },
   phone: {
     type: String,
     required: true,
   },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  email: {
+    type: String,
+  },
+  type: {
+    type: String,
+    enum: ['user', 'collection'],
+    default: 'user'
+  },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = mongoose.model("Address", addressSchema);

@@ -1,31 +1,25 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Typography,
-  Stack,
-  Button,
-  Grid,
-} from "@mui/material";
+import { Typography, Stack, Button, Grid } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { arrivalData } from "../homepage/Carousel";
 import ICard from "../../components/ui-elements/Card";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { base_url } from "../../utils/baseUrl";
 
 const WishList = () => {
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState([]);
   const auth = useSelector((state) => state.auth);
-  const {  user } = auth;
+  const { user } = auth;
 
   const getWishList = () => {
     axios
-      .get(`${base_url}user/wishlist`, { 
+      .get(`${base_url}user/wishlist`, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
-        }, 
+        },
       })
       .then((response) => {
-        console.log(response.data) 
         setProducts(response.data.wishlist);
       })
       .catch((error) => console.log(error));

@@ -5,12 +5,9 @@ import {
   Stack,
   TextField,
   styled,
-  MenuItem,
   Typography,
   Button,
-  Checkbox,
-  IconButton,
-  FormControlLabel,
+  
 } from "@mui/material";
 import axios from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -19,7 +16,6 @@ import { useParams } from "react-router-dom";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { base_url } from "../../utils/baseUrl";
 import {
   getCategories,
   getCategory,
@@ -47,6 +43,8 @@ const AddCategory = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const dispatch = useDispatch();
   const categoryState = useSelector((state) => state.category);
+  const [editMode, setEditMode ]  = useState(false)
+
   const {
     categories,
     isSuccess,
@@ -65,11 +63,15 @@ const AddCategory = () => {
 
   useEffect(() => {
     if (id !== "create") {
+
       dispatch(getCategory(id));
+      setEditMode(!editMode)
     } else {
       dispatch(resetState());
     }
   }, [id]);
+  // console.log(updatedCategory)
+
   useEffect(() => {
     if (isSuccess && createdCategory) {
       makeToast("success", "Category Added Sucessfully!");
@@ -93,7 +95,7 @@ const AddCategory = () => {
     }
   }, [isSuccess, isLoading]);
   const initialValues = {
-    name: "",
+    name: categoryData?.name || "",
     parent: "",
   };
   useEffect(() => {
@@ -191,7 +193,7 @@ const AddCategory = () => {
                     categoryLevels={categoryLevels}
                     selectedCategories={selectedCategories}
                     field="parent"
-
+                    editMode={editMode}
 
                   />
                    <CustomTextField

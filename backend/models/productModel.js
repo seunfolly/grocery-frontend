@@ -32,6 +32,7 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
     isFeatured: { type: Boolean, default: false },
+    published: { type: Boolean, default: false  },
     regularPrice: {
       type: Number,
       required: true,
@@ -63,9 +64,19 @@ const productSchema = new mongoose.Schema(
         url: String,
       },
     ],
-    ratings: [ratingSchema],
+    ratings: [
+      {
+        star: Number,
+        comment: String,
+        postedby: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      }
+    ],
     totalrating: {
-      type: String,
+      type: Number,
+      default: 0,
+    },
+    totalstar: {
+      type: Number,
       default: 0,
     },
   },

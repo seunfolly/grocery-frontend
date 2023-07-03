@@ -1,34 +1,30 @@
+import { useState, useEffect } from "react";
 import {
   Divider,
   Stack,
   Typography,
   Paper,
   TextField,
-  Grid,
+  Button,
   styled,
   MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Box,
 } from "@mui/material";
-import { IReview, reviews } from "../user-dashboard/OrderedProducts";
-const products = reviews.map((reviews) => ({
-  ...reviews,
-  pReview: null,
-  icon: true,
-  pAmount: "$116.00",
-}));
+import { base_url } from "../../utils/baseUrl";
+import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { IReview } from "../user-dashboard/OrderedProducts";
+import axios from "axios";
+import makeToast from "../../utils/toaster";
 
-const currencies = [
-  {
-    value: "Pending",
-    label: "Pending",
-  },
-  {
-    value: "Delivered",
-    label: "Delivered",
-  },
-  {
-    value: "Processing",
-    label: "Processing",
-  },
+const orderStatus = [
+  "Pending",
+  "Processing",
+  "Dispatched",
+  "Cancelled",
+  "Delivered",
 ];
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -46,6 +42,61 @@ const CustomTextField = styled(TextField)({
   },
 });
 const OrderDetails = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [order, setOrder] = useState(null);
+  const [value, setValue] = useState({ orderStatus: "", isPaid: false });
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
+  const getOrder = () => {
+    axios
+      .get(`${base_url}user/order/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      })
+      .then((response) => {
+        setOrder(response.data);
+        setValue({
+          orderStatus: response.data?.orderStatus,
+          isPaid: response.data?.isPaid,
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+  useEffect(() => {
+    getOrder();
+  }, []);
+  const handleStatusChange = (event) => {
+    setValue({ ...value, orderStatus: event.target.value });
+  };
+
+  const updateOrderStatus = (event) => {
+    event.preventDefault();
+    axios
+      .put(`${base_url}user/order/update-order/${id}`, value, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      })
+      .then((response) => {
+        navigate("/admin/orders");
+      })
+      .catch((error) => {
+        makeToast("error", "Something Went Wrong");
+        console.log(error);
+      });
+  };
+
+  if (!id || id === undefined)
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
+        <Typography variant="h6" fontSize="21px">
+          No Order ID to load Order Details
+        </Typography>
+      </Box>
+    );
+
   return (
     <Stack spacing={3} bgcolor="background.paper" p={3}>
       <Typography variant="h6" fontSize="21px">
@@ -74,7 +125,7 @@ const OrderDetails = () => {
                 color: "text.primary",
               }}
             >
-              f0ba538b-c8f3-45ce-b6c1-209cf07ba5f8
+              {order?.orderId}
             </Typography>
           </Stack>
           <Stack direction="row">
@@ -87,182 +138,192 @@ const OrderDetails = () => {
                 color: "text.primary",
               }}
             >
-              10 Nov, 2022
+              {new Date(order?.orderDate).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </Typography>
           </Stack>
         </Stack>
-        <Grid container spacing={2}>
-          <Grid item sm={6}>
-            <CustomTextField
-              fullWidth
-              variant="outlined"
-              type="text"
-              label="Add Product"
-              placeholder="Type product name"
-              InputLabelProps={{
-                style: { fontSize: "15px" },
+
+        <CustomTextField
+          select
+          label="Order Status"
+          fullWidth
+          value={value.orderStatus}
+          onChange={handleStatusChange}
+          variant="outlined"
+          InputLabelProps={{
+            style: { fontSize: "15px" },
+          }}
+        >
+          {orderStatus.map((option, index) => (
+            <MenuItem key={index} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </CustomTextField>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={value.isPaid}
+              onChange={(e) => {
+                setValue({ ...value, isPaid: e.target.checked });
+              }}
+              name="isPaid"
+              sx={{
+                fontSize: "16px",
+                "&.Mui-checked": {
+                  color: "#4e97fd",
+                },
+                "&:hover": {
+                  color: "#4e97fd",
+                },
+                "& .MuiSvgIcon-root": { fontSize: 25 },
+                "& .MuiTypography-body1": {
+                  fontSize: "16px",
+                },
               }}
             />
-          </Grid>
-          <Grid item sm={6}>
-            <CustomTextField
-              select
-              label="Order Status"
-              fullWidth
-              defaultValue="Pending"
-              variant="outlined"
-              sx={{
-                gridColumn: "span 2",
-              }}
-              InputLabelProps={{
-                style: { fontSize: "15px" },
-              }}
-            >
-              {currencies.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </CustomTextField>
-          </Grid>
-        </Grid>
+          }
+          label={
+            <Typography component="span" sx={{ fontSize: "15px" }}>
+              Paid
+            </Typography>
+          }
+        />
         <Stack spacing={3}>
-          {products.map((review, index) => (
+          {order?.products.map((review, index) => (
             <IReview key={index} {...review} />
           ))}
         </Stack>
       </Paper>
 
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          marginLeft: "-16px !important",
-        }}
-      >
-        <Grid item sm={6}>
-          <Paper
-            elevation={0}
-            sx={{
-              bgcolor: "white",
-              borderRadius: "10px",
-              paddingX: 3,
-              paddingY: 4,
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-            }}
-          >
-            <CustomTextField
-              fullWidth
-              variant="outlined"
-              type="text"
-              label="Shipping Address"
-              defaultValue="Kelly Williams 777 Brockton Avenue, Abington MA 2351"
-              multiline
-              rows={5}
-              placeholder="Type product name"
-              InputLabelProps={{
-                style: { fontSize: "15px" },
-              }}
-            />
-            <CustomTextField
-              fullWidth
-              variant="outlined"
-              type="text"
-              label="Customer's Note"
-              defaultValue="Please deliver ASAP."
-              multiline
-              rows={5}
-              placeholder="Type product name"
-              InputLabelProps={{
-                style: { fontSize: "15px" },
-              }}
-            />
-          </Paper>
-        </Grid>
+      <Stack spacing={3} direction="row">
+        <Stack
+          spacing={6}
+          flex={1}
+          py={3}
+          px={5}
+          borderRadius={3}
+          sx={{
+            background: "white",
+            alignSelf: "start",
+            boxShadow: " 0px 1px 3px rgba(3, 0, 71, 0.09)",
+          }}
+        >
+          <Stack>
+            <Typography fontWeight="600" color="text.primary">
+              Shipping Address
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              color="text.primary"
+              textTransform="capitalize"
+            >
+              {`${order?.address.address} ${order?.address.state}`}
+            </Typography>
+          </Stack>
+          <Stack>
+            <Typography fontWeight="600" color="text.primary">
+              Customer's Note
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              color="text.primary"
+              textTransform="capitalize"
+            >
+              {order?.comment}
+            </Typography>
+          </Stack>
+        </Stack>
 
-        <Grid item sm={6}>
-          <Paper
-            elevation={0}
-            sx={{
-              bgcolor: "white",
-              borderRadius: "10px",
-              paddingX: 3,
-              paddingY: 4,
-              display: "flex",
-              flexDirection: "column",
-              gap: 3,
-            }}
-          >
-            <Typography variant="subtitle1">Total Summary</Typography>
+        <Stack
+          spacing={3}
+          flex={1}
+          py={3}
+          px={5}
+          borderRadius={3}
+          sx={{
+            background: "white",
+
+            boxShadow: " 0px 1px 3px rgba(3, 0, 71, 0.09)",
+          }}
+        >
+          <Typography variant="h6" color="text.primary">
+            Total Summary
+          </Typography>
+          <Stack spacing={1}>
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="subtitle2" color="text.secondary">
-                SubTotal:
+                Subtotal:
               </Typography>
               <Typography variant="subtitle1" color="text.primary">
-                $350.00
+                {`₦ ${order?.totalPrice}`}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
+
+            <Stack direction="row" justifyContent="space-between">
               <Typography variant="subtitle2" color="text.secondary">
                 Shipping Fee:
               </Typography>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Typography variant="subtitle1" fontSize="16px">
-                  $
-                </Typography>
-                <TextField
-                  type="number"
-                  size="small"
-                  defaultValue={10}
-                  sx={{
-                    width: "90px",
-                  }}
-                />
-              </Stack>
-            </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Typography variant="subtitle2" color="text.secondary">
-                Discount(%):
-              </Typography>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Typography variant="subtitle1" fontSize="16px">
-                  $
-                </Typography>
-                <TextField
-                  type="number"
-                  size="small"
-                  sx={{
-                    width: "90px",
-                  }}
-                />
-              </Stack>
-            </Stack>
-            <Divider />
-            <Stack direction="row" justifyContent="space-between">
               <Typography variant="subtitle1" color="text.primary">
-                Total:
-              </Typography>
-              <Typography variant="subtitle1" color="text.primary">
-                $350.00
+                ₦ 0.00
               </Typography>
             </Stack>
 
-            <Typography variant="subtitle2" color="text.primary">
-              Paid by Credit/Debit Card
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="subtitle2" color="text.secondary">
+                Discount:
+              </Typography>
+              <Typography variant="subtitle1" color="text.primary">
+                ₦ 0.00
+              </Typography>
+            </Stack>
+          </Stack>
+          <Divider />
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="subtitle1" color="text.primary">
+              Total:
             </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+            <Typography variant="subtitle1" color="text.primary">
+              {`₦ ${order?.totalPrice}`}
+            </Typography>
+          </Stack>
+
+          <Typography
+            variant="subtitle2"
+            color="text.primary"
+            textTransform="capitalize"
+          >
+            {order?.isPaid ? `Paid by ${order?.paymentMethod}` : "Pending"}
+          </Typography>
+        </Stack>
+      </Stack>
+      <Button
+        type="submit"
+        onClick={updateOrderStatus}
+        // disabled={!isValid || !dirty}
+        sx={{
+          textTransform: "none",
+          bgcolor: "#4e97fd",
+          color: "white",
+          fontSize: "14px",
+          paddingX: "15px",
+          fontWeight: 400,
+          paddingY: "5px",
+          alignSelf: "start",
+          borderRadius: "8px",
+          alignItems: "center",
+
+          "&:hover": {
+            backgroundColor: "#2756b6",
+          },
+        }}
+      >
+        Update Order Status
+      </Button>
     </Stack>
   );
 };

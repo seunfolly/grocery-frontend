@@ -1,84 +1,80 @@
-import {
-  Typography,
-  Box,
-  Stack,
-  IconButton,
-  Button,
-  Paper,
-  Chip,
-  Avatar,
-  Grid,
-} from "@mui/material";
+import { useEffect } from "react";
+import { Typography, Box, Stack, IconButton, Paper, Chip } from "@mui/material";
 import { Link } from "react-router-dom";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import EastIcon from '@mui/icons-material/East';
+import EastIcon from "@mui/icons-material/East";
+import { useDispatch, useSelector } from "react-redux";
+import { getOrders } from "../../features/auth/authSlice";
 
-const orders = [
-    {
-        id: Math.floor(Math.random() * 100000),
-        order: "f0ba538b",
-        status: "pending",
-        date: "Nov 22, 2023",
-        total: "$333"
-    },
-    {
-        id: Math.floor(Math.random() * 100000),
-        order: "f0ba538b",
-        status: "pending",
-        date: "Nov 22, 2023",
-        total: "$333"
-    }, {
-        id: Math.floor(Math.random() * 100000),
-        order: "f0ba538b",
-        status: "pending",
-        date: "Nov 22, 2023",
-        total: "$333"
-    }
-]
-
-const Order = ({id,order,status,date,total}) => {
-    return (
-        <Link to={`/user/orders/${id}`} style={{
-            textDecoration: "none"
-        }}>
-        <Paper elevation={0} sx={{
-            paddingX: 2,
-            paddingY: 1.5,
-            display: "flex",
-            bgcolor: "white",
-            borderRadius: "10px",
-            alignItems: "center"
-            }}> 
-              <Typography variant="subtitle1" flex="1 1 0">
-          {order}
+const Order = ({ _id, orderId, orderStatus, orderDate, totalPrice }) => {
+  return (
+    <Link
+      to={`/user/orders/${_id}`}
+      style={{
+        textDecoration: "none",
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          paddingX: 2,
+          paddingY: 1.5,
+          display: "flex",
+          bgcolor: "white",
+          borderRadius: "10px",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="subtitle1" flex="1 1 0">
+          {orderId.substring(0, 8)}
         </Typography>
-         <Box flex="1 1 0">
-         <Chip label={status} sx={{
-            height: "25px"
-         }} />
-         </Box>
+        <Box flex="1 1 0">
+          <Chip
+            label={orderStatus}
+            sx={{
+              height: "25px",
+            }}
+          />
+        </Box>
 
-        <Typography variant="subtitle2" flex="1 1 0" marginLeft="40px" sx={{
-          marginLeft:"40px" 
-        }}>
-          {date}
+        <Typography
+          variant="subtitle2"
+          flex="1 1 0"
+          marginLeft="40px"
+          sx={{
+            marginLeft: "40px",
+          }}
+        >
+          {new Date(orderDate).toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
         </Typography>
         <Typography variant="subtitle2" flex="1 1 0" marginLeft="40px">
-          {total}
+          {`₦ ${totalPrice}`}
         </Typography>
-            
-        <Typography  >
-            <IconButton >
-                <EastIcon />
-            </IconButton>
+
+        <Typography>
+          <IconButton>
+            <EastIcon />
+          </IconButton>
         </Typography>
-            </Paper>
-        </Link>
-        
-    )
-}
+      </Paper>
+    </Link>
+  );
+};
 
 const Orders = () => {
+  const dispatch = useDispatch();
+  const { orders } = useSelector((state) => state.auth);
+  useEffect(() => {
+    const getUserOrders = async () => {
+      dispatch(getOrders());
+    };
+    getUserOrders();
+  }, []);
+
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -112,9 +108,9 @@ const Orders = () => {
       </Box>
 
       <Stack spacing={2}>
-        {
-            orders.map((order,index) => <Order {...order} key={index} />)
-        }
+        {orders.map((order, index) => (
+          <Order {...order} key={index} />
+        ))}
       </Stack>
     </Stack>
   );

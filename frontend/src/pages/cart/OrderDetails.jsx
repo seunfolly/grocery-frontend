@@ -1,47 +1,34 @@
 import { Stack, Typography, Divider } from "@mui/material";
+import { useSelector } from "react-redux";
+
 const OrderDetails = () => {
+  const { products, cartTotal } = useSelector((state) => state.cart);
+
   return (
     <Stack spacing={2}>
-      <Typography variant="subtitle1">Your order</Typography>
+      <Typography variant="body2">Order Confirmation</Typography>
       <Stack spacing={1.5}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Typography variant="subtitle">
-            <span
-              style={{
-                fontWeight: "700",
-                marginRight: "8px",
-              }}
-            >
-              1
-            </span>
-            x iPhone 12
-          </Typography>
+        {products.map((product) => (
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="subtitle">
+              <span
+                style={{
+                  fontWeight: "500",
+                  marginRight: "8px",
+                }}
+              >
+                {`₦ ${product.price}`} X {product.count}
+              </span>
+              {`- ${product.name}`}
+            </Typography>
 
-          <Typography variant="subtitle">$999.00</Typography>
-        </Stack>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Typography variant="subtitle">
-            <span
-              style={{
-                fontWeight: "700",
-                marginRight: "8px",
-              }}
-            >
-              1
-            </span>
-            x iPhone 12
-          </Typography>
-
-          <Typography variant="subtitle">$999.00</Typography>
-        </Stack>
+            <Typography variant="subtitle1"> {`₦ ${product.total}`}</Typography>
+          </Stack>
+        ))}
       </Stack>
       <Divider />
       <Stack spacing={1}>
@@ -50,7 +37,7 @@ const OrderDetails = () => {
             Subtotal:
           </Typography>
           <Typography variant="subtitle1" color="text.primary">
-            $350.00
+            {`₦ ${cartTotal}`}
           </Typography>
         </Stack>
 
@@ -78,7 +65,7 @@ const OrderDetails = () => {
           Total:
         </Typography>
         <Typography variant="subtitle1" color="text.primary">
-          $350.00
+          {`₦ ${cartTotal}`}
         </Typography>
       </Stack>
     </Stack>

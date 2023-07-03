@@ -14,7 +14,7 @@ import {
 import AppsIcon from "@mui/icons-material/Apps";
 import ViewListIcon from "@mui/icons-material/ViewList";
 
-const Sort = ({activeIcon, setActiveIcon}) => {
+const Sort = ({ activeIcon, setActiveIcon, sort, setSort }) => {
   return (
     <Box
       bgcolor="white"
@@ -37,12 +37,15 @@ const Sort = ({activeIcon, setActiveIcon}) => {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={20}
+                value={sort}
+                onChange={(e) => {
+                  setSort(e.target.value);
+                }}
               >
-                <MenuItem value={20}>Relevance</MenuItem>
-                <MenuItem value={40}>Date</MenuItem>
-                <MenuItem value={30}>Price Low to High</MenuItem>
-                <MenuItem value={30}>Price High to Low</MenuItem>
+                <MenuItem value={"relevance"}>Relevance</MenuItem>
+                <MenuItem value={"new_arrivals"}>New Arrivals</MenuItem>
+                <MenuItem value={"price_low_high"}>Price Low to High</MenuItem>
+                <MenuItem value={"price_high_low"}>Price High to Low</MenuItem>
               </Select>
             </FormControl>
           </Stack>
@@ -52,13 +55,19 @@ const Sort = ({activeIcon, setActiveIcon}) => {
             <IconButton
               onClick={() => setActiveIcon("apps")}
               sx={{
-                color: activeIcon === "apps" ? "#D23F57" : "rgba(0, 0, 0, 0.54)"}}
+                color:
+                  activeIcon === "apps" ? "#D23F57" : "rgba(0, 0, 0, 0.54)",
+              }}
             >
               <AppsIcon />
             </IconButton>
-            <IconButton  onClick={() => setActiveIcon("view")}
+            <IconButton
+              onClick={() => setActiveIcon("view")}
               sx={{
-                color: activeIcon === "view" ? "#D23F57" : "rgba(0, 0, 0, 0.54)"}}>
+                color:
+                  activeIcon === "view" ? "#D23F57" : "rgba(0, 0, 0, 0.54)",
+              }}
+            >
               <ViewListIcon />
             </IconButton>
           </Stack>

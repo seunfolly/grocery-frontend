@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Stack, Typography, IconButton, Chip, Box } from "@mui/material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Link } from "react-router-dom";
@@ -5,38 +6,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "./Header";
 import { DataGrid } from "@mui/x-data-grid";
 import Table from "./Table";
+import { useDispatch, useSelector } from "react-redux";
+import { getOrders } from "../../features/order/orderSlice";
 
-const products = [
-  {
-    id: "6d3eedo4",
-    qty: 3,
-    date: "10 Nov 2020",
-    address: "Kelly Williams 777 Brockton Avenue",
-    amount: "$340.00",
-    status: "Pending",
-    action: null,
-  },
-  {
-    id: "#6d00edo4",
-    qty: 5,
-    date: "10 Nov 2020",
-    address: "Kelly Williams 777 Brockton Avenue",
-    amount: "$112.00",
-    status: "Delivered",
-    action: null,
-  },
-  {
-    id: "#6d3e4do4",
-    qty: 2,
-    date: "10 Nov 2020",
-    address: "Kelly Williams 777 Brockton Avenue",
-    amount: "$450.40",
-    status: "Processing",
-    action: null,
-  },
-];
 const columns = [
-  { field: "id", headerName: "Order ID", width: 150 },
+  { field: "id", headerName: "Order ID", width: 120 },
   {
     field: "qty",
     headerName: "Qty",
@@ -44,7 +18,7 @@ const columns = [
   {
     field: "date",
     headerName: "Purchase Date",
-    width: 150,
+    width: 120,
     headerAlign: "center",
     align: "center",
   },
@@ -63,7 +37,8 @@ const columns = [
   {
     field: "status",
     headerName: "Status",
-    // flex: 1,
+    width: 120,
+
     renderCell: ({ value }) => {
       return (
         <Box>
@@ -73,13 +48,13 @@ const columns = [
               sx={{ color: "#33d067", bgcolor: "#e7f9ed", height: "25px" }}
             />
           )}
-          {value === "Pending" && (
+          {(value === "Pending" || value === "Cancelled") && (
             <Chip
               label={value}
               sx={{ color: "#4E97FD", bgcolor: "#DBF0FE", height: "25px" }}
             />
           )}
-          {value === "Processing" && (
+          {(value === "Processing" || value === "Dispatched") && (
             <Chip
               label={value}
               sx={{ color: "#ffcd4e", bgcolor: "#FFF8E5", height: "25px" }}
@@ -97,21 +72,46 @@ const columns = [
     align: "center",
     renderCell: ({ row }) => (
       <Stack direction="row">
-        <Link to={`/admin/order/${row.id}`}>
-        <IconButton aria-label="View">
-          <RemoveRedEyeIcon />
-        </IconButton>
+        <Link to={`/admin/order/${row._id}`}>
+          <IconButton aria-label="View">
+            <RemoveRedEyeIcon />
+          </IconButton>
         </Link>
-       
-        <IconButton aria-label="Delete">
+
+        {/* <IconButton aria-label="Delete">
           <DeleteIcon />
-        </IconButton>
+        </IconButton> */}
       </Stack>
     ),
   },
 ];
 
 const Orders = () => {
+  const dispatch = useDispatch();
+  const { orders } = useSelector((state) => state.order);
+
+  const orderData = orders.map((order) => ({
+    _id: order?._id,
+    id: order?.orderId.substring(0, 8),
+    date: new Date(order.orderDate).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }),
+    qty: order?.products.reduce((sum, product) => sum + product.count, 0),
+    address: `${order?.address.address} ${order?.address.state}`,
+    amount: order?.totalPrice,
+    status: order?.orderStatus,
+    action: null,
+  }));
+
+  useEffect(() => {
+    const getUserOrders = async () => {
+      dispatch(getOrders());
+    };
+    getUserOrders();
+  }, []);
+
   return (
     <Stack spacing={3} bgcolor="background.paper" py={3}>
       <Header
@@ -119,9 +119,8 @@ const Orders = () => {
         placeholder="Search Order..."
         button="Create Order"
       />
-
       <Table>
-        <DataGrid rows={products} columns={columns} />
+        <DataGrid rows={orderData} columns={columns} />
       </Table>
     </Stack>
   );

@@ -8,6 +8,8 @@ import {
   MenuItem,
   Typography,
   Button,
+  Switch,
+  FormControlLabel
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
@@ -93,6 +95,7 @@ const AddProduct = () => {
     salePrice: productData?.salePrice || 0,
     tags: productData?.tags || [],
     category: productData?.category?._id || "",
+    published: productData?.published || false,
     images: [],
   };
   useEffect(() => {
@@ -328,6 +331,47 @@ const AddProduct = () => {
                     }}
                   />
                 </Box>
+                <Box mt="20px">
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={values.published}
+                      onChange={(e) => {
+                        setFieldValue("published", e.target.checked);
+                      }}
+                      name="published"
+                      sx={{
+                        "& .MuiSwitch-thumb": {
+                          color: "#2756b6",
+                        },
+                        "& .Mui-checked+.MuiSwitch-track": {
+                          backgroundColor: "#4e97fd !important",
+                        },
+                      }}
+                      // sx={{
+                      //   fontSize: "16px",
+                      //   "&.Mui-checked": {
+                      //     color: "#4e97fd",
+                      //   },
+                      //   "&:hover": {
+                      //     color: "#4e97fd",
+                      //   },
+                      //   "& .MuiSvgIcon-root": { fontSize: 25 },
+                      //   "& .MuiTypography-body1": {
+                      //     fontSize: "16px",
+                      //   },
+                      // }}
+                    />
+                  }
+                  label={
+                    <Typography component="span" sx={{ fontSize: "17px" }}>
+                      Publish Product
+                    </Typography>
+                  }
+                />
+                </Box>
+                
+                
                 <Button
                   type="submit"
                   disabled={!isValid || (!dirty && id === "create")}
@@ -347,7 +391,7 @@ const AddProduct = () => {
                     alignSelf: "start",
                     borderRadius: "8px",
                     alignItems: "center",
-                    mt: "40px",
+                    mt: "20px",
                     "&:hover": {
                       backgroundColor: "#2756b6",
                     },

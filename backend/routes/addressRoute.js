@@ -4,7 +4,7 @@ const {
   updatedAddress,
   getAddresses,
   getAddress,
-  deleteAddress
+  deleteAddress,
 } = require("../controllers/addressController");
 const { authMiddleware, isAdmin } = require("../middlewares/auth");
 const router = express.Router();

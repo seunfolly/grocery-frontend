@@ -3,8 +3,6 @@ import {
   Typography,
   Stack,
   Box,
-  List,
-  ListItem,
   IconButton,
   Button,
   Avatar,
@@ -20,11 +18,13 @@ import {
   removeFromCart,
   decreaseQuantity,
 } from "../../features/cart/cartSlice";
+import { useNavigate } from "react-router-dom";
 
 const Cart = ({ open, onClose }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { products, cartTotal } = useSelector((state) => state.cart);
-  const count = products.reduce((sum, product) => sum + product.count, 0)
+  const count = products.reduce((sum, product) => sum + product.count, 0);
   return (
     <Drawer
       open={open}
@@ -66,7 +66,9 @@ const Cart = ({ open, onClose }) => {
               alignItems="center"
             >
               <ShoppingBagOutlinedIcon />
-              <Typography variant="subtitle1">{`${count} ${count <= 1 ? "item" : "items"}` }</Typography>
+              <Typography variant="subtitle1">{`${count} ${
+                count <= 1 ? "item" : "items"
+              }`}</Typography>
             </Stack>
             <IconButton onClick={onClose}>
               <ClearIcon />
@@ -95,7 +97,7 @@ const Cart = ({ open, onClose }) => {
                   <Stack alignItems="center">
                     <Button
                       disabled={product.count === 1}
-                      onClick={() => dispatch(decreaseQuantity(product.id)) }
+                      onClick={() => dispatch(decreaseQuantity(product.id))}
                       variant="outlined"
                       sx={{
                         padding: "1px",
@@ -109,7 +111,7 @@ const Cart = ({ open, onClose }) => {
                     </Button>
                     <Typography>{product.count}</Typography>
                     <Button
-                      onClick={() => dispatch(increaseQuantity(product.id)) }
+                      onClick={() => dispatch(increaseQuantity(product.id))}
                       variant="outlined"
                       sx={{
                         padding: "1px",
@@ -141,7 +143,9 @@ const Cart = ({ open, onClose }) => {
                     </Stack>
                   </Stack>
 
-                  <IconButton onClick={()=> dispatch(removeFromCart(product.id)) }>
+                  <IconButton
+                    onClick={() => dispatch(removeFromCart(product.id))}
+                  >
                     <ClearIcon />
                   </IconButton>
                 </Box>
@@ -149,34 +153,50 @@ const Cart = ({ open, onClose }) => {
             ))}
           </Stack>
         </Box>
-
-        <Box
-          p={3}
-          sx={{
-            flex: 1,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Button
+        {count > 0 && (
+          <Box
+            p={3}
             sx={{
-              textTransform: "none",
-              bgcolor: "primary.main",
-              color: "white",
-              fontSize: "14px",
-              paddingY: "10px",
-              fontWeight: 600,
-              width: "100%",
-
-              "&:hover": {
-                backgroundColor: "#E3364E",
-              },
+              flex: 1,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              gap: 2,
             }}
           >
-            {`Checkout Now(₦ ${cartTotal})`}
-          </Button>
-        </Box>
+            <Typography
+              sx={{
+                textTransform: "none",
+                bgcolor: "primary.main",
+                color: "white",
+                fontSize: "14px",
+                paddingY: "10px",
+                fontWeight: 600,
+                width: "100%",
+                textAlign: "center",
+                borderRadius: "3px",
+
+              }}
+            >
+              {`TOTAL (₦ ${cartTotal})`}
+            </Typography>
+            <Button
+              onClick={() => navigate("/cart")}
+              variant="outlined"
+              sx={{
+                textTransform: "none",
+                color: "primary.main",
+                fontSize: "14px",
+                paddingY: "10px",
+                fontWeight: 600,
+                width: "100%",
+              }}
+            >
+              View cart
+            </Button>
+          </Box>
+        )}
       </Box>
     </Drawer>
   );

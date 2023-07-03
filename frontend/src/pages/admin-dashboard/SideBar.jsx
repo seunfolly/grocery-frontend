@@ -7,11 +7,12 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import LogoutIcon from "@mui/icons-material/Logout";
+import PlaceIcon from '@mui/icons-material/Place';
 import BookIcon from "@mui/icons-material/Book";
 import CategoryIcon from "@mui/icons-material/Category";
 import AppsIcon from "@mui/icons-material/Apps";
 import { useDispatch } from "react-redux";
-import { logout } from "../../features/auth/authSlice";
+import { logout, resetState } from "../../features/auth/authSlice";
 
 const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -172,6 +173,17 @@ const SideBar = () => {
               Order Details
             </MenuItem>
           </SubMenu>
+          <SubMenu label="Collection Addresses" icon={<PlaceIcon />}>
+            <MenuItem component={<NavLink to="/admin/addresses" />}>
+              {" "}
+              Address List
+            </MenuItem>
+            <MenuItem component={<NavLink to="/admin/address/create" />}>
+              {" "}
+              Create Address
+            </MenuItem>
+           
+          </SubMenu>
           <MenuItem
             icon={<PeopleAltIcon />}
             component={<NavLink to="/admin/customers" />}
@@ -180,8 +192,10 @@ const SideBar = () => {
             Customer List{" "}
           </MenuItem>
 
+
           <MenuItem icon={<LogoutIcon />} onClick={()=> {
             dispatch(logout())
+
             navigate("/")
           }}> Logout</MenuItem>
         </Menu>

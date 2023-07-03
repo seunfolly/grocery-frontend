@@ -1,34 +1,33 @@
-import { Typography, Stack, Button, Paper, IconButton } from "@mui/material";
-
+import { useEffect } from "react";
+import {
+  Typography,
+  Stack,
+  Button,
+  Paper,
+  IconButton,
+  Box,
+} from "@mui/material";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { useDispatch, useSelector } from "react-redux";
+import { getCards } from "../../features/auth/authSlice";
 import { Link } from "react-router-dom";
 
-const addresses = [
-  {
-    id: Math.floor(Math.random() * 100000),
-    cardName: "Solomon Micheal",
-    cardNo: "1234 **** **** ****",
-    cvc: "+2345679044",
-    date: "08 / 22",
-  },
-  {
-    id: Math.floor(Math.random() * 100000),
-    cardName: "Stanley Ahmed",
-    cardNo: "4332 **** **** ****",
-    cvc: "+2345679044",
-    date: "08 / 22",
-  },
-  {
-    id: Math.floor(Math.random() * 100000),
-    cardName: "Zainab Soteye",
-    cardNo: "1234 **** **** ****",
-    cvc: "+2345679044",
-    date: "08 / 22",
-  },
-];
-const Address = ({ id, cardName, cardNo, date }) => {
+export const getCardImage = (card) => {
+  switch (card) {
+    case "visa":
+      return <img src="https://bazaar.ui-lib.com/assets/images/payment-methods/Visa.svg" width="100%" />;
+    case "master":
+      return <img src="https://bazaar.ui-lib.com/assets/images/payment-methods/Mastercard.svg" width="100%" />;
+      case "verve":
+        return <img src="https://bazaar.ui-lib.com/assets/images/payment-methods/Visa.svg" width="100%" />;
+    default:
+      return true;
+  }
+};
+
+const Card = ({ _id, cardDetails }) => {
   return (
     <Paper
       elevation={0}
@@ -42,33 +41,32 @@ const Address = ({ id, cardName, cardNo, date }) => {
         // justifyContent: "space-between"
       }}
     >
-      <Typography variant="subtitle1" flex="1 1 0">
-        {cardName}
-      </Typography>
-
-      <Typography variant="subtitle2" flex="1 1 0">
-        {cardNo}
-      </Typography>
-      <Typography variant="subtitle2" flex="1 1 0">
-        {date}
-      </Typography>
-
-      <Stack direction="row"  justifyContent="end">
-        <Link
-          to={`/user/payments/${id}`}
-          style={{
-            textDecoration: "none",
+      <Stack direction="row" spacing={1.5} alignItems="center" flex="1 1 0">
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            boxShadow: "rgba(3, 0, 71, 0.09) 0px 1px 3px",
+            overflow: "hidden",
+            width: "42px",
+            height: "28px",
+            borderRadius: "2px",
           }}
         >
-          <IconButton>
-            <EditIcon
-              sx={{
-                fontSize: "1.3rem",
-              }}
-            />
-          </IconButton>
-        </Link>
+          {
+            getCardImage(cardDetails?.brand)
+          }
+        </Box>
+        <Typography variant="subtitle1">{cardDetails?.account_name}</Typography>
+      </Stack>
 
+      <Typography variant="subtitle2" flex="1 1 0">
+        {`**** **** **** ${cardDetails?.last4}`}
+      </Typography>
+      <Typography variant="subtitle2" flex="1 1 0">
+        {`${cardDetails?.exp_month}/${cardDetails?.exp_year.substr(2)}`}
+      </Typography>
+
+      <Stack direction="row" justifyContent="end">
         <IconButton>
           <DeleteIcon
             sx={{
@@ -82,6 +80,14 @@ const Address = ({ id, cardName, cardNo, date }) => {
 };
 
 const Payments = () => {
+  const dispatch = useDispatch();
+  const { cards } = useSelector((state) => state.auth);
+  useEffect(() => {
+    const getUserCards = async () => {
+      dispatch(getCards());
+    };
+    getUserCards();
+  }, []);
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -98,34 +104,11 @@ const Payments = () => {
           </Typography>
         </Stack>
 
-        <Link
-          to={`/user/payments/new`}
-          style={{
-            textDecoration: "none",
-          }}
-        >
-          <Button
-            sx={{
-              textTransform: "none",
-              bgcolor: "#FCE9EC",
-              color: "primary.main",
-              fontSize: "subtitle2",
-              paddingX: "40px",
-              fontWeight: 600,
-              paddingY: "6px",
-              "&:hover": {
-                backgroundColor: "rgba(210, 63, 87, 0.04)",
-              },
-            }}
-          >
-            Add New Payment Method
-          </Button>
-        </Link>
       </Stack>
 
       <Stack spacing={2}>
-        {addresses.map((address, index) => (
-          <Address {...address} key={index} />
+        {cards.map((card, index) => (
+          <Card {...card} key={index} />
         ))}
       </Stack>
     </Stack>

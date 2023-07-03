@@ -12,9 +12,10 @@ const TabPanel = ({ children, value, index }) => (
     {value === index && <Box py={3}>{children}</Box>}
   </div>
 );
+
+
 const TabComponent = ({ product }) => {
   const [selectedTab, setSelectedTab] = useState(0);
-
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -43,7 +44,7 @@ const TabComponent = ({ product }) => {
       </TabPanel>
 
       <TabPanel value={selectedTab} index={1}>
-        <Reviews product={product} />
+        <Reviews id={product?._id} />
       </TabPanel>
     </Box>
   );

@@ -19,15 +19,10 @@ const Payment = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const handleExpiryChange = (event) => {
     let value = event.target.value;
-
-    // Remove non-digit characters
     value = value.replace(/\D/g, "");
-
-    // Format the value as MM/YY
     if (value.length > 2) {
       value = value.replace(/^(\d{2})(\d{0,2})$/, "$1/$2");
     }
-
     event.target.value = value;
   };
   return (

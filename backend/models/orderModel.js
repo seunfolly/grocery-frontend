@@ -14,15 +14,19 @@ const orderSchema = new mongoose.Schema(
         },
         count: Number,
         price: Number,
+        image: String,
       },
     ],
-    paymentMethod: {},
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "voucher", "card"],
+      required: true,
+    },
     orderStatus: {
       type: String,
       default: "Pending",
       enum: [
         "Pending",
-        "Cash on Delivery",
         "Processing",
         "Dispatched",
         "Cancelled",
@@ -39,6 +43,30 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
       required:true
+    },
+    paidAt: {
+     type: Date,
+    },
+    isPaid: {
+     type: Boolean,
+     default: false
+    },
+    totalPrice: {
+      type: Number,
+      required: true,
+      
+    },
+    orderDate: {
+      type: Date,
+      default: Date.now()
+    },
+    comment: {
+      type: String,
+
+    },
+    reference: {
+      type: String,
+
     },
     orderBy: {
       type: mongoose.Schema.Types.ObjectId,

@@ -11,7 +11,6 @@ const getCategories = async (level) => {
 
 const createCategory = async (category) => {
   const response = await axios.post(`${base_url}category/`, category, config);
-  console.log(category)
   return response.data;
 };
 

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Stack,
   Typography,
@@ -6,9 +7,27 @@ import {
   FormControlLabel,
   Divider,
 } from "@mui/material";
-const Brand = () => {
-  const brands = ["Nike", "Addidas", "Samsung", "Tesla"];
-  const featured = ["On Sales", "In Stock", "Featured"];
+import { useDispatch, useSelector } from "react-redux";
+import { getBrands } from "../../features/brand/brandSlice";
+const Brand = ({setSelectedBrands, selectedBrands}) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(getBrands());
+    };
+    fetchData();
+  }, []);
+  const { brands } = useSelector((state) => state.brand);
+
+  const handleRatingChange = (event) => {
+    const brandId = event.target.value;
+    if (event.target.checked) {
+      setSelectedBrands([...selectedBrands, brandId]);
+    } else {
+      setSelectedBrands(selectedBrands.filter((id) => id !== brandId));
+    }
+  };
+
   return (
     <>
       <Stack spacing={2} pb={1}>
@@ -18,32 +37,22 @@ const Brand = () => {
         <FormGroup>
           {brands.map((brand, index) => (
             <FormControlLabel
+              key={brand._id}
               control={
-                <Checkbox sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }} />
+                <Checkbox
+                  value={brand._id}
+                  onChange={handleRatingChange}
+                  checked={selectedBrands.includes(brand._id)}
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
+                />
               }
-              label={brand}
+              label={brand.name}
             />
           ))}
         </FormGroup>
       </Stack>
-      <Divider
-        sx={{
-          margin: "16px 0px 24px",
-          borderWidth: "0px 0px thin",
-          borderStyle: "solid",
-          borderColor: "rgb(243, 245, 249)",
-        }}
-      />
-      <FormGroup>
-        {featured.map((brand, index) => (
-          <FormControlLabel
-            control={
-              <Checkbox sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }} />
-            }
-            label={brand}
-          />
-        ))}
-      </FormGroup>
+   
+     
     </>
   );
 };

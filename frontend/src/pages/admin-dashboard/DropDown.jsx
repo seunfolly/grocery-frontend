@@ -1,22 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Paper,
-  Stack,
-  TextField,
-  styled,
-  MenuItem,
-  Typography,
-  Button,
-  Checkbox,
-  IconButton,
-  FormControlLabel,
-} from "@mui/material";
+import { Box, TextField, styled, MenuItem, IconButton } from "@mui/material";
 import axios from "axios";
 import { base_url } from "../../utils/baseUrl";
-import { getCategories } from "../../features/category/categorySlice";
 import CloseIcon from "@mui/icons-material/Close";
-import { useDispatch, useSelector } from "react-redux";
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     borderRadius: "8px",
@@ -31,7 +17,7 @@ const Dropdown = ({
   selectedCategories,
   setSelectedCategories,
   setFieldValue,
-  field
+  field,
 }) => {
   const [renderKey, setRenderKey] = useState(0);
 
@@ -72,9 +58,7 @@ const Dropdown = ({
       return null; // Don't render the dropdown if the level is empty
     }
     const fieldName =
-      index === categoryLevels.length - 1
-        ? field
-        : `category-level-${index}`;
+      index === categoryLevels.length - 1 ? field : `category-level-${index}`;
     return (
       <Box position="relative">
         <CustomTextField

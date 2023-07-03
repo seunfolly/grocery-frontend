@@ -1,11 +1,10 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import cartService from "./cartService";
-
 export const getUserCart = createAsyncThunk(
   "cart/get-user-cart",
-  async (thunkAPI) => {
+  async (token, thunkAPI) => {
     try {
-      return await cartService.getUserCart();
+      return await cartService.getUserCart(token);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -29,6 +28,8 @@ const calculateCartTotal = (products) => {
   });
   return total;
 };
+
+export const resetState = createAction("Reset_Cart_State");
 
 const cartSlice = createSlice({
   name: "cart",
@@ -131,7 +132,8 @@ const cartSlice = createSlice({
       .addCase(getUserCart.rejected, (state, action) => {
         state.error = true;
         state.isLoading = false;
-      });
+      })
+      .addCase(resetState, () => initialState);
   },
 });
 

@@ -53,7 +53,7 @@ export const deleteABrand = createAsyncThunk(
   }
 );
 
-export const resetState = createAction("Reset_all");
+export const resetState = createAction("Reset_all_BrandState");
 
 const initialState = {
   brands: [],

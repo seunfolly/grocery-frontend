@@ -1,29 +1,39 @@
+import React, { useState, useEffect } from "react";
 import {
   Stack,
   Typography,
   FormGroup,
-  Checkbox,
+  Radio,
   FormControlLabel,
   Rating,
 } from "@mui/material";
 
-
-const RatingProduct = () => {
+const RatingProduct = ({ rating, setRating }) => {
   const ratings = [5, 4, 3, 2, 1];
+  const handleRatingChange = (event) => {
+    const checkedRating = parseInt(event.target.value);
+    setRating(checkedRating);
+  };
+
   return (
     <Stack spacing={2} pb={1}>
       <Typography variant="subtitle1" fontSize="15px">
         Rating
       </Typography>
       <FormGroup>
-        {ratings.map((rating, index) => (
+        {ratings.map((r, index) => (
           <FormControlLabel
+            key={index}
             control={
-              <Checkbox sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }} />
+              <Radio
+                value={r}
+                checked={rating === r}
+                onChange={handleRatingChange}
+              />
             }
             label={
               <Rating
-                value={rating}
+                value={r}
                 readOnly
                 sx={{
                   fontSize: 20,

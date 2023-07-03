@@ -1,19 +1,27 @@
-
 import React, { useState, useEffect } from "react";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Box, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getCategories } from "../../features/category/categorySlice";
+import { base_url } from "../../utils/baseUrl";
+import axios from "axios";
 
 const Category = () => {
-  const dispatch = useDispatch();
+  const [categories, setCategories] = useState([]);
+  const getCategories = () => {
+    axios
+      .get(`${base_url}category?level=1&visible=true`)
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
 
   useEffect(() => {
-    dispatch(getCategories(1));
-  }, [dispatch]);
+    getCategories();
+  }, []);
 
-  const { categories } = useSelector((state) => state.category);
+  // const { categories } = useSelector((state) => state.category);
 
   const [expandedCategories, setExpandedCategories] = useState([]);
 
@@ -35,24 +43,23 @@ const Category = () => {
     const hasChildren = category.children && category.children.length > 0;
     const isExpanded = isCategoryExpanded(category._id);
 
-
     return (
       <Box key={category._id}>
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
-          paddingY={topLevel? 1: 0.7}
+          paddingY={topLevel ? 1 : 0.7}
           sx={{ cursor: "pointer" }}
           onClick={() => toggleCategory(category._id)}
         >
           <Link
-            to={`/categories/${category._id}`}
+            to={`/store?category=${category._id}`}
             style={{ textDecoration: "none", width: "100%" }}
           >
             <Typography
               color="#4B566B"
-              fontSize= {topLevel? "16px": "14.5px"}
+              fontSize={topLevel ? "16px" : "14.5px"}
               sx={{
                 "&:hover": {
                   color: "#D23F57",
@@ -91,7 +98,7 @@ const Category = () => {
       sx={{
         width: "278px",
         minWidth: "278px",
-        height: "calc(100vh - 180px)",
+        height: "calc(100vh - 140px)",
         boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
         position: "sticky",
         top: "80px",
@@ -108,12 +115,9 @@ const Category = () => {
         },
       }}
     >
-      {categories.map((category) => renderCategory(category,true))}
+      {categories.map((category) => renderCategory(category, true))}
     </Box>
   );
 };
 
 export default Category;
-
-
-

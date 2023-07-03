@@ -1,16 +1,19 @@
 const Brand = require("../models/brandModel");
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 function generateRandomHex() {
-  const buffer = crypto.randomBytes(4); 
-  return "#" + buffer.toString('hex');
+  const buffer = crypto.randomBytes(4);
+  return "#" + buffer.toString("hex");
 }
 
 const createBrand = asyncHandler(async (req, res) => {
   try {
-    const newBrand = await Brand.create({...req.body, brandId: generateRandomHex()});
+    const newBrand = await Brand.create({
+      ...req.body,
+      brandId: generateRandomHex(),
+    });
     res.json(newBrand);
   } catch (error) {
     throw new Error(error);

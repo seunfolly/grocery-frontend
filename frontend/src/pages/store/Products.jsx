@@ -1,17 +1,27 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../features/product/productSlice";
-import {  Stack,Grid } from "@mui/material";
+import {
+  getProducts,
+  getProductByCategory,
+  searchProduct,
+} from "../../features/product/productSlice";
+import { Stack, Grid, CircularProgress, Box } from "@mui/material";
 import { Pagination } from "@mui/material";
 import { useState } from "react";
 import ICard from "../../components/ui-elements/Card";
 import ProductCard from "./ProductCard";
 
-const Products = ({ activeIcon }) => {
+const Products = ({ activeIcon, category, search }) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getProducts());
-  }, []);
+    if (category) {
+      dispatch(getProductByCategory(category));
+    } else if (search) {
+      dispatch(searchProduct(search));
+    } else {
+      dispatch(getProducts());
+    }
+  }, [category, search]);
   const productState = useSelector((state) => state.product.products);
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +35,23 @@ const Products = ({ activeIcon }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = productState.slice(startIndex, endIndex);
+  const { isLoading } = useSelector((state) => state.product);
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "500px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Stack>

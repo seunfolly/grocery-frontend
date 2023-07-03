@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const Card = require("../models/cardModel");
 const Order = require("../models/orderModel");
 const asyncHandler = require("express-async-handler");
 const crypto = require("crypto");
@@ -9,13 +10,19 @@ const validateMongoDbId = require("../utils/validateMongodbId");
 const sendEmail = require("./emailContoller");
 const { v4: uuidv4 } = require("uuid");
 const { cloudinaryDeleteImg } = require("../utils/cloudinary");
+const axios = require("axios");
 
+const paystack = axios.create({
+  baseURL: "https://api.paystack.co",
+  headers: {
+    Authorization: `Bearer sk_test_72f9b6cb1cf752a0ddd3d696e2c592849ff81a12`,
+    "Content-Type": "application/json",
+  },
+});
 
 const createUser = asyncHandler(async (req, res) => {
   const email = req.body.email;
-
   const findUser = await User.findOne({ email: email });
-
   if (!findUser) {
     const newUser = await User.create(req.body);
     res.status(201).json({
@@ -30,11 +37,8 @@ const createUser = asyncHandler(async (req, res) => {
       token: generateToken(newUser?._id),
     });
   } else {
-    /**
-     * TODO:if user found then thow an error: User already exists
-     */
     res.status(409);
-    throw new Error("User Already Exists");
+    throw new Error("User With This Email Or Phone-Number Already Exists");
   }
 });
 
@@ -119,9 +123,9 @@ const getLoggedInUserProfile = asyncHandler(async (req, res) => {
 const updatedUserProfile = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
-  
+
   try {
-    const user = await User.findById(_id)
+    const user = await User.findById(_id);
     const updateObject = { ...req.body };
     if (req.images) {
       updateObject.image = req.images[0];
@@ -222,7 +226,6 @@ const getWishlist = asyncHandler(async (req, res) => {
 const userCart = asyncHandler(async (req, res) => {
   const { cart } = req.body;
   const { _id } = req.user;
-  // console.log(req.body)
   validateMongoDbId(_id);
   try {
     let products = [];
@@ -231,7 +234,7 @@ const userCart = asyncHandler(async (req, res) => {
     // Check if the user already has a cart and remove it
     const alreadyExistCart = await Cart.findOne({ orderBy: user._id });
     if (alreadyExistCart) {
-      const a = await Cart.deleteOne({ _id: alreadyExistCart._id });
+      const a = await Cart.deleteMany({ _id: alreadyExistCart._id });
     }
 
     for (let i = 0; i < cart.length; i++) {
@@ -245,6 +248,7 @@ const userCart = asyncHandler(async (req, res) => {
       object.name = getProduct.name;
       object.total = cart[i].total;
       object.image = cart[i].image;
+      object.name = cart[i].name;
       products.push(object);
     }
     let cartTotal = 0;
@@ -257,9 +261,9 @@ const userCart = asyncHandler(async (req, res) => {
       cartTotal,
       orderBy: user?._id,
     }).save();
-
     res.json(newCart);
   } catch (error) {
+    console.log(error);
     throw new Error(error);
   }
 });
@@ -286,46 +290,115 @@ const emptyCart = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+
 const createOrder = asyncHandler(async (req, res) => {
-  const { COD, address, deliveryDate, deliveryTime } = req.body;
+  const { paymentMethod, address, deliveryDate, deliveryTime, comment, cardId } = req.body;
   const { _id } = req.user;
   validateMongoDbId(_id);
+  let orderStatus;
+  const validPaymentMethods = ["cash", "voucher", "card"];
+  if (!validPaymentMethods.includes(paymentMethod))
+    return res.status(400).json({ error: "Invalid payment method" });
+
+  if (paymentMethod === "cash") {
+    orderStatus = "Processing";
+  } else if (paymentMethod === "card") {
+    try {
+      const user = await User.findById(_id);
+      const userCart = await Cart.findOne({ orderBy: user._id });
+      const orderId = uuidv4();
+      let paystackPayment;
+
+      if (cardId) {
+        const card = await Card.findById(cardId);
+        if (!card) {
+          return res.status(404).json({ error: "Card not found" });
+        }
+        paystackPayment = await initializePaystackCheckoutWithCard(
+          userCart.cartTotal,
+          user.email,
+          card.cardDetails.authorization_code
+        );
+
+        if (paystackPayment.status === "success") {
+          await createNewOrder(
+            orderId,
+            userCart.products,
+            paymentMethod,
+            userCart.cartTotal,
+            user._id,
+            "Processing",
+            address,
+            comment,
+            deliveryDate,
+            deliveryTime,
+            paystackPayment.reference
+          );     
+          user.orderCount += 1;
+          await user.save();
+          await updateProductStock(userCart.products);
+          await Cart.deleteOne({ orderBy: user._id });
+          return res.json({
+            message: "success",
+            status: paystackPayment.status,
+          });
+        } else {
+          // Payment was not successful
+          return res.status(400).json({ error: "Payment failed" });
+        }
+      } else {
+        paystackPayment = await initializePaystackCheckout(
+          userCart.cartTotal,
+          user.email,
+          user._id
+        );
+        await createNewOrder(
+          orderId,
+          userCart.products,
+          paymentMethod,
+          userCart.cartTotal,
+          user._id,
+          "Processing",
+          address,
+          comment,
+          deliveryDate,
+          deliveryTime,
+          paystackPayment.reference
+        );  
+        user.orderCount += 1;
+        await user.save();
+        await updateProductStock(userCart.products);
+        await Cart.deleteOne({ orderBy: user._id });
+        return res.json({
+          message: "success",
+          authorizationUrl: paystackPayment.authorizationUrl,
+        });
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
   try {
-    if (!COD) throw new Error("Create cash order failed");
     const user = await User.findById(_id);
     let userCart = await Cart.findOne({ orderBy: user._id });
     let finalAmout = userCart.cartTotal;
-
     const orderId = uuidv4();
-
-    let newOrder = await new Order({
-      orderId: orderId,
-      products: userCart.products,
-      paymentMethod: {
-        id: orderId,
-        method: "COD",
-        amount: finalAmout,
-        created: Date.now(),
-        currency: "ngn",
-      },
-      orderBy: user._id,
-      orderStatus: "Cash on Delivery",
+    await createNewOrder(
+      orderId,
+      userCart.products,
+      paymentMethod,
+      userCart.cartTotal,
+      user._id,
+      orderStatus,
       address,
+      comment,
       deliveryDate,
-      deliveryTime,
-    }).save();
-
+      deliveryTime
+    );
     user.orderCount += 1;
     await user.save();
-    let update = userCart.products.map((item) => {
-      return {
-        updateOne: {
-          filter: { _id: item.product._id },
-          update: { $inc: { stock: -item.count, sold: +item.count } },
-        },
-      };
-    });
-    const updated = await Product.bulkWrite(update, {});
+    await updateProductStock(userCart.products);
+    await Cart.deleteOne({ orderBy: user._id });
     res.json({ message: "success" });
   } catch (error) {
     throw new Error(error);
@@ -351,8 +424,12 @@ const getOrderById = asyncHandler(async (req, res) => {
   validateMongoDbId(id);
   try {
     const userorders = await Order.findById({ _id: id })
-      .populate("products.product")
+      .populate({
+        path: "products.product",
+        select: "name description",
+      })
       .populate("orderBy")
+      .populate("address")
       .exec();
     res.json(userorders);
   } catch (error) {
@@ -362,10 +439,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 
 const getAllOrders = asyncHandler(async (req, res) => {
   try {
-    const alluserorders = await Order.find()
-      .populate("products.product")
-      .populate("orderBy")
-      .exec();
+    const alluserorders = await Order.find().populate("address").exec();
     res.json(alluserorders);
   } catch (error) {
     throw new Error(error);
@@ -387,14 +461,15 @@ const getOrdersByUserId = asyncHandler(async (req, res) => {
 });
 
 const updateOrderStatus = asyncHandler(async (req, res) => {
-  const { status } = req.body;
+  const { orderStatus, isPaid } = req.body;
   const { id } = req.params;
   validateMongoDbId(id);
   try {
     const updateOrderStatus = await Order.findByIdAndUpdate(
       id,
       {
-        orderStatus: status,
+        orderStatus,
+        isPaid,
       },
       { new: true }
     );
@@ -402,6 +477,46 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   } catch (error) {
     throw new Error(error);
   }
+});
+
+const paystackWebhook = asyncHandler(async (req, res) => {
+  const secret = "sk_test_72f9b6cb1cf752a0ddd3d696e2c592849ff81a12";
+  const hash = req.headers["x-paystack-signature"];
+  const hmac = crypto.createHmac("sha512", secret);
+  hmac.update(JSON.stringify(req.body));
+  const digest = hmac.digest("hex");
+  if (digest !== hash) {
+    console.error("Invalid webhook signature");
+    res.status(400).send("Invalid signature");
+    return;
+  }
+  const event = req.body.event;
+  const data = req.body.data;
+  if (event === "charge.success") {
+    const paymentReference = data.reference;
+    try {
+      const order = await Order.findOne({ reference: paymentReference }); 
+      await Order.findByIdAndUpdate(
+        { _id: order._id }, 
+        {
+          isPaid: true,
+        },
+        { new: true }
+      );
+      const existingCard = await Card.findOne({
+        "cardDetails.authorization_code": data.authorization.authorization_code,
+      });
+      if (!existingCard) {
+        await Card.create({
+          cardDetails: data.authorization,
+          owner: data.metadata.userId,
+        });
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  res.sendStatus(200);
 });
 
 module.exports = {
@@ -425,4 +540,79 @@ module.exports = {
   getOrdersByUserId,
   getUserOrders,
   updateOrderStatus,
+  paystackWebhook,
+};
+
+async function initializePaystackCheckout(amount, email, userId) {
+  const { data } = await paystack.post("/transaction/initialize", {
+    email: email,
+    amount: amount * 100,
+    channels: ["card"],
+    metadata: {
+      userId: userId,
+    },
+  });
+
+  return {
+    authorizationUrl: data.data.authorization_url,
+    reference: data.data.reference,
+  };
+}
+
+
+async function initializePaystackCheckoutWithCard(amount, email, authorization_code) {
+  const { data } = await paystack.post("/transaction/charge_authorization", {
+    email: email,
+    amount: amount * 100,
+  authorization_code: authorization_code
+  });
+
+  return {
+    reference: data.data.reference,
+    status: data.data.status
+  };
+}
+
+const createNewOrder = async (
+  orderId,
+  products,
+  paymentMethod,
+  totalPrice,
+  userId,
+  orderStatus,
+  address,
+  comment,
+  deliveryDate,
+  deliveryTime,
+  reference
+) => {
+  return new Order({
+    orderId,
+    products: products.map((product) => ({
+      product: product.id,
+      price: product.price,
+      count: product.count,
+      image: product.image,
+    })),
+    paymentMethod,
+    totalPrice,
+    orderBy: userId,
+    orderStatus,
+    address,
+    comment,
+    deliveryDate,
+    deliveryTime,
+    reference,
+  }).save();
+};
+
+const updateProductStock = async (products) => {
+  const updateOperations = products.map((item) => ({
+    updateOne: {
+      filter: { _id: item.id },
+      update: { $inc: { stock: -item.count, sold: +item.count } },
+    },
+  }));
+
+  await Product.bulkWrite(updateOperations, {});
 };

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Typography,
   Box,
@@ -30,9 +30,9 @@ const CustomTextField = styled(TextField)({
 
 const Login = () => {
   const dispatch = useDispatch();
-
+  let [userCartFetched, setUserCartFetched] = useState(false);
   const auth = useSelector((state) => state.auth);
-  const { isSuccess, isError, isLoading, user } = auth;
+  const { isSuccess, message, isError, isLoading, user } = auth;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const Login = () => {
      
     }
     if (isError) {
-      makeToast("error", "Something went wrong");
+      makeToast("error", message);
       dispatch(resetState());
     }
   }, [isSuccess, isLoading, user]);
@@ -74,8 +74,7 @@ const Login = () => {
       >
         <Formik
           onSubmit={(values, { resetForm }) => {
-            
-            dispatch(login(values));
+            dispatch(login(values))
           }}
           initialValues={initialValues}
           validationSchema={loginSchema}
@@ -223,7 +222,6 @@ const loginSchema = yup.object().shape({
   emailOrPhone: yup
     .string()
     .test("emailOrPhone", "Invalid email or phone number", function (value) {
-      // Check if the value is a valid email or phone number
       const isValidEmail = yup.string().email().isValidSync(value);
       const isValidPhone = phoneRegExp.test(value);
       return isValidEmail || isValidPhone;

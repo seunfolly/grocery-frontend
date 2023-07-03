@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import customerService from "./customerService";
 
 export const getCustomers = createAsyncThunk(
-  "user/get-users",
+  "user/get-customers",
   async (thunkAPI) => {
     try {
       return await customerService.getCustomers();
@@ -22,7 +22,7 @@ export const deleteCustomer = createAsyncThunk(
     }
   }
 );
-export const resetState = createAction("Reset_all");
+export const resetState = createAction("Reset_Customer_State");
 
 const initialState = {
     customers: [],

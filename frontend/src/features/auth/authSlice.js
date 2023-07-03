@@ -7,6 +7,7 @@ const getUserfromLocalStorage = localStorage.getItem("user")
 const initialState = {
   user: getUserfromLocalStorage,
   orders: [],
+  cards: [],
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -16,12 +17,12 @@ const initialState = {
 };
 
 export const signup = createAsyncThunk(
-  "auth/sign",
+  "auth/sign-up",
   async (userData, thunkAPI) => {
     try {
       return await authService.signup(userData);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.response.data.message);
     }
   }
 );
@@ -32,16 +33,10 @@ export const login = createAsyncThunk(
     try {
       return await authService.login(userData);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.response.data.message);
     }
   }
 );
-
-// export const logout = createAsyncThunk("auth/logout", async (_, { getState }) => {
-//   localStorage.removeItem("user");
-//   const initialState = getState().auth.initialState;
-//   return initialState;
-// });
 
 export const updateProfile = createAsyncThunk(
   "auth/edit-profile",
@@ -64,16 +59,38 @@ export const updateProfile = createAsyncThunk(
 
 export const userCart = createAsyncThunk(
   "cart/store-cart",
-  async (cart, thunkAPI) => {
+  async (data, thunkAPI) => {
     try {
-      return await authService.userCart(cart);
+      return await authService.userCart(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
-export const resetState = createAction("Reset_all");
+export const getOrders = createAsyncThunk(
+  "user/get-orders",
+  async (thunkAPI) => {
+    try {
+      return await authService.getOrders();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const getCards = createAsyncThunk(
+  "user/get-cards",
+  async (thunkAPI) => {
+    try {
+      return await authService.getCards();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const resetState = createAction("Reset_Auth_State");
 export const resetUpdatedFlag = createAction("Reset_Updated_Flag");
 export const logout = createAction("auth/logout");
 export const authSlice = createSlice({
@@ -95,7 +112,7 @@ export const authSlice = createSlice({
       .addCase(signup.rejected, (state, action) => {
         state.isError = true;
         state.isSuccess = false;
-        state.message = action.error;
+        state.message = action.payload;
         state.isLoading = false;
       })
       .addCase(login.pending, (state) => {
@@ -106,12 +123,11 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.user = action.payload;
-        state.message = "success";
       })
       .addCase(login.rejected, (state, action) => {
         state.isError = true;
         state.isSuccess = false;
-        state.message = action.error;
+        state.message = action.payload;
         state.isLoading = false;
       })
       .addCase(updateProfile.pending, (state) => {
@@ -145,9 +161,38 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.cart = action.payload;
-        state.message = "success";
       })
       .addCase(userCart.rejected, (state, action) => {
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+        state.isLoading = false;
+      })
+      .addCase(getOrders.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getOrders.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.orders = action.payload;
+      })
+      .addCase(getOrders.rejected, (state, action) => {
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+        state.isLoading = false;
+      })
+      .addCase(getCards.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getCards.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.cards = action.payload;
+      })
+      .addCase(getCards.rejected, (state, action) => {
         state.isError = true;
         state.isSuccess = false;
         state.message = action.error;
@@ -156,11 +201,12 @@ export const authSlice = createSlice({
       .addCase(resetState, () => initialState)
       .addCase(resetUpdatedFlag, (state,action) => {state.userUpdated = false})
 
-      .addCase(logout, () => {
+      .addCase(logout, (state,action) => {
         // Reset the state to its initial values
         localStorage.removeItem("user");
         return {
           ...initialState,
+          user: null
         };
       });
   },

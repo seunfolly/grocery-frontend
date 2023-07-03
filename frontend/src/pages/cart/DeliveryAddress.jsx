@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Stack,
   Grid,
@@ -10,42 +11,54 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAddresses,
+} from "../../features/address/addressSlice";
+import {
+  setSelectedAddress
+} from "../../features/order/orderSlice";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const addresses = [
-  {
-    id: Math.floor(Math.random() * 100000),
-    name: "Office",
-    address: "34 Lekki Phase 1 Lagos State",
-    phone: "+2345679044",
-  },
-  {
-    id: Math.floor(Math.random() * 100000),
-    name: "Office",
-    address: "34 Lekki Phase 1 Lagos State",
-    phone: "+2345679044",
-  },
-  {
-    id: Math.floor(Math.random() * 100000),
-    name: "Office",
-    address: "34 Lekki Phase 1 Lagos State",
-    phone: "+2345679044",
-  },
-];
+const Address = (prop) => {
+  const {
+    fullName,
+    address,
+    phone,
+    state,
+    _id,
+    activeId,
+    type,
+    updateStepCompletion,
+  } = prop;
+  const dispatch = useDispatch();
+  const isSelected = activeId?._id === _id;
+  const handleClick = () => {
+    dispatch(
+      setSelectedAddress({ fullName, address, phone, state, _id, type })
+    );
+    updateStepCompletion("Checkout");
+  };
 
-const Address = ({ name, address, phone }) => {
   return (
     <Stack
       bgcolor="#f6f9fc"
       borderRadius="8px"
-      p={2}
+      p={1}
       direction="row"
-      justifyContent="space-around"
+      justifyContent="space-between"
+      onClick={handleClick}
+      sx={{
+        cursor: "pointer",
+        border: isSelected ? "1px solid #d23f57" : "none",
+        textTransform: "capitalize",
+      }}
     >
       <Stack>
-        <Typography variant="subtitle1">{name}</Typography>
+        <Typography variant="subtitle1">{fullName}</Typography>
         <Typography fontSize="13px">{address}</Typography>
+        <Typography fontSize="13px">{state}</Typography>
         <Typography fontSize="13px">{phone}</Typography>
       </Stack>
       <Stack alignSelf="self-start" direction="row">
@@ -79,7 +92,17 @@ const Address = ({ name, address, phone }) => {
   );
 };
 
-const DeliveryAddress = () => {
+export const DeliveryAddress = ({ updateStepCompletion }) => {
+  const dispatch = useDispatch();
+  const { addresses } = useSelector((state) => state.address);
+  const { selectedAddress } = useSelector((state) => state.order);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(getAddresses());
+    };
+    fetchData();
+  }, []);
   return (
     <Paper
       elevation={1}
@@ -90,8 +113,7 @@ const DeliveryAddress = () => {
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        borderRadius:"8px"
-
+        borderRadius: "8px",
       }}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -121,12 +143,14 @@ const DeliveryAddress = () => {
       <Grid container spacing={2}>
         {addresses.map((address) => (
           <Grid item sm={4}>
-            <Address {...address} />
+            <Address
+              {...address}
+              activeId={selectedAddress}
+              updateStepCompletion={updateStepCompletion}
+            />
           </Grid>
         ))}
       </Grid>
     </Paper>
   );
 };
-
-export default DeliveryAddress;

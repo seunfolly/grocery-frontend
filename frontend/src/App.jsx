@@ -6,15 +6,15 @@ import Homepage from "./pages/homepage";
 import Store from "./pages/store";
 import UserDashBoard from "./pages/user-dashboard/index";
 import AdminDashboard from "./pages/admin-dashboard";
-import Checkout from "./pages/checkout";
 import ProductDescription from "./pages/product-description";
 import "@fortawesome/fontawesome-free/css/all.css";
 import Signup from "./pages/auth/Signup";
 import Login from "./pages/auth/Login";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import Cart from "./pages/cart";
 import { useDispatch, useSelector } from "react-redux";
-import { userCart, logout } from "./features/auth/authSlice";
+import { userCart, logout, resetState } from "./features/auth/authSlice";
 import { getUserCart } from "./features/cart/cartSlice";
 
 function PrivateRoute({ children, authorizedRoles }) {
@@ -28,18 +28,26 @@ function App() {
   const cart = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
   // const cartState = localStorage.getItem('cartState');
-  console.log(user);
+  // console.log(user)
   const isInitialMount = useRef(true);
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      // dispatch(getUserCart())
       return;
     }
-    if (user) {
-      dispatch(userCart(cart.products));
+    if (user && cart.products && cart.products.length > 0) {
+      const data = {
+        cart: cart.products,
+      };
+      dispatch(userCart(data));
     }
-  }, [dispatch, cart, user]);
+  }, [dispatch, cart]);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getUserCart());
+    }
+  }, [user]);
 
   const getUserfromLocalStorage = localStorage.getItem("user");
   useEffect(() => {
@@ -88,11 +96,18 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/checkout" element={<Checkout />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/cart"
+            element={
+              <PrivateRoute authorizedRoles={["admin", "user"]}>
+                <Cart />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </LocalizationProvider>
     </>
@@ -100,33 +115,3 @@ function App() {
 }
 
 export default App;
-
-// let user
-
-//   ? JSON.parse(localStorage.getItem("user"))
-//   : null;
-
-// if (
-//   getUserfromLocalStorage &&
-//   getUserfromLocalStorage.expirationTime &&
-//   new Date().getTime() > getUserfromLocalStorage.expirationTime
-// ) {
-
-//   localStorage.removeItem("user");
-//   user = null;
-// } else {
-//   user = getUserfromLocalStorage;
-// }
-
-// const getUserfromLocalStorage = localStorage.getItem("user")
-// useEffect(() => {
-//   if (getUserfromLocalStorage &&
-//     getUserfromLocalStorage.expirationTime) {
-//     const remainingTime =
-//     getUserfromLocalStorage.expirationTime.getTime() - new Date().getTime();
-
-//     logoutTimer = setTimeout(dispatch(logout()), remainingTime);
-//   } else {
-//     clearTimeout(logoutTimer);
-//   }
-// }, [user]);

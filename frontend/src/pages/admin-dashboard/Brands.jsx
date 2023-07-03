@@ -30,14 +30,14 @@ const Brands = () => {
     if (deletedBrand) {
       makeToast("success", "Brand deleted successfully!");
       dispatch(getBrands());
+      dispatch(resetState());
     }
     if (isError) {
       makeToast("error", "Something went wrong");
     }
 
-    return () => {
-      dispatch(resetState());
-    };
+    // return () => {
+    // };
   }, [deletedBrand]);
 
   const brands = brandState.brands.map((brand) => ({

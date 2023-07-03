@@ -13,6 +13,10 @@ import AddProduct from "./AddProduct";
 import AddCategory from "./AddCategory";
 import AddBrand from "./AddBrand";
 import OrderDetails from "./OrderDetails";
+import AddCollectionAddress from "./AddCollectionAddress";
+import CollectionAddress from "./CollectionAddresses";
+
+
 const AdminDashboard = () => {
   return (
     <Box display="flex">
@@ -31,7 +35,10 @@ const AdminDashboard = () => {
           <Route exact path="/brand/:id" element={<AddBrand />} />
           <Route exact path="/brands" element={<Brands />} />
           <Route exact path="/orders" element={<Orders />} />
-          <Route exact path="/order/*" element={<OrderDetails />} />
+          <Route exact path="/addresses" element={<CollectionAddress />} />
+          <Route exact path="/address/:id" element={<AddCollectionAddress />} />
+          <Route  path="/order" element={<OrderDetails />} />
+          <Route  path="/order/:id" element={<OrderDetails />} />
           <Route exact path="/customers" element={<Customers />} />
         </Routes>
       </Box>

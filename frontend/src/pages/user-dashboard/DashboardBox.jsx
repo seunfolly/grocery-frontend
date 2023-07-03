@@ -8,7 +8,7 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logout } from "../../features/auth/authSlice";
+import { logout,resetState } from "../../features/auth/authSlice";
 
 const dashboards = [
   { text: "Orders", no: 5, Icon: <ShoppingBagOutlinedIcon />, url: "orders" },

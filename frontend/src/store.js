@@ -5,6 +5,9 @@ import brandReducer from "./features/brand/brandSlice";
 import customerSlice from "./features/customer/customerSlice";
 import cartReducer, {initializeCart, getUserCart} from "./features/cart/cartSlice";
 import authReducer from "./features/auth/authSlice";
+import addressReducer from "./features/address/addressSlice";
+import orderReducer from "./features/order/orderSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -13,12 +16,13 @@ export const store = configureStore({
     brand: brandReducer,
     customer: customerSlice,
     cart: cartReducer,
-    auth: authReducer
+    auth: authReducer,
+    address: addressReducer,
+    order: orderReducer
   },
 });
 
-let userCartFetched = false;
-
+//  let userCartFetched = false;
 const persistedCartState = localStorage.getItem('cartState');
 if (persistedCartState) {
   store.dispatch(initializeCart(JSON.parse(persistedCartState)));
@@ -28,10 +32,10 @@ store.subscribe(() => {
   const { cart } = store.getState();
   localStorage.setItem('cartState', JSON.stringify(cart));
 });
-store.subscribe(() => {
-  const { auth } = store.getState();
-  if (auth.user && !userCartFetched) { 
-    userCartFetched = true; 
-    store.dispatch(getUserCart());
-  }
-});
+// store.subscribe(() => {
+//   const { auth } = store.getState();
+//   if (auth.user && !userCartFetched) { 
+//     userCartFetched = true; 
+//     store.dispatch(getUserCart());
+//   }
+// });

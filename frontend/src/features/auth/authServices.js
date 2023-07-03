@@ -1,5 +1,5 @@
 import axios from "axios";
-import { config } from "../../utils/axiosconfig";
+import { config, updateConfigToken } from "../../utils/axiosconfig";
 import { base_url } from "../../utils/baseUrl";
 
 const signup = async (user) => {
@@ -10,6 +10,7 @@ const signup = async (user) => {
       expirationTime: expirationTime,
     }
   localStorage.setItem("user", JSON.stringify(userData));
+  updateConfigToken()
   return userData;
 };
 
@@ -21,12 +22,13 @@ const login = async (user) => {
       expirationTime: expirationTime,
     };
   localStorage.setItem("user", JSON.stringify(userData));
-  return userData;
+  updateConfigToken()
+  return userData
 };
 
-const userCart = async (cart) => {
+const userCart = async (data) => {
   // console.log(cart)
-  const response = await axios.post(`${base_url}user/cart`, { cart }, config);
+  const response = await axios.post(`${base_url}user/cart`, { cart: data.cart }, config);
   return response.data;
 };
 
@@ -49,11 +51,23 @@ const editProfile = async (userData) => {
   return data;
 };
 
+const getOrders = async () => {
+  const response = await axios.get(`${base_url}user/get-orders`, config);
+  return response.data;
+};
+
+const getCards = async () => {
+  const response = await axios.get(`${base_url}card`, config);
+  return response.data;
+};
+
 const authService = {
   login,
   signup,
   userCart,
-  editProfile
+  editProfile,
+  getOrders,
+  getCards
 };
 
 export default authService;
