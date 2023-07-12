@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { base_url } from "../../utils/baseUrl";
 import axios from "axios";
@@ -7,10 +7,10 @@ import {
   Stack,
   Grid,
   Container,
-  Avatar,
   Typography,
-  Rating,
   Button,
+  IconButton,
+  Tooltip
 } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Footer from "../../components/layouts/Footer";
@@ -21,16 +21,29 @@ import {
   addToCart,
   decreaseQuantity,
 } from "../../features/cart/cartSlice";
+import { getProducts } from "../../features/product/productSlice";
+import ICard from "../../components/ui-elements/Card";
+
 import makeToast from "../../utils/toaster";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { itemArray, Item, item1Array, Item1 } from "./data";
 
 const ProductDescription = () => {
-  const [selectedImage, setSelectedImage] = useState();
   const [productDetails, setProductDetails] = useState(null);
+  const [toggle, setToggle] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.cart);
+  const productState = useSelector((state) => state.product.products);
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
+
   const cartProduct = products.find(
     (product) => product.id === productDetails?._id
   );
@@ -40,7 +53,6 @@ const ProductDescription = () => {
       .get(`${base_url}product/${id}`)
       .then((response) => {
         setProductDetails(response.data);
-        setSelectedImage(response.data.images[0].url);
       })
       .catch((error) => console.log(error));
   };
@@ -49,9 +61,10 @@ const ProductDescription = () => {
     getProduct();
   }, [id]);
 
-  const handleImageClick = (image) => {
-    setSelectedImage(image.url);
-  };
+  useEffect(() => {
+    dispatch(getProducts());
+  }, []);
+ 
   const handleAddToCart = () => {
     dispatch(
       addToCart({
@@ -70,6 +83,46 @@ const ProductDescription = () => {
     dispatch(decreaseQuantity(id));
     makeToast("error", "Remove from Cart");
   };
+
+  const mainSliderRef = useRef(null);
+  const thumbnailSliderRef = useRef(null);
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    arrows: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    asNavFor: thumbnailSliderRef.current,
+  };
+
+  const thumbnailSettings = {
+    dots: false,
+    infinite: true,
+    arrows: true,
+    speed: 500,
+    slidesToShow:
+      productDetails?.images.length < 4 ? productDetails?.images.length : 4,
+    slidesToScroll: 1,
+    focusOnSelect: true,
+    asNavFor: mainSliderRef.current,
+  };
+  const addToWishList = () => {
+    axios
+      .put(`${base_url}product/wishlist/${productDetails?._id}`, null, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      })
+      .then((response) => {
+        setToggle(!toggle);
+      })
+      .catch((error) => {
+        makeToast("error", "You must be logged. Sign in");
+      });
+  };
+
   return (
     <>
       <Header />
@@ -82,50 +135,206 @@ const ProductDescription = () => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={3}>
-            <Grid item md={6}>
-              <Box display="flex" justifyContent="center">
-                <img
-                  src={selectedImage}
-                  alt="Selected Image"
-                  style={{
-                    width: "400px",
-                    height: "400px",
-                    objectFit: "contain",
-                  }}
-                />
-              </Box>
-              <Stack direction="row" spacing={2} justifyContent="center" mt={4}>
-                {productDetails &&
-                  productDetails.images.map((image, index) => (
-                    <Avatar
-                      key={index}
-                      onClick={() => handleImageClick(image)}
-                      src={image.url}
-                      sx={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: "8px",
-                        border:
-                          selectedImage === image.url
-                            ? "1px solid #D23F57"
-                            : "",
-                        cursor: "pointer",
-                      }}
-                    />
+            <Grid item xs={12} md={6} spacing={1}>
+              <div>
+                <Slider {...settings} ref={mainSliderRef}>
+                  {productDetails?.images.map((image) => (
+                    <div key={image._id}>
+                      <img
+                        src={image.url}
+                        alt={`Image ${image._id}`}
+                        style={{
+                          width: "100%",
+                        }}
+                      />
+                    </div>
                   ))}
-              </Stack>
+                </Slider>
+                <Box
+                  mt={2}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <Slider {...thumbnailSettings} ref={thumbnailSliderRef}>
+                    {productDetails?.images.map((image) => (
+                      <div key={image._id} className="thumbnail-item">
+                        <img
+                          src={image.url}
+                          alt={`Thumbnail ${image._id}`}
+                          style={{ width: "130px", height: "auto" }}
+                        />
+                      </div>
+                    ))}
+                  </Slider>
+                </Box>
+              </div>
             </Grid>
 
-            <Grid item md={6} alignSelf="center">
+            <Grid item xs={12} md={6}>
               <Stack spacing={2}>
                 <Typography variant="h5">{productDetails?.name}</Typography>
-                <Typography variant="subtitle2">
-                  Brand:{" "}
-                  <span style={{ fontWeight: 600 }}>
-                    {productDetails?.brand.name}
-                  </span>{" "}
+                <Stack direction="row" spacing={2} alignItems="end">
+                  <Typography
+                    color="text.secondary"
+                    variant="subtitle2"
+                    fontSize="14px"
+                  >
+                    <del>
+                      {productDetails?.salePrice
+                        ? `₦  ${productDetails?.regularPrice}`
+                        : ""}
+                    </del>
+                  </Typography>
+                  <Typography variant="h5" color="primary.main">
+                    {`₦ ${
+                      productDetails &&
+                      (productDetails?.salePrice
+                        ? productDetails?.salePrice
+                        : productDetails?.regularPrice)
+                    }`}
+                  </Typography>
+                </Stack>
+
+                <Stack direction="row" spacing={5}>
+                  <Stack spacing={0.3}>
+                    <Typography variant="subtitle1">Brand: </Typography>
+                    <Typography variant="subtitle1">Reference: </Typography>
+                    <Typography variant="subtitle1">In Stock: </Typography>
+                  </Stack>
+                  <Stack spacing={0.3}>
+                    <Typography variant="subtitle2">
+                      {productDetails?.brand?.name || "Brand"}
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      {productDetails?.productId}
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      {`${productDetails?.stock} Items`}
+                    </Typography>
+                  </Stack>
+                </Stack>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {productDetails?.description}
                 </Typography>
-                <Stack spacing={1} alignItems="center" direction="row">
+
+                <Box
+                  sx={{
+                    padding: "13px 0",
+                    borderWidth: "1px 0",
+                    borderStyle: "dashed",
+                    borderColor: "#ddd",
+                    display: "flex",
+                    gap: "15px",
+                    // margin: 30px 0;
+                  }}
+                >
+                  <Box
+                    sx={{
+                      borderRadius: "8px",
+                      border: "1px solid #dee2e6",
+                      padding: "0 8px",
+                      width: "110px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ExpandMoreIcon
+                      onClick={() => handleRemoveCart(productDetails._id)}
+                      sx={{
+                        cursor: "pointer",
+                        fontSize: "25px",
+                        "&:hover": {
+                          color: "#E3364E",
+                        },
+                      }}
+                    />
+                    {cartProduct?.count && cartProduct?.count > 0 ? (
+                      <Typography variant="subtitle1">
+                        {cartProduct?.count}
+                      </Typography>
+                    ) : (
+                      0
+                    )}
+
+                    <ExpandLessIcon
+                      onClick={() => handleAddToCart()}
+                      sx={{
+                        cursor: "pointer",
+                        fontSize: "25px",
+
+                        "&:hover": {
+                          color: "#E3364E",
+                        },
+                      }}
+                    />
+                  </Box>
+
+                  <Button
+                    onClick={() => handleAddToCart()}
+                    sx={{
+                      textTransform: "none",
+                      bgcolor: "primary.main",
+                      color: "white",
+                      fontSize: "14px",
+                      paddingX: "25px",
+                      fontWeight: 600,
+                      paddingY: "12px",
+                      alignSelf: "start",
+                      display: "flex",
+                      gap: "10px",
+                      borderRadius: "16px",
+                      "&:hover": {
+                        backgroundColor: "#E3364E",
+                      },
+                    }}
+                  >
+                    <ShoppingCartOutlinedIcon />
+                    <Typography variant="subtitle1"> Add To Cart</Typography>
+                  </Button>
+ 
+                  <Tooltip title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
+                  <IconButton
+                    onClick={() => addToWishList()}
+                    sx={{
+                      backgroundColor: toggle? "#D23F57" : "#e9ecef",
+                      borderRadius: "16px",
+                      paddingX: "12px",
+                      color: toggle? "white" : "black",
+                      "&:hover": {
+                        backgroundColor: "#D23F57",
+                        color: "white",
+                      },
+                    }}
+                  >
+                    <FavoriteBorderIcon />
+                  </IconButton>
+                     </Tooltip>
+                 
+                </Box>
+                <Stack direction="row" spacing={5}>
+                  <Stack spacing={0.3}>
+                    <Typography variant="subtitle1">Category: </Typography>
+                    <Typography variant="subtitle1">Tags: </Typography>
+                  </Stack>
+                  <Stack spacing={0.3}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      {productDetails?.category.name}
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      {productDetails?.tags.join(", ")}
+                    </Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack spacing={2}>
+                  {item1Array.map((item, index) => (
+                    <Item1 key={index} {...item} />
+                  ))}
+                </Stack>
+
+                {/* <Stack spacing={1} alignItems="center" direction="row">
                   <Typography variant="subtitle2">Rating:</Typography>
                   <Rating
                     value={productDetails?.totalstar || 2}
@@ -136,73 +345,52 @@ const ProductDescription = () => {
                     }}
                   />
                   <Typography variant="subtitle2">{`(${productDetails?.totalrating})`}</Typography>
-                </Stack>
-                <Typography variant="h5" color="primary.main">
-                  {`₦ ${
-                    productDetails &&
-                    (productDetails.salePrice
-                      ? productDetails.salePrice
-                      : productDetails.regularPrice)
-                  }`}
-                </Typography>
-                <Typography fontSize="14px">Stock Available</Typography>
-                {cartProduct?.count > 0 ? null : (
-                  <Button
-                    onClick={() => handleAddToCart()}
-                    sx={{
-                      textTransform: "none",
-                      bgcolor: "primary.main",
-                      color: "white",
-                      fontSize: "14px",
-                      paddingX: "20px",
-                      fontWeight: 500,
-                      paddingY: "8px",
-                      alignSelf: "start",
-                      "&:hover": {
-                        backgroundColor: "#E3364E",
-                      },
-                    }}
-                  >
-                    Add To Cart
-                  </Button>
-                )}
-                <Stack alignItems="center" direction="row" spacing={2}>
-                  {cartProduct?.count > 0 && (
-                    <Button
-                      onClick={() => handleRemoveCart(productDetails._id)}
-                      variant="outlined"
-                      sx={{
-                        padding: "1px",
-                        minWidth: 0,
-                        alignItems: "center",
-                        textAlign: "center",
-                      }}
-                    >
-                      <RemoveIcon />
-                    </Button>
-                  )}
-                  {cartProduct?.count && cartProduct?.count > 0 ? (
-                    <Typography>{cartProduct?.count}</Typography>
-                  ) : null}
+                </Stack> */}
 
-                  {cartProduct?.count > 0 && (
-                    <Button
-                      onClick={() => handleAddToCart()}
-                      variant="outlined"
-                      sx={{
-                        padding: "1px",
-                        minWidth: 0,
-                      }}
-                    >
-                      <AddIcon />
-                    </Button>
-                  )}
-                </Stack>
+                {/* </Stack> */}
               </Stack>
             </Grid>
           </Grid>
 
+          <Grid
+            container
+            spacing={3}
+            sx={{
+              my: 6,
+            }}
+          >
+            {itemArray.map((item, index) => (
+              <Grid key={index} item md={3}>
+                <Item {...item} />
+              </Grid>
+            ))}
+          </Grid>
           <Tab product={productDetails} />
+
+          <Stack
+            spacing={2}
+            sx={{
+              my: 7,
+            }}
+          >
+            <Typography variant="h6" fontSize="20px">
+              Related Products
+            </Typography>
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                width: "calc(100% + 24px)",
+                marginLeft: "-24px !important",
+              }}
+            >
+              {productState.map((item) => (
+                <Grid item xs={3} key={item._id}>
+                  <ICard {...item} />
+                </Grid>
+              ))}
+            </Grid>
+          </Stack>
         </Container>
       </Box>
       <Footer />

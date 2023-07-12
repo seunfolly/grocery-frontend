@@ -46,20 +46,18 @@ const ForgotPassword = () => {
         }}
       >
         <form>
-          <Typography
-            variant="h5"
-            fontSize="20px"
-            mt={1}
-            mb={2}
-            textAlign="center"
-          >
+          <img
+            src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
+            alt="bazaar logo"
+            style={{
+              margin: "0 auto",
+              display: "block",
+            }}
+          />
+          <Typography variant="body2" mt={2} mb={2} textAlign="center">
             Forgot Password?
           </Typography>
-          <Typography
-            
-            mb={4}
-            textAlign="center"
-          >
+          <Typography mb={4} textAlign="center">
             Enter your email to reset password.
           </Typography>
 

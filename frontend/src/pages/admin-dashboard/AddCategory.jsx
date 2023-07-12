@@ -7,11 +7,12 @@ import {
   styled,
   Typography,
   Button,
-  
+  Divider,
 } from "@mui/material";
 import axios from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import AddIcon from "@mui/icons-material/Add";
+import ClearIcon from "@mui/icons-material/Clear";
+import Dropzone from "react-dropzone";
 import { useParams } from "react-router-dom";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -43,7 +44,8 @@ const AddCategory = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const dispatch = useDispatch();
   const categoryState = useSelector((state) => state.category);
-  const [editMode, setEditMode ]  = useState(false)
+  const [editMode, setEditMode] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const {
     categories,
@@ -63,9 +65,8 @@ const AddCategory = () => {
 
   useEffect(() => {
     if (id !== "create") {
-
       dispatch(getCategory(id));
-      setEditMode(!editMode)
+      setEditMode(!editMode);
     } else {
       dispatch(resetState());
     }
@@ -97,13 +98,13 @@ const AddCategory = () => {
   const initialValues = {
     name: categoryData?.name || "",
     parent: "",
+    image: null,
   };
   useEffect(() => {
     if (categories.length > 0) {
       setCategoryLevels([categories]);
     }
   }, [categories]);
-
   return (
     <Box
       bgcolor="background.paper"
@@ -133,7 +134,7 @@ const AddCategory = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values, { resetForm }) => {
-              const categoryData = { name: values.name };
+              const categoryData = { name: values.name, image: values.image };
               if (values.parent) {
                 categoryData.parent = values.parent;
               }
@@ -184,8 +185,7 @@ const AddCategory = () => {
                   gap: "10px",
                 }}
               >
-                <Box display="flex" gap="20px" flexWrap="wrap">
-                 
+                <Box display="flex" gap="20px" flexWrap="wrap" mb={3}>
                   <Dropdown
                     setCategoryLevels={setCategoryLevels}
                     setSelectedCategories={setSelectedCategories}
@@ -194,9 +194,8 @@ const AddCategory = () => {
                     selectedCategories={selectedCategories}
                     field="parent"
                     editMode={editMode}
-
                   />
-                   <CustomTextField
+                  <CustomTextField
                     variant="outlined"
                     type="text"
                     label="Name"
@@ -214,12 +213,121 @@ const AddCategory = () => {
                     }}
                   />
                 </Box>
+                <div>
+                  <Dropzone
+                    onDrop={(acceptedFiles) => {
+                      const file = acceptedFiles[0];
+                      setSelectedFile(file);
+                      setFieldValue("image", file);
+                    }}
+                    // accept="image/*"
+                    multiple={false}
+                  >
+                    {({ getRootProps, getInputProps }) => (
+                      <div
+                        {...getRootProps()}
+                        style={{
+                          backgroundColor: "#F6F9FC",
+                          width: "100%",
+                          mt: 2,
+                          border: `1px dashed ${
+                            errors.image ? "#f44336" : "#DAE1E7"
+                          }`,
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: "20px",
+                          alignItems: "center",
+                          flexDirection: "column",
+                          minHeight: "200px",
+                          py: 4,
+                          borderRadius: "8px",
+                        }}
+                      >
+                        <input accept="image/*" {...getInputProps()} />
+                        <Typography
+                          variant="body2"
+                          color={errors.image ? "#f44336" : "#7D879C"}
+                        >
+                          {errors.image
+                            ? errors.image
+                            : "Drag and drop images here"}{" "}
+                        </Typography>
+                        <Box width="300px">
+                          <Divider
+                            sx={{
+                              color: "#DAE1E7",
+                            }}
+                          >
+                            OR
+                          </Divider>
+                        </Box>
+
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "#4E97FD",
+                            borderColor: "#4e97fd80",
+                            textTransform: "none",
+                            fontSize: "15px",
+                            fontWeight: 500,
+                            paddingX: "30px",
+                            //    paddingY: "8px",
+                            borderRadius: "8px",
+                            "&:hover": {
+                              backgroundColor: "rgba(78, 151, 253, 0.04)",
+                              border: "1px solid #4E97FD",
+                            },
+                          }}
+                          component="span"
+                        >
+                          Select File
+                        </Button>
+                      </div>
+                    )}
+                  </Dropzone>
+                  {selectedFile && (
+                    <div
+                      style={{
+                        marginTop: "30px",
+                        position: "relative",
+                        display: "inline-block",
+                      }}
+                    >
+                      <ClearIcon
+                        sx={{
+                          position: "absolute",
+                          fontSize: "14px",
+                          top: "-10px",
+                          right: "-7px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          setSelectedFile(null);
+                          setFieldValue("image", null);
+                        }}
+                      />
+                      <img
+                        src={URL.createObjectURL(selectedFile)}
+                        alt="Selected"
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          borderRadius: "8px",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
                 <Button
                   type="submit"
+                  disabled={!isValid || (!dirty && id === "create")}
                   sx={{
                     textTransform: "none",
-                    bgcolor: "#4e97fd",
-                    color: "white",
+                    bgcolor:
+                      !isValid || (!dirty && id === "create") || isLoading
+                        ? "#0000001f"
+                        : "#4e97fd",
+                    color: isLoading ? "#00000042" : "white",
                     fontSize: "14px",
                     paddingX: "15px",
                     fontWeight: 400,
@@ -244,9 +352,13 @@ const AddCategory = () => {
   );
 };
 const validationSchema = yup.object({
-  name: yup
-    .string()
-    .required("required")
-    .min(3, "Name must be at least 3 characters"),
+  name: yup.string().required("Name is required"),
+  image: yup
+    .mixed()
+    .notRequired()
+    .test("fileType", "Only image files are allowed", function (value) {
+      if (!value) return true; // Skip validation if no file is selected
+      return ["image/jpeg", "image/png", "image/gif"].includes(value.type);
+    }),
 });
 export default AddCategory;

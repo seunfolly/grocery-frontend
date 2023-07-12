@@ -28,7 +28,6 @@ const Card = ({ _id, cardDetails }) => {
       setSelectedCard(_id)
     );
   };
-  console.log(selectedCard)
 
   return (
     <Stack

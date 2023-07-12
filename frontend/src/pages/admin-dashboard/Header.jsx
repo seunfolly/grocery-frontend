@@ -28,7 +28,7 @@ const CustomTextField = styled(TextField)({
     },
   },
 });
-const Header = ({ title, button, placeholder, route }) => {
+const Header = ({ title, button, placeholder, route, searchQuery, setSearchQuery }) => {
   return (
     <Stack spacing={3} px={3}>
       <Typography variant="h6" fontSize="21px">
@@ -38,6 +38,8 @@ const Header = ({ title, button, placeholder, route }) => {
         <CustomTextField
           id="input-with-icon-textfield"
           placeholder={placeholder}
+          value={searchQuery}
+           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

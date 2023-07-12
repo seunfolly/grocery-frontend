@@ -3,9 +3,16 @@ import { Box, Stack, Grid, Typography, CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../features/product/productSlice";
+import { getCategories } from "../../features/category/categorySlice";
+
 import Comment from "./Comment";
 import Footer from "./Footer";
 import { Carousel, Carousel1, Carousel2 } from "./Carousel";
+import ICard from "../../components/ui-elements/Card";
+
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 const cats = [
   "Fruit & Vegetable",
   "Fish & Meat",
@@ -15,18 +22,21 @@ const cats = [
   "Baby Food",
 ];
 
-const Category = ({ icon, title }) => {
+const Category = ({ name, image, _id }) => {
   return (
     <Link
-      to="/store"
+    to={`/store?category=${_id}`}
       style={{
         textDecoration: "none",
       }}
     >
       <Box
+        flexDirection={{ xs: "column", sm: "row" }}
         sx={{
           bgcolor: "white",
-          padding: "23px",
+          paddingX: "15px",
+          paddingY: "15px",
+
           borderRadius: "8px",
           display: "flex",
           gap: "12px",
@@ -35,13 +45,13 @@ const Category = ({ icon, title }) => {
         }}
       >
         <img
-          src="https://bazaar.ui-lib.com/assets/images/icons/healthy-food.svg"
-          alt={title}
-          style={{ width: "46px", height: "46px" }}
+          src= {image.url}
+          alt={name}
+          style={{ width: "60px", height: "60px", borderRadius: "8px" }}
         />
 
         <Typography variant="subtitle1" color="#4B566B" sx={{}}>
-          {title}
+          {name}
         </Typography>
       </Box>
     </Link>
@@ -50,10 +60,15 @@ const Category = ({ icon, title }) => {
 
 const Shop = () => {
   const dispatch = useDispatch();
+  
   useEffect(() => {
     dispatch(getProducts());
+    dispatch(getCategories(1));
   }, []);
+
   const { products, isLoading } = useSelector((state) => state.product);
+  const { categories } = useSelector((state) => state.category);
+
 
   if (isLoading) {
     return (
@@ -63,6 +78,7 @@ const Shop = () => {
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
+
         }}
       >
         <CircularProgress />
@@ -71,7 +87,7 @@ const Shop = () => {
   }
 
   return (
-    <Box>
+    <Box >
       <Stack spacing={6}>
         <Carousel2 />
         <Stack spacing={1}>
@@ -80,18 +96,18 @@ const Shop = () => {
             container
             spacing={3}
             sx={{
-              width: "calc(100% + 32px)",
-              marginLeft: "-32px !important",
+              width: "calc(100% + 24px)",
+              marginLeft: "-24px !important",
             }}
           >
-            {cats.map((item, index) => (
-              <Grid key={index} item md={4}>
-                <Category title={item} />
+            {categories.map((item, index) => (
+              <Grid key={index} item xs={6} lg={4}>
+                <Category {...item} />
               </Grid>
             ))}
           </Grid>
         </Stack>
-        <Carousel title={"Featured Item"} productList={products} />
+       
         <Carousel title={"Best Selling in Your Area"} productList={products} />
         <Carousel1 />
         <Carousel

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Stack, Typography, IconButton, Chip, Box } from "@mui/material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Link } from "react-router-dom";
@@ -88,9 +88,16 @@ const columns = [
 
 const Orders = () => {
   const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
   const { orders } = useSelector((state) => state.order);
 
-  const orderData = orders.map((order) => ({
+  const filteredOrders = orders.filter(
+    (order) =>
+      order.orderId.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+
+  const orderData = filteredOrders .map((order) => ({
     _id: order?._id,
     id: order?.orderId.substring(0, 8),
     date: new Date(order.orderDate).toLocaleDateString("en-US", {
@@ -110,7 +117,7 @@ const Orders = () => {
       dispatch(getOrders());
     };
     getUserOrders();
-  }, []);
+  }, [searchQuery]);
 
   return (
     <Stack spacing={3} bgcolor="background.paper" py={3}>
@@ -118,6 +125,8 @@ const Orders = () => {
         title={"Order List"}
         placeholder="Search Order..."
         button="Create Order"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
       <Table>
         <DataGrid rows={orderData} columns={columns} />

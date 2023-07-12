@@ -95,9 +95,10 @@ const Category = () => {
       py={3}
       px={2.2}
       borderRadius="5px"
+      display={{ xs: "none", md: "block" }}
       sx={{
-        width: "278px",
-        minWidth: "278px",
+        // width: "278px",
+        // minWidth: "278px",
         height: "calc(100vh - 140px)",
         boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
         position: "sticky",

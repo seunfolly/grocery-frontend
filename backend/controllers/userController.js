@@ -213,7 +213,6 @@ const deleteAUser = asyncHandler(async (req, res) => {
 });
 
 const getWishlist = asyncHandler(async (req, res) => {
-  console.log("l");
   const { _id } = req.user;
   try {
     const findUser = await User.findById(_id).populate("wishlist");
@@ -296,7 +295,7 @@ const createOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
   let orderStatus;
-  const validPaymentMethods = ["cash", "voucher", "card"];
+  const validPaymentMethods = ["cash", "card"];
   if (!validPaymentMethods.includes(paymentMethod))
     return res.status(400).json({ error: "Invalid payment method" });
 

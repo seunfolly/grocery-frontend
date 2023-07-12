@@ -9,7 +9,8 @@ const initialState = {
   orderMessage: null,
   selectedCard: null,
   deliveryOption: null,
-  selectedAddress: null
+  selectedAddress: null,
+  billingAddress: null
 };
 
 export const getOrders = createAsyncThunk(
@@ -41,6 +42,9 @@ export const orderSlice = createSlice({
     setSelectedAddress: (state, action) => { 
       state.selectedAddress = action.payload;
     },
+    setBillingAddress: (state, action) => { 
+      state.billingAddress = action.payload;
+    },
   },
   extraReducers: (buildeer) => {
     buildeer
@@ -66,6 +70,7 @@ export const {
   getOrderMessage,
   setSelectedCard,
   setDeliveryOption,
-  setSelectedAddress
+  setSelectedAddress,
+  setBillingAddress
 } = orderSlice.actions;
 export default orderSlice.reducer;

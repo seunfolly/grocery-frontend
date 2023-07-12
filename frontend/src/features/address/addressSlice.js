@@ -2,28 +2,37 @@ import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import addressService from "./addressService";
 
 export const getAddresses = createAsyncThunk(
-    "address/get-addresses",
-    async (thunkAPI) => {
-      try {
-        return await addressService.getAddresses();
-      } catch (error) {
-        return thunkAPI.rejectWithValue(error);
-      }
+  "address/get-addresses",
+  async (thunkAPI) => {
+    try {
+      return await addressService.getAddresses();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
-  );
+  }
+);
 
-  export const getCollectionAddresses = createAsyncThunk(
-    "address/get-collection-addresses",
-    async (thunkAPI) => {
-      try {
-        return await addressService.getCollectionAddresses();
-       
-      } catch (error) {
-        return thunkAPI.rejectWithValue(error);
-      }
+export const getCollectionAddresses = createAsyncThunk(
+  "address/get-collection-addresses",
+  async (thunkAPI) => {
+    try {
+      return await addressService.getCollectionAddresses();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
-  );
+  }
+);
 
+export const getBillingAddresses = createAsyncThunk(
+  "address/get-billing-addresses",
+  async (thunkAPI) => {
+    try {
+      return await addressService.getBillingAddresses();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
 
 export const createAddress = createAsyncThunk(
   "address/create-address",
@@ -69,10 +78,12 @@ export const deleteAddress = createAsyncThunk(
 );
 
 export const resetState = createAction("Reset_Address_State");
+// export const resetUpdatedFlag = createAction("Reset_UpdatedAddress_Flag");
 
 const initialState = {
   addresses: [],
-  collectionAddresses:[],
+  collectionAddresses: [],
+  billingAddresses: [],
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -108,6 +119,21 @@ export const addressSlice = createSlice({
         state.collectionAddresses = action.payload;
       })
       .addCase(getCollectionAddresses.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+      })
+      .addCase(getBillingAddresses.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getBillingAddresses.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.billingAddresses = action.payload;
+      })
+      .addCase(getBillingAddresses.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
@@ -173,6 +199,7 @@ export const addressSlice = createSlice({
         state.isSuccess = false;
         state.message = action.error;
       })
+      // .addCase(resetUpdatedFlag, (state,action) => {state.updatedAddress = null})
       .addCase(resetState, () => initialState);
   },
 });

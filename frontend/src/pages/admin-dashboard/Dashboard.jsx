@@ -10,6 +10,7 @@ import {
 import { mockData, mockData2 } from "./data";
 import { DataGrid } from "@mui/x-data-grid";
 import Table from "./Table";
+import { useSelector } from "react-redux";
 const columns = [
   { field: "id", headerName: "Order ID", flex: 1 },
   { field: "product", headerName: "Product", flex: 1 },
@@ -203,6 +204,8 @@ const Card2 = ({ name, amount, percentage, Icon }) => {
 };
 
 const Dashboard = () => {
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <Box bgcolor="background.paper" p={4}>
       <Grid container spacing={3}>
@@ -217,8 +220,8 @@ const Dashboard = () => {
             sx={{ boxShadow: " 0px 1px 3px rgba(3, 0, 71, 0.09)" }}
           >
             <Stack spacing={0.5}>
-              <Typography variant="subtitle1" color="#4E97FD" fontSize="16px">
-                Good Morning, Maruf!
+              <Typography variant="subtitle1" color="#4E97FD" fontSize="16px" textTransform="capitalize">
+                {`Welcome ${user?.fullName}`}
               </Typography>
               <Typography variant="subtitle2" color="text.secondary">
                 Here’s what happening with your store today!
@@ -260,7 +263,7 @@ const Dashboard = () => {
                 }}
               >
                 <img
-                  src="	https://bazaar.ui-lib.com/assets/images/illustrations/dashboard/welcome.svg"
+                  src= "	https://bazaar.ui-lib.com/assets/images/illustrations/dashboard/welcome.svg"
                   style={{
                     width: "100%",
                     height: "100%",

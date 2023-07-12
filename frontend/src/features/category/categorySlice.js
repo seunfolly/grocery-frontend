@@ -15,7 +15,14 @@ export const createCategory = createAsyncThunk(
   "category/create-category",
   async (categoryData, thunkAPI) => {
     try {
-      return await categoryService.createCategory(categoryData);
+      const formData = new FormData();
+      formData.append("name", categoryData.name);
+      if(categoryData.parent){
+        formData.append("parent", categoryData.parent);
+
+      }
+      formData.append("image", categoryData.image);
+      return await categoryService.createCategory(formData);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }

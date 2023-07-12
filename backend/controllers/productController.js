@@ -30,7 +30,9 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  // console.log(req.body.tags);
+  const parsedPreviousImages = req.body.previousImages.map((imageString) =>
+    JSON.parse(imageString)
+  );
   const { id } = req.params;
   validateMongoDbId(id);
   try {
@@ -38,26 +40,38 @@ const updateProduct = asyncHandler(async (req, res) => {
     if (req.body.name) updatedData.slug = slugify(req.body.name);
     const product = await Product.findById(id);
     const existingImages = product.images;
+    let updatedImages = [];
+
     if (req.images && req.images.length > 0) {
-      const allImages = [
-        ...req.images.map((image) => ({
-          public_id: image.public_id,
-          url: image.url,
-        })),
-      ];
-      updatedData.images = allImages;
-    } else {
-      updatedData.images = existingImages;
+      updatedImages = req.images.map((image) => ({
+        public_id: image.public_id,
+        url: image.url,
+      }));
     }
+
+    updatedData.images = [...updatedImages, ...existingImages];
+
     const removedImages = existingImages.filter(
       (existingImage) =>
-        !updatedData.images.some(
-          (updatedImage) => updatedImage.public_id === existingImage.public_id
+        !parsedPreviousImages.some(
+          (previousImage) =>
+            previousImage.public_id === existingImage.public_id
         )
     );
+
     for (const removedImage of removedImages) {
       await cloudinaryDeleteImg(removedImage.public_id);
     }
+
+    updatedData.images = updatedData.images.filter(
+      (updatedImage) =>
+        !removedImages.some(
+          (removedImage) =>
+            removedImage.public_id === updatedImage.public_id
+        )
+    );
+
+    delete updatedData.previousImages;
     const updatedProduct = await Product.findByIdAndUpdate(id, updatedData, {
       new: true,
     });
@@ -88,7 +102,7 @@ const getaProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
   try {
-    const findProduct = await Product.findById(id)
+    const findProduct = await Product.findById(id)  
       .populate("category")
       .populate("brand")
       .populate("ratings.postedby");

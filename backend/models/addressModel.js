@@ -13,7 +13,6 @@ var addressSchema = new mongoose.Schema({
   },
   state: {
     type: String,
-    required: true,
     lowercase: true,
   },
   phone: {
@@ -23,9 +22,17 @@ var addressSchema = new mongoose.Schema({
   email: {
     type: String,
   },
+  postal: {
+    type: Number
+
+  },
+  country: {
+    type: String,
+    lowercase: true,
+  },
   type: {
     type: String,
-    enum: ['user', 'collection'],
+    enum: ['user', 'collection','billing'],
     default: 'user'
   },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

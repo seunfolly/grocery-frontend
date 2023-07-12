@@ -4,25 +4,31 @@ import {
   Typography,
   Box,
   Stack,
+  Tooltip,
   Button,
   IconButton,
-  Card,
-  CardContent,
-  CardMedia,
   Rating,
+  Paper,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, decreaseQuantity } from "../../features/cart/cartSlice";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { base_url } from "../../utils/baseUrl";
 import makeToast from "../../utils/toaster";
 import { Link, useNavigate } from "react-router-dom";
 
-const ICard = ({ images, name, regularPrice, salePrice, totalstar, _id }) => {
+const ICard = ({
+  images,
+  name,
+  description,
+  regularPrice,
+  salePrice,
+  totalstar,
+  _id,
+}) => {
   const [toggle, setToggle] = useState(false);
   const [hover, setHover] = useState(false);
   const navigate = useNavigate();
@@ -35,7 +41,7 @@ const ICard = ({ images, name, regularPrice, salePrice, totalstar, _id }) => {
     dispatch(
       addToCart({
         id: _id,
-        image: images[0].url,
+        image: images[0]?.url,
         price: salePrice ? salePrice : regularPrice,
         name: name,
       })
@@ -47,6 +53,7 @@ const ICard = ({ images, name, regularPrice, salePrice, totalstar, _id }) => {
     dispatch(decreaseQuantity(_id));
     makeToast("error", "Remove from Cart");
   };
+
   const addToWishList = () => {
     axios
       .put(`${base_url}product/wishlist/${_id}`, null, {
@@ -59,141 +66,142 @@ const ICard = ({ images, name, regularPrice, salePrice, totalstar, _id }) => {
         setToggle(!toggle);
       })
       .catch((error) => {
-        makeToast("error", "Login to Add Product to WishList");
+        makeToast("error", "You must be logged. Sign in");
       });
   };
   return (
-    <Box>
-      <Card
-        sx={{ borderRadius: "9px", bgcolor: "white", position: "relative" }}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        <Typography
-          color="white"
-          bgcolor="primary.main"
-          borderRadius="16px"
-          px="15px"
-          py="5px"
-          fontSize="10px"
-          position="absolute"
-          top="10px"
-          left="10px"
-        >
-          10% off
-        </Typography>
-        {hover && (
-          <Stack
-            sx={{
-              position: "absolute",
-              top: "3px",
-              right: "3px",
-            }}
+    <Paper
+      elevation={3}
+      sx={{
+        backgroundColor: "#fff",
+        height: "100%",
+        margin: "auto",
+        display: "flex",
+        overflow: "hidden",
+        borderRadius: "8px",
+        position: "relative",
+        flexDirection: "column",
+        paddingBottom: 3,
+      }}
+    >
+      <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
+        <img src={images[0].url} style={{ width: "100%", height: "250px" }} />
+        {/* {images[0].url} */}
+      </Link>
+
+      <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
+        <Box px={2}>
+          <Typography variant="body2" color="#373F50" textAlign="center">
+            {name}
+          </Typography>
+          <Typography
+            variant="subtitle2"
+            color="text.secondary"
+            textAlign="center"
+            mt={1}
           >
-            <IconButton
-              onClick={() => addToWishList()}
+            {description.length > 100
+              ? `${description.substring(0, 90)}...`
+              : description}
+          </Typography>
+        </Box>
+      </Link>
+
+      <Box
+        mt={2}
+        sx={{
+          alignSelf: "center",
+        }}
+      >
+        {product?.count > 0 ? (
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Button
+              onClick={() => handleRemoveCart()}
+              variant="outlined"
               sx={{
-                color: toggle ? "#D23F57" : "#00000042",
+                padding: "1px",
+                minWidth: 0,
+                alignItems: "center",
+                textAlign: "center",
               }}
             >
-              {toggle ? (
-                <FavoriteIcon fontSize="small" />
-              ) : (
-                <FavoriteBorderIcon fontSize="small" />
-              )}
-            </IconButton>
-            <IconButton onClick={() => navigate(`/product/${_id}`)}>
-              <RemoveRedEyeIcon fontSize="small" />
-            </IconButton>
-          </Stack>
-        )}
-        <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-          <CardMedia
-            sx={{ height: 320 }}
-            image={images[0] ? images[0].url : ""}
-          />
-        </Link>
-        <CardContent
-          sx={{
-            bgcolor: "white",
-            paddingTop: "10px",
-          }}
-        >
-          <Stack direction="row" justifyContent="space-between">
-            <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-              <Stack spacing={1}>
-                <Typography
-                  variant="subtitle1"
-                  color="#373F50"
-                  style={{
-                    maxWidth: "220px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {name}
-                </Typography>
-                {totalstar && (
-                  <Rating
-                    name="simple-controlled"
-                    value={totalstar || 0}
-                    readOnly
-                  />
-                )}
-                <Stack spacing={1} direction="row">
-                  <Typography
-                    color="primary.main"
-                    variant="subtitle1"
-                    fontSize="13px"
-                  >
-                    {`₦ ${salePrice ? salePrice : regularPrice}`}
-                  </Typography>
-                  <Typography
-                    color="text.secondary"
-                    variant="subtitle2"
-                    fontSize="13px"
-                  >
-                    <del>{salePrice ? `₦  ${regularPrice}` : ""}</del>
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Link>
-            <Stack alignItems="center">
-              {product?.count > 0 && (
-                <Button
-                  onClick={() => handleRemoveCart()}
-                  variant="outlined"
-                  sx={{
-                    padding: "1px",
-                    minWidth: 0,
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}
-                >
-                  <RemoveIcon />
-                </Button>
-              )}
-              {product?.count && product?.count > 0 ? (
-                <Typography>{product?.count}</Typography>
-              ) : null}
+              <RemoveIcon />
+            </Button>
 
-              <Button
-                onClick={() => handleAddToCart()}
-                variant="outlined"
-                sx={{
-                  padding: "1px",
-                  minWidth: 0,
-                }}
-              >
-                <AddIcon />
-              </Button>
-            </Stack>
+            <Typography>{product?.count}</Typography>
+
+            <Button
+              onClick={() => handleAddToCart()}
+              variant="outlined"
+              sx={{
+                padding: "1px",
+                minWidth: 0,
+              }}
+            >
+              <AddIcon />
+            </Button>
           </Stack>
-        </CardContent>
-        {/* </Link> */}
-      </Card>
-    </Box>
+        ) : (
+          <Button
+            onClick={() => handleAddToCart()}
+            sx={{
+              textTransform: "none",
+              bgcolor: "primary.main",
+              color: "white",
+              fontSize: "14px",
+              paddingX: "20px",
+              fontWeight: 500,
+              paddingY: "8px",
+              alignSelf: "start",
+              borderRadius: "50px",
+              gap: 1,
+
+              "&:hover": {
+                backgroundColor: "#E3364E",
+              },
+            }}
+          >
+            <ShoppingCartOutlinedIcon
+              sx={{
+                fontSize: "20px",
+              }}
+            />
+            <Typography variant="subtitle1"> Add To Cart</Typography>{" "}
+          </Button>
+        )}
+      </Box>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        px={2}
+        mt={2}
+      >
+        <Stack spacing={0.2} direction="row">
+          <Typography
+            color="text.secondary"
+            variant="subtitle2"
+            fontSize="13px"
+          >
+            <del>{salePrice ? `₦${regularPrice.toLocaleString()}` : ""}</del>
+          </Typography>
+          <Typography color="primary.main" variant="subtitle1" fontSize="13px">
+            {`₦${(salePrice ? salePrice : regularPrice).toLocaleString()}`}
+          </Typography>
+        </Stack>
+
+        <Tooltip title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
+          <IconButton
+            onClick={() => addToWishList()}
+            sx={{
+              color: toggle ? "#D23F57" : "#00000042",
+            }}
+          >
+            <FavoriteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+    </Paper>
   );
 };
 

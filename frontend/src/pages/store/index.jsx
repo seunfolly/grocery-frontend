@@ -154,6 +154,8 @@ const Store = () => {
         </Container>
       </Box>
       <Footer />
+
+      
     </>
   );
 };

@@ -21,6 +21,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Cart from "./Cart";
 import { logout, resetState } from "../../features/auth/authSlice";
 import { useSelector, useDispatch } from "react-redux";
+import MobileHeader from "./MobileHeader";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -76,6 +77,7 @@ const Header = () => {
           direction="row"
           justifyContent="space-between"
           alignItems="center"
+          display={{ xs: "none", lg: "flex" }}
         >
           <Link to="/">
             <Box>
@@ -191,6 +193,7 @@ const Header = () => {
             </IconButton>
           </Stack>
         </Stack>
+        <MobileHeader handleCartOpen={handleCartOpen} />
       </Container>
       <Cart open={cartOpen} onClose={handleCartClose} />
     </Box>
@@ -198,4 +201,3 @@ const Header = () => {
 };
 
 export default Header;
-

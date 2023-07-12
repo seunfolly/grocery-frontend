@@ -57,8 +57,10 @@ const getAddresses = asyncHandler(async (req, res) => {
     let addresses;
     if (type === "collection") {
       addresses = await Address.find({ type: "collection" });
+    } else if (type === "billing") {
+      addresses = await Address.find({ type: "billing", createdBy: _id });
     } else {
-      addresses = await Address.find({ createdBy: _id });
+      addresses = await Address.find({ type: "user", createdBy: _id });
     }
     res.json(addresses);
   } catch (error) {

@@ -7,6 +7,10 @@ const categorySchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    image: {
+      public_id: String,
+      url: String,
+    },
     name: { type: String, required: true, unique: true, index: true },
     parent: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     children: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],

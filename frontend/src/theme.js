@@ -26,11 +26,12 @@ export const theme = createTheme({
       },
     },
     typography: {
+      htmlFontSize: 10,
       fontFamily: [
         "Poppins",
         "sans-serif",
       ].join(","),
-      // fontSize: 12,
+      fontSize: 14,
       h5: {
         fontWeight: 700,
         fontSize: "25px",
@@ -60,8 +61,8 @@ export const theme = createTheme({
     breakpoints: {
       values: {
         xs: 0,
-        sm: 680,
-        md: 900,
+        sm: 600,
+        md: 968,
         lg: 1280,
         xl: 1536,
       },

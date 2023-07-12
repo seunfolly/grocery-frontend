@@ -12,9 +12,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import { ReactComponent as Browse } from "../../assets/icons/browse.svg";
 import { ReactComponent as Bell } from "../../assets/icons/bell.svg";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 
 
 const TopBar = () => {
+  const { user } = useSelector((state) => state.auth);
   return (
     <Box
       bgcolor="white"
@@ -95,10 +98,11 @@ const TopBar = () => {
             }}
           >
             <img
-              src="https://bazaar.ui-lib.com/assets/images/avatars/001-man.svg"
-              sx={{
+              src={user?.image}
+              style={{
                 width: "100%",
                 height: "100%",
+                borderRadius:"50%"
               }}
             />
           </Box>

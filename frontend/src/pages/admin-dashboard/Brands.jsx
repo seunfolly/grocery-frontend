@@ -16,13 +16,13 @@ import {
 
 const Brands = () => {
   const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       dispatch(getBrands());
     };
     fetchData();
-  }, []);
-
+  }, [searchQuery]);
   const brandState = useSelector((state) => state.brand);
   const { isSuccess, isError, isLoading, deletedBrand } = brandState;
 
@@ -35,12 +35,15 @@ const Brands = () => {
     if (isError) {
       makeToast("error", "Something went wrong");
     }
-
-    // return () => {
-    // };
   }, [deletedBrand]);
 
-  const brands = brandState.brands.map((brand) => ({
+  const filteredBrands = brandState.brands.filter(
+    (brand) =>
+      brand.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      brand.brandId.includes(searchQuery)
+  );
+
+  const brands = filteredBrands.map((brand) => ({
     _id: brand._id,
     id: brand.brandId,
     name: brand.name,
@@ -54,6 +57,8 @@ const Brands = () => {
         placeholder="Search Brand..."
         button="Add Brand"
         route="brand/create"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
 
       <Table>

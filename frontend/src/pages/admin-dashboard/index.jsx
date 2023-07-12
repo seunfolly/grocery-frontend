@@ -19,7 +19,7 @@ import CollectionAddress from "./CollectionAddresses";
 
 const AdminDashboard = () => {
   return (
-    <Box display="flex">
+    <Box display="flex" position="relative">
       <Sidebar />
 
       <Box flex={1}>

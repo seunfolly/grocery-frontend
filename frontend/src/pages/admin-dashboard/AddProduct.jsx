@@ -9,12 +9,15 @@ import {
   Typography,
   Button,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  Divider,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import ImageUpload from "./ImageUpload";
+import Dropzone from "react-dropzone";
+import ClearIcon from "@mui/icons-material/Clear";
+
 import { Formik } from "formik";
 import * as yup from "yup";
 import {
@@ -24,6 +27,8 @@ import {
   updateProduct,
 } from "../../features/product/productSlice";
 import { getCategories } from "../../features/category/categorySlice";
+import { getBrands } from "../../features/brand/brandSlice";
+
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
 import Dropdown from "./DropDown";
@@ -42,7 +47,10 @@ const AddProduct = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [categoryLevels, setCategoryLevels] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [touch, setTouched] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const newProduct = useSelector((state) => state.product);
+  const { brands } = useSelector((state) => state.brand);
   const categories = useSelector((state) => state.category.categories);
   const {
     isSuccess,
@@ -57,6 +65,7 @@ const AddProduct = () => {
 
   useEffect(() => {
     dispatch(getCategories(1));
+    dispatch(getBrands());
   }, []);
 
   useEffect(() => {
@@ -73,11 +82,15 @@ const AddProduct = () => {
       setCategoryLevels([]);
       setSelectedCategories([]);
       resetFormRef.current();
+      setSelectedFiles([]);
       dispatch(resetState());
       dispatch(getCategories(1));
+      dispatch(getBrands());
     }
     if (isSuccess && updatedProduct) {
       makeToast("success", "Product Updated Successfullly!");
+      setSelectedFiles([]);
+
       navigate("/admin/products");
       dispatch(resetState());
     }
@@ -90,11 +103,12 @@ const AddProduct = () => {
   const initialValues = {
     name: productData?.name || "",
     description: productData?.description || "",
-    stock: productData?.stock || 0,
-    regularPrice: productData?.regularPrice || 0,
-    salePrice: productData?.salePrice || 0,
+    stock: productData?.stock || "",
+    regularPrice: productData?.regularPrice || "",
+    salePrice: productData?.salePrice || "",
     tags: productData?.tags || [],
     category: productData?.category?._id || "",
+    brand: productData?.brand?._id || "",
     published: productData?.published || false,
     images: [],
   };
@@ -104,6 +118,11 @@ const AddProduct = () => {
     }
   }, [categories]);
 
+  useEffect(() => {
+    if (productData) {
+      setSelectedFiles(productData?.images);
+    }
+  }, [productData]);
   return (
     <Box bgcolor="background.paper" p={4}>
       <Stack spacing={3}>
@@ -122,8 +141,10 @@ const AddProduct = () => {
             enableReinitialize={true}
             onSubmit={(values, { resetForm }) => {
               if (id !== "create") {
-                const data = { id: id, productData: values };
-
+                const data = {
+                  id: id,
+                  productData: { ...values, previousImages: selectedFiles },
+                };
                 dispatch(updateProduct(data));
                 resetFormRef.current = resetForm;
               } else {
@@ -183,6 +204,33 @@ const AddProduct = () => {
                         style: { fontSize: "15px" },
                       }}
                     />
+                    <CustomTextField
+                      select
+                      label="Select Brand"
+                      fullWidth
+                      variant="outlined"
+                      onBlur={handleBlur}
+                      onChange={(event) => {
+                        const selectedCategoryId = event.target.value;
+                        setFieldValue("brand", selectedCategoryId);
+                      }}
+                      value={values.brand}
+                      name="brand"
+                      error={!!touched.brand && !!errors.brand}
+                      helperText={touched.brand && errors.brand}
+                      sx={{
+                        width: "250px",
+                      }}
+                      InputLabelProps={{
+                        style: { fontSize: "15px" },
+                      }}
+                    >
+                      {brands.map((option) => (
+                        <MenuItem key={option._id} value={option._id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
                     <Dropdown
                       setCategoryLevels={setCategoryLevels}
                       setSelectedCategories={setSelectedCategories}
@@ -192,33 +240,6 @@ const AddProduct = () => {
                       field="category"
                     />
                   </Box>
-                  {/* <CustomTextField
-                    select
-                    label="Select Category"
-                    fullWidth
-                    variant="outlined"
-                    onBlur={handleBlur}
-                    onChange={(event) => {
-                      const selectedCategoryId = event.target.value;
-                      setFieldValue("category", selectedCategoryId);
-                    }}
-                    value={values.category}
-                    name="category"
-                    error={!!touched.category && !!errors.category}
-                    helperText={touched.category && errors.category}
-                    sx={{
-                      gridColumn: "span 2",
-                    }}
-                    InputLabelProps={{
-                      style: { fontSize: "15px" },
-                    }}
-                  >
-                    {categoriesState.map((option) => (
-                      <MenuItem key={option._id} value={option._id}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </CustomTextField> */}
                   <CustomTextField
                     fullWidth
                     variant="outlined"
@@ -244,11 +265,136 @@ const AddProduct = () => {
                       gridColumn: "span 4",
                     }}
                   >
-                    <ImageUpload
-                      previousImageUrl={productData?.images}
-                      setFieldValue={setFieldValue}
-                      isSuccess={isSuccess}
-                    />
+                    <div>
+                      <Dropzone
+                        onDrop={(acceptedFiles) => {
+                          const files = acceptedFiles.map((file) => {
+                            file.url = URL.createObjectURL(file);
+                            return file;
+                          });
+                          setSelectedFiles((prevFiles) => [
+                            ...files,
+                            ...prevFiles,
+                          ]);
+                          setFieldValue("images", [...files, ...values.images]);
+                        }}
+                        // accept="image/*"
+                        multiple={true} // Set multiple to true to allow multiple file uploads
+                      >
+                        {({ getRootProps, getInputProps }) => (
+                          <div
+                            {...getRootProps()}
+                            style={{
+                              backgroundColor: "#F6F9FC",
+                              width: "100%",
+                              mt: 2,
+                              border: `1px dashed ${
+                                errors.images && touch ? "#f44336" : "#DAE1E7"
+                              }`,
+                              display: "flex",
+                              justifyContent: "center",
+                              gap: "20px",
+                              alignItems: "center",
+                              flexDirection: "column",
+                              minHeight: "200px",
+                              py: 4,
+                              borderRadius: "8px",
+                            }}
+                            onBlur={() => setTouched(true)}
+                          >
+                            <input accept="image/*" {...getInputProps()} />
+                            <Typography
+                              variant="body2"
+                              color={
+                                errors.images && touch ? "#f44336" : "#7D879C"
+                              }
+                            >
+                              {errors.images && touch
+                                ? errors.images
+                                : "Drag and drop images here"}{" "}
+                            </Typography>
+                            <Box width="300px">
+                              <Divider
+                                sx={{
+                                  color: "#DAE1E7",
+                                }}
+                              >
+                                OR
+                              </Divider>
+                            </Box>
+
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                color: "#4E97FD",
+                                borderColor: "#4e97fd80",
+                                textTransform: "none",
+                                fontSize: "15px",
+                                fontWeight: 500,
+                                paddingX: "30px",
+                                borderRadius: "8px",
+                                "&:hover": {
+                                  backgroundColor: "rgba(78, 151, 253, 0.04)",
+                                  border: "1px solid #4E97FD",
+                                },
+                              }}
+                              component="span"
+                            >
+                              Select File
+                            </Button>
+                          </div>
+                        )}
+                      </Dropzone>
+                      {selectedFiles.length > 0 && (
+                        <div
+                          style={{
+                            marginTop: "30px",
+                          }}
+                        >
+                          {selectedFiles.map((file, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                display: "inline-block",
+                                position: "relative",
+                                marginRight: "10px",
+                              }}
+                            >
+                              <ClearIcon
+                                sx={{
+                                  position: "absolute",
+                                  fontSize: "14px",
+                                  top: "-10px",
+                                  right: "-7px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setSelectedFiles((prevFiles) => {
+                                    const updatedFiles = prevFiles.filter(
+                                      (_, i) => i !== index
+                                    );
+                                    return updatedFiles;
+                                  });
+                                  const updatedImages = values.images.filter(
+                                    (_, i) => i !== index
+                                  );
+                                  setFieldValue("images", updatedImages);
+                                }}
+                              />
+                              <img
+                                src={file.url}
+                                alt="Selected"
+                                style={{
+                                  width: "100px",
+                                  height: "100px",
+                                  borderRadius: "8px",
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </Box>
                   <CustomTextField
                     fullWidth
@@ -332,46 +478,45 @@ const AddProduct = () => {
                   />
                 </Box>
                 <Box mt="20px">
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={values.published}
-                      onChange={(e) => {
-                        setFieldValue("published", e.target.checked);
-                      }}
-                      name="published"
-                      sx={{
-                        "& .MuiSwitch-thumb": {
-                          color: "#2756b6",
-                        },
-                        "& .Mui-checked+.MuiSwitch-track": {
-                          backgroundColor: "#4e97fd !important",
-                        },
-                      }}
-                      // sx={{
-                      //   fontSize: "16px",
-                      //   "&.Mui-checked": {
-                      //     color: "#4e97fd",
-                      //   },
-                      //   "&:hover": {
-                      //     color: "#4e97fd",
-                      //   },
-                      //   "& .MuiSvgIcon-root": { fontSize: 25 },
-                      //   "& .MuiTypography-body1": {
-                      //     fontSize: "16px",
-                      //   },
-                      // }}
-                    />
-                  }
-                  label={
-                    <Typography component="span" sx={{ fontSize: "17px" }}>
-                      Publish Product
-                    </Typography>
-                  }
-                />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={values.published}
+                        onChange={(e) => {
+                          setFieldValue("published", e.target.checked);
+                        }}
+                        name="published"
+                        sx={{
+                          "& .MuiSwitch-thumb": {
+                            color: "#2756b6",
+                          },
+                          "& .Mui-checked+.MuiSwitch-track": {
+                            backgroundColor: "#4e97fd !important",
+                          },
+                        }}
+                        // sx={{
+                        //   fontSize: "16px",
+                        //   "&.Mui-checked": {
+                        //     color: "#4e97fd",
+                        //   },
+                        //   "&:hover": {
+                        //     color: "#4e97fd",
+                        //   },
+                        //   "& .MuiSvgIcon-root": { fontSize: 25 },
+                        //   "& .MuiTypography-body1": {
+                        //     fontSize: "16px",
+                        //   },
+                        // }}
+                      />
+                    }
+                    label={
+                      <Typography component="span" sx={{ fontSize: "17px" }}>
+                        Publish Product
+                      </Typography>
+                    }
+                  />
                 </Box>
-                
-                
+
                 <Button
                   type="submit"
                   disabled={!isValid || (!dirty && id === "create")}
@@ -417,17 +562,21 @@ const productSchema = yup.object().shape({
     .string()
     .required("required")
     .min(8, "Name must be at least 8 characters"),
-  stock: yup
-    .number()
-    .min(1, "Regular price must be greater than zero")
-    .required("required"),
-  regularPrice: yup
-    .number()
-    .min(1, "Regular price must be greater than zero")
-    .required("required"),
-  salePrice: yup.number().min(1, "Regular price must be greater than zero"),
-  // tags: yup.string().required("required"),
-  category: yup.string().required("category must contain at least 1 item"),
+  stock: yup.number().required("required"),
+  regularPrice: yup.number().required("required"),
+
+  images: yup
+    .array()
+    .of(
+      yup
+        .mixed()
+        .test("fileType", "Only image files are allowed", function (value) {
+          if (!value) return true;
+          return ["image/jpeg", "image/png", "image/gif"].includes(value.type);
+        })
+        .required("Image file is required")
+    )
+    .required("At least one image is required"),
 });
 
 export default AddProduct;

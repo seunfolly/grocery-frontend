@@ -18,13 +18,13 @@ import {
 
 const Categories = () => {
   const dispatch = useDispatch();
-
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       dispatch(getCategories(1));
     };
     fetchData();
-  }, []);
+  }, [searchQuery]);
 
   const categoryState = useSelector((state) => state.category);
   const { isSuccess, isError, isLoading, deletedCategory } = categoryState;
@@ -43,7 +43,13 @@ const Categories = () => {
       dispatch(resetState());
     };
   }, [deletedCategory]);
-  const categories = categoryState.categories.map((category) => ({
+  const filteredCategories = categoryState.categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      category.categoryId.includes(searchQuery)
+  );
+
+  const categories = filteredCategories.map((category) => ({
     _id: category._id,
     id: category.categoryId,
     name: category.name,
@@ -75,6 +81,8 @@ const Categories = () => {
         placeholder="Search Category..."
         button="Add Category"
         route="category/create"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
 
       <Table>

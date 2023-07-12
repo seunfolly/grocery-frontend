@@ -25,13 +25,7 @@ const Sort = ({ activeIcon, setActiveIcon, sort, setSort }) => {
       }}
     >
       <Stack direction="row" justifyContent="space-between">
-        <Stack>
-          <Typography>Searching for “ mobile phone ”</Typography>
-          <Typography variant="subtitle2">48 results found</Typography>
-        </Stack>
-
-        <Stack direction="row" spacing={3}>
-          <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={1} alignItems="center">
             <Typography>Sort By:</Typography>
             <FormControl size="small">
               <Select
@@ -49,6 +43,7 @@ const Sort = ({ activeIcon, setActiveIcon, sort, setSort }) => {
               </Select>
             </FormControl>
           </Stack>
+          
 
           <Stack direction="row" spacing={1} alignItems="center">
             <Typography>View:</Typography>
@@ -72,7 +67,7 @@ const Sort = ({ activeIcon, setActiveIcon, sort, setSort }) => {
             </IconButton>
           </Stack>
         </Stack>
-      </Stack>
+      
     </Box>
   );
 };

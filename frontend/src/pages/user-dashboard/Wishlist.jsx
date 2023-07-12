@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Typography, Stack, Button, Grid } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { arrivalData } from "../homepage/Carousel";
 import ICard from "../../components/ui-elements/Card";
 import { useSelector } from "react-redux";
 import { base_url } from "../../utils/baseUrl";

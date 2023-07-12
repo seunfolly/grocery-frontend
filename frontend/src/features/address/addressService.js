@@ -20,6 +20,14 @@ const getCollectionAddresses = async () => {
   return response.data;
 };
 
+const getBillingAddresses = async () => {
+  const response = await axios.get(
+    `${base_url}address?type=billing`,
+    config
+  );
+  return response.data;
+};
+
 const updateAddress = async (address) => {
   const response = await axios.put(
     `${base_url}address/${address.id}`,
@@ -46,6 +54,7 @@ const addressService = {
   getAddress,
   deleteAddress,
   getCollectionAddresses,
+  getBillingAddresses
 };
 
 export default addressService;

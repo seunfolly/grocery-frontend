@@ -1,33 +1,10 @@
-import { Typography, Box, Stack, IconButton, TextField } from "@mui/material";
+import { Typography, Box, Stack, IconButton, TextField, Grid } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export const reviews = [
-  {
-    img: "https://bazaar.ui-lib.com/assets/images/products/Automotive/2.Audi2017.png",
-    pName: "Budi 2017",
-    pAmount: "$226.00 x 4",
-    pReview: "Write A Review",
-    pProperties: "Product properties: Black, L",
-  },
-  {
-    img: "https://bazaar.ui-lib.com/assets/images/products/Automotive/3.Tesla2015.png",
-    pName: "Resla 2015",
-    pAmount: "$116.00 x 4",
-    pReview: "Write A Review",
-    pProperties: "Product properties: Black, L",
-  },
-  {
-    img: "https://bazaar.ui-lib.com/assets/images/products/Automotive/4.Porsche2018.png",
-    pName: "Xorsche 2018",
-    pAmount: "$526.00 x 4",
-    pReview: "Write A Review",
-    pProperties: "Product properties: Black, L",
-  },
-];
-
-export const IReview = ({ image, product, price, count, icon }) => {
+export const IReview = ({ image, product, price, count }) => {
   return (
-    <Stack direction="row" alignItems="center" width="100%">
+    <Grid container spacing={2}>
+      <Grid item md={2.5}>
       <Stack direction="row" spacing={2} flexGrow={1} alignItems="center">
         <img
           src={image}
@@ -41,41 +18,34 @@ export const IReview = ({ image, product, price, count, icon }) => {
           <Typography variant="subtitle1" color="text.primary">
             {product?.name}
           </Typography>
-          {icon ? (
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography color="text.secondary" variant="subtitle2">
-                {price}
-              </Typography>
-              <TextField
-                type="number"
-                size="small"
-                defaultValue={4}
-                sx={{
-                  width: "60px",
-                }}
-              />
-            </Stack>
-          ) : (
-            <Typography color="text.secondary" variant="subtitle2">
-              {`₦ ${price} X ${count}`}
-            </Typography>
-          )}
+
+          <Typography color="text.secondary" variant="subtitle2">
+            {`₦ ${price} X ${count}`}
+          </Typography>
         </Stack>
       </Stack>
+      </Grid>
+      
 
-      <Typography flexGrow={1} variant="subtitle2" color="text.secondary">
+      <Grid item md={7.5}>
+      <Typography variant="subtitle2" color="text.secondary">
         {product?.description}
       </Typography>
-      <Typography flexGrow={1} variant="subtitle2" color="primary.main">
-      Write A Review
-      </Typography>
+      </Grid>
 
-      {icon && (
+      <Grid item md={2}>
+      <Typography  variant="subtitle2" color="primary.main">
+        Write A Review
+      </Typography>
+      </Grid>
+     
+
+      {/* {icon && (
         <IconButton aria-label="Delete">
           <DeleteIcon />
         </IconButton>
-      )}
-    </Stack>
+      )} */}
+    </Grid>
   );
 };
 

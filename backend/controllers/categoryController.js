@@ -9,19 +9,32 @@ const createCategory = asyncHandler(async (req, res) => {
     if (parent) {
       const parentCategory = await Category.findById(parent);
       const level = parentCategory.level + 1;
-      const newCategory = await Category.create({
+
+      const categoryData = {
         categoryId: generateRandomHex(),
         ...req.body,
         level,
-      });
+      };
+
+      if (req.images && req.images.length > 0) {
+        categoryData.image = req.images[0];
+      }
+
+      const newCategory = await Category.create(categoryData);
       parentCategory.children.push(newCategory._id);
       await Promise.all([newCategory.save(), parentCategory.save()]);
       res.json(newCategory);
     } else {
-      const newCategory = await Category.create({
+      const categoryData = {
         ...req.body,
         categoryId: generateRandomHex(),
-      });
+      };
+
+      if (req.images && req.images.length > 0) {
+        categoryData.image = req.images[0];
+      }
+
+      const newCategory = await Category.create(categoryData);
       res.json(newCategory);
     }
   } catch (error) {

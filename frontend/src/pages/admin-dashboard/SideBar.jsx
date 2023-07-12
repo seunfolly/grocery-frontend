@@ -7,7 +7,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import LogoutIcon from "@mui/icons-material/Logout";
-import PlaceIcon from '@mui/icons-material/Place';
+import PlaceIcon from "@mui/icons-material/Place";
 import BookIcon from "@mui/icons-material/Book";
 import CategoryIcon from "@mui/icons-material/Category";
 import AppsIcon from "@mui/icons-material/Apps";
@@ -16,15 +16,18 @@ import { logout, resetState } from "../../features/auth/authSlice";
 
 const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
+        position: "sticky",
+        top: 0,
+        height: "100vh",
         "& .ps-sidebar-root": {
           width: "280px",
           minWidth: "280px",
-          height: "100vh",
+          height: "100%",
         },
       }}
     >
@@ -182,7 +185,6 @@ const SideBar = () => {
               {" "}
               Create Address
             </MenuItem>
-           
           </SubMenu>
           <MenuItem
             icon={<PeopleAltIcon />}
@@ -192,12 +194,17 @@ const SideBar = () => {
             Customer List{" "}
           </MenuItem>
 
+          <MenuItem
+            icon={<LogoutIcon />}
+            onClick={() => {
+              dispatch(logout());
 
-          <MenuItem icon={<LogoutIcon />} onClick={()=> {
-            dispatch(logout())
-
-            navigate("/")
-          }}> Logout</MenuItem>
+              navigate("/");
+            }}
+          >
+            {" "}
+            Logout
+          </MenuItem>
         </Menu>
       </Sidebar>
     </Box>

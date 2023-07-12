@@ -41,7 +41,6 @@ export const login = createAsyncThunk(
 export const updateProfile = createAsyncThunk(
   "auth/edit-profile",
   async (data, thunkAPI) => {
-    console.log(data)
 
     try {
       const formData = new FormData();

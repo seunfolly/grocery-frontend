@@ -10,13 +10,15 @@ import {
 } from "@mui/material";
 import { DeliveryAddress } from "./DeliveryAddress";
 import { CollectionAddress } from "./CollectionAddress";
-import BillingAddressForm from "./BillingAddressForm";
+// import BillingAddressForm from "./BillingAddressForm";
 import { setDeliveryOption } from "../../features/order/orderSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const DeliveryCollection = ({ updateStepCompletion }) => {
   const dispatch = useDispatch();
-  const { selectedAddress, deliveryOption  } = useSelector((state) => state.order);
+  const { selectedAddress, deliveryOption } = useSelector(
+    (state) => state.order
+  );
   const handleSelectedOption = (event) => {
     event.stopPropagation();
     const selectedOption = event.target.value;
@@ -70,26 +72,7 @@ const DeliveryCollection = ({ updateStepCompletion }) => {
         <CollectionAddress updateStepCompletion={updateStepCompletion} />
       )}
 
-      {selectedAddress && (
-        <Paper
-          elevation={1}
-          sx={{
-            backgroundColor: "white",
-            p: 3,
-            pb: 6,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            borderRadius: "8px",
-          }}
-        >
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar sx={{ bgcolor: "#d23f57" }}>3</Avatar>
-            <Typography variant="body2">Billing Address</Typography>
-          </Stack>
-          <BillingAddressForm />
-        </Paper>
-      )}
+      {/* {selectedAddress && <BillingAddressForm />} */}
     </Stack>
   );
 };

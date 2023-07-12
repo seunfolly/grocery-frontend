@@ -5,6 +5,9 @@
   margin: 0;
 }
 
+html {
+  font-size: 62.5%; /* 62.5% of 16px = 10px */
+}
 body {
   color: #2b3445 !important;
   font-size: 14px;
@@ -18,79 +21,6 @@ body {
   font-family: "Poppins", sans-serif;
   font-size: 14px;
 }
-.carousel-provider {
-  position: relative;
-}
-.carousel-provider-bg {
-  background: #fff8e5;
-}
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.carousel-dots button {
-  position: relative;
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-  border-radius: 50%;
-  margin: 0 5px;
-  padding: 0;
-  border: 1px solid #0f3460;
-  cursor: pointer;
-}
-
-.carousel-dots button::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 9px;
-  height: 9px;
-  background-color: #0f3460;
-  border-radius: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%) scaleX(1);
-  transition: opacity 0.3s ease-in-out;
-}
-
-.carousel-dots button.carousel__dot--selected::before {
-  opacity: 1;
-}
-
-.carousel-dots button:focus {
-  outline: none;
-}
-
-.arrow-forward,
-.arrow-backward {
-  width: 40px;
-  border: 0;
-  height: 40px;
-  border-radius: 50%;
-  align-items: center;
-  position: absolute;
-  justify-content: center;
-  transform: translateY(-50%);
-  display: flex;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-  background: #0f3460;
-  color: #fff;
-  top: calc(50% - 0px);
-  right: -20px;
-}
-.arrow-backward {
-  left: -20px !important;
-}
-
-.dots {
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-}
-
 .arrow-backward:disabled,
 .arrow-forward:disabled {
   background: #dae1e7;
@@ -110,4 +40,42 @@ body {
 }
 .MuiDataGrid-footerContainer {
   justify-content: center !important;
+}
+.thumbnail-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  /* Add other styles as needed */
+}
+.caur{
+  padding: 10px;
+}
+.slick-next{
+  display: block;
+    
+    color: #111;
+    z-index: 22;
+    background: transparent;
+    right: -5px;
+}
+.slick-prev{
+  display: block;
+  color: #111;
+    z-index: 22;
+    background: transparent;
+    left: -15px;
+}
+.slick-next:before {
+  color: black;
+}
+ .slick-prev:before{
+  color: black;
+}
+.carousel-card{
+  padding: 10px;
+}
+@media (max-width: 600px) {
+  .MuiContainer-root {
+    padding: 0 10px !important;
+  }
 }

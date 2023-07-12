@@ -14,6 +14,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { Link } from "react-router-dom";
 import { base_url } from "../../utils/baseUrl";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +30,7 @@ const ProductCard = ({
   name,
   regularPrice,
   salePrice,
+  description,
   _id,
   totalstar,
 }) => {
@@ -61,11 +63,11 @@ const ProductCard = ({
         },
       })
       .then((response) => {
-        makeToast("success", "Product Added to WishList");
+        // makeToast("success", "Product Added to WishList");
         setToggle(!toggle);
       })
       .catch((error) => {
-        makeToast("error",error.response.data.message);
+        makeToast("error", "You must be logged. Sign in");
       });
   };
   return (
@@ -102,76 +104,80 @@ const ProductCard = ({
         <Grid item sm={9}>
           <Stack spacing={1.1}>
             <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-              <Typography variant="subtitle1" color="#373F50">
+              <Typography variant="body2" color="#373F50">
                 {name}
               </Typography>
-              <Rating value={totalstar || 0} readOnly />
-              <Stack spacing={1} direction="row">
-                <Typography
-                  color="primary.main"
-                  variant="subtitle1"
-                  fontSize="13px"
-                >
-                  {`₦ ${salePrice ? salePrice : regularPrice}`}
-                </Typography>
-                <Typography
-                  color="text.secondary"
-                  variant="subtitle2"
-                  fontSize="13px"
-                >
-                  <del>{salePrice ? `₦  ${regularPrice}` : ""}</del>
-                </Typography>
-              </Stack>
             </Link>
 
-            {product?.count > 0 ? null : (
-              <Button
-                onClick={() => handleAddToCart()}
-                sx={{
-                  textTransform: "none",
-                  bgcolor: "primary.main",
-                  color: "white",
-                  fontSize: "14px",
-                  paddingX: "20px",
-                  fontWeight: 500,
-                  paddingY: "8px",
-                  alignSelf: "start",
-                  "&:hover": {
-                    backgroundColor: "#E3364E",
-                  },
-                }}
-              >
-                Add To Cart
-              </Button>
-            )}
-            <Stack alignItems="center" direction="row" spacing={2}>
-              {product?.count > 0 && (
-                <Button
-                  onClick={() => handleRemoveCart()}
-                  variant="outlined"
-                  sx={{
-                    padding: "1px",
-                    minWidth: 0,
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}
-                >
-                  <RemoveIcon />
-                </Button>
-              )}
-              {product?.count && product?.count > 0 ? (
-                <Typography>{product?.count}</Typography>
-              ) : null}
-              {product?.count > 0 && (
+            {/* <Rating value={totalstar || 0} readOnly />
+             */}
+            <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
+              <Typography variant="subtitle2" color="text.secondary" mt={1}>
+                {description}
+              </Typography>
+            </Link>
+
+            <Stack spacing={1} direction="row" mt={1} alignItems="center">
+              <Typography color="primary.main" variant="subtitle1">
+                {`₦ ${salePrice ? salePrice : regularPrice}`}
+              </Typography>
+              <Typography color="text.secondary" variant="subtitle1">
+                <del>{salePrice ? `₦  ${regularPrice}` : ""}</del>
+              </Typography>
+              {product?.count > 0 ? (
+                <Stack alignItems="center" direction="row" spacing={2}>
+                  <Button
+                    onClick={() => handleRemoveCart()}
+                    variant="outlined"
+                    sx={{
+                      padding: "1px",
+                      minWidth: 0,
+                      alignItems: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    <RemoveIcon />
+                  </Button>
+
+                  <Typography>{product?.count}</Typography>
+
+                  <Button
+                    onClick={() => handleAddToCart()}
+                    variant="outlined"
+                    sx={{
+                      padding: "1px",
+                      minWidth: 0,
+                    }}
+                  >
+                    <AddIcon />
+                  </Button>
+                </Stack>
+              ) : (
                 <Button
                   onClick={() => handleAddToCart()}
-                  variant="outlined"
                   sx={{
-                    padding: "1px",
-                    minWidth: 0,
+                    textTransform: "none",
+                    bgcolor: "primary.main",
+                    color: "white",
+                    fontSize: "14px",
+                    paddingX: "20px",
+                    fontWeight: 500,
+                    paddingY: "8px",
+                    alignSelf: "start",
+                    borderRadius: "50px",
+                    gap: 1,
+
+                    "&:hover": {
+                      backgroundColor: "#E3364E",
+                    },
                   }}
                 >
-                  <AddIcon />
+                  <ShoppingCartOutlinedIcon
+                    sx={{
+                      fontSize: "20px",
+                    }}
+                  />
+                  <Typography variant="subtitle1"> Add To Cart</Typography>{" "}
                 </Button>
               )}
             </Stack>

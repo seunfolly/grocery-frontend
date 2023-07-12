@@ -44,8 +44,8 @@ const Reviews = ({ id }) => {
   }, []);
 
   return (
-    <Stack spacing={6}>
-      <Stack spacing={5} maxWidth="600px">
+    <Stack spacing={3}>
+      <Stack spacing={2} maxWidth="600px">
         {productData?.ratings.map((rating, index) => (
           <Stack spacing={1}>
             <Stack direction="row" spacing={2}>
@@ -77,7 +77,7 @@ const Reviews = ({ id }) => {
       </Stack>
 
       <Stack spacing={1.5}>
-        <Typography variant="h5" mb="20px">
+        <Typography variant="h6" >
           Write a Review for this product
         </Typography>
         <form onSubmit={addComment}>
@@ -113,6 +113,12 @@ const Reviews = ({ id }) => {
               InputLabelProps={{
                 style: { fontSize: "15px" },
               }}
+              sx={{
+                "& .MuiInputBase-root" : {
+                  borderRadius: "10px"
+                }
+
+              }}
             />
           </Stack>
           <Button
@@ -131,6 +137,7 @@ const Reviews = ({ id }) => {
               paddingY: "8px",
               alignSelf: "start",
               marginTop: "30px !important",
+              borderRadius: "10px",
               "&:hover": {
                 backgroundColor: "#E3364E",
               },
@@ -142,22 +149,6 @@ const Reviews = ({ id }) => {
       </Stack>
 
       <Stack>
-        <Typography variant="h6" fontSize="20px" mb={3}>
-          Related Products
-        </Typography>
-        {/* <Grid
-          container
-          spacing={6}
-          sx={{
-            marginLeft: "-48px !important",
-          }}
-        >
-          {product.map((item) => (
-            <Grid item xs={3}>
-              <ICard {...item} />
-            </Grid>
-          ))}
-        </Grid> */}
       </Stack>
     </Stack>
   );

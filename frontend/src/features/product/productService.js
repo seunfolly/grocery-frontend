@@ -37,6 +37,7 @@ const getProduct = async (id) => {
 };
 
 const updateProduct = async (id, product) => {
+
   const response = await axios.put(`${base_url}product/${id}`, product, config);
   return response.data;
 };

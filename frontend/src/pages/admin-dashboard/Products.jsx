@@ -41,13 +41,13 @@ const renderNameCell = (params) => {
 
 const Products = () => {
   const dispatch = useDispatch();
-
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       dispatch(getProducts());
     };
     fetchData();
-  }, []);
+  }, [searchQuery]);
   const productState = useSelector((state) => state.product);
   const { isSuccess, isError, isLoading, deletedProduct } = productState;
 
@@ -62,7 +62,14 @@ const Products = () => {
     }
   }, [deletedProduct, isError]);
 
-  const products = productState.products.map((product) => ({
+  const filteredProducts = productState.products.filter((product) =>
+  product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  product.category.name.toLowerCase().includes(searchQuery.toLowerCase())||
+  product.brand.name.toLowerCase().includes(searchQuery.toLowerCase())||
+  product.productId.includes(searchQuery)
+);
+
+  const products = filteredProducts.map((product) => ({
     _id: product._id,
     id: product.productId,
     name: product.name,
@@ -80,6 +87,8 @@ const Products = () => {
         placeholder="Search Product..."
         button="Add Product"
         route="product/create"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
 
       <Table>

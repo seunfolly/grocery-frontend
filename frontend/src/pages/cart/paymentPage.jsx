@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base_url } from "../../utils/baseUrl";
 import axios from "axios";
 import makeToast from "../../utils/toaster";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 
 import {
   Stack,
@@ -226,12 +227,19 @@ const PaymentPage = () => {
             fontSize: "14px",
             paddingX: "20px",
             fontWeight: 500,
+            gap: 1,
+
             "&:hover": {
               backgroundColor: "#E3364E",
             },
           }}
         >
-          Place Order
+          <ShoppingCartOutlinedIcon
+              sx={{
+                fontSize: "20px",
+              }}
+            />
+          Buy now{" "}
         </Button>
       </Grid>
       <Grid item sm={4}>

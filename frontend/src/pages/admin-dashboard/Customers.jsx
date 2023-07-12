@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Stack,
-  Typography,
-  IconButton,
-  Avatar,
-} from "@mui/material";
+import { Stack, Typography, IconButton, Avatar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "./Header";
@@ -33,12 +28,14 @@ const renderNameCell = (params) => {
 
 const Customers = () => {
   const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch(getCustomers());
     };
     fetchData();
-  }, []);
+  }, [searchQuery]);
   const customerState = useSelector((state) => state.customer);
   const { isSuccess, isError, isLoading, deletedCustomer } = customerState;
 
@@ -55,12 +52,18 @@ const Customers = () => {
       dispatch(resetState());
     };
   }, [deletedCustomer]);
-  const customers = customerState.customers.map((customer) => ({
+  const filteredCustomers = customerState.customers.filter(
+    (customer) =>
+      customer.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.phone.includes(searchQuery)
+  );
+  const customers = filteredCustomers.map((customer) => ({
     id: customer?._id,
     name: customer?.fullName,
     email: customer?.email,
     phone: customer?.phone,
-    image: "https://bazaar.ui-lib.com/assets/images/avatars/002-woman.svg",
+    image: customer?.image?.url,
     orders: customer?.orderCount,
     action: null,
   }));
@@ -71,6 +74,8 @@ const Customers = () => {
         title={"Customers"}
         placeholder="Search Customer..."
         button="Add Customer"
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
 
       <Table>
