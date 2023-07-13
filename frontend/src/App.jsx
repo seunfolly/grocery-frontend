@@ -27,15 +27,15 @@ function App() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
-  // const cartState = localStorage.getItem('cartState');
-  // console.log(user)
   const isInitialMount = useRef(true);
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
-    if (user && cart.products && cart.products.length > 0) {
+    // if (user && cart.products && cart.products.length > 0) {
+
+    if (user && cart.products) {
       const data = {
         cart: cart.products,
       };

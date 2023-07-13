@@ -4,10 +4,12 @@ import { Typography, Stack, Button, Grid } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ICard from "../../components/ui-elements/Card";
 import WishListCard from "./WishlistCard";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { base_url } from "../../utils/baseUrl";
+import { addAllToCart } from "../../features/cart/cartSlice";
 
 const WishList = () => {
+  const dispatch = useDispatch()
   const [products, setProducts] = useState([]);
   const [toggle, setToggle] = useState(false);
   const auth = useSelector((state) => state.auth);
@@ -45,6 +47,15 @@ const WishList = () => {
         </Stack>
 
         <Button
+           onClick={() => {
+           const productItems = products.map((product) => ({
+            id: product._id,
+            image: product.images[0].url,
+            price: product.salePrice ? product.salePrice : product.regularPrice,
+            name: product.name,
+           }))
+           dispatch(addAllToCart(productItems))
+           }}
           sx={{
             textTransform: "none",
             bgcolor: "#FCE9EC",

@@ -58,6 +58,31 @@ const cartSlice = createSlice({
 
       state.cartTotal = calculateCartTotal(state.products);
     },
+    addAllToCart: (state, action) => {
+      action.payload.forEach((prod) => {
+        const { id, price, image, name } = prod;
+        const existingProduct = state.products.find(
+          (product) => product.id === id
+        );
+
+        if (existingProduct) {
+          existingProduct.count += 1;
+          existingProduct.total = calculateProductTotal(existingProduct);
+        } else {
+          const newProduct = {
+            id,
+            count: 1,
+            price,
+            image,
+            total: price,
+            name: name,
+          };
+          state.products.push(newProduct);
+        }
+      });
+
+      state.cartTotal = calculateCartTotal(state.products);
+    },
     removeFromCart: (state, action) => {
       const productId = action.payload;
       const updatedProducts = state.products.filter(
@@ -144,6 +169,7 @@ export const {
   decreaseQuantity,
   clearCart,
   initializeCart,
+  addAllToCart
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
