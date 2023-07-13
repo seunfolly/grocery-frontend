@@ -71,7 +71,6 @@ const AddCategory = () => {
       dispatch(resetState());
     }
   }, [id]);
-  // console.log(updatedCategory)
 
   useEffect(() => {
     if (isSuccess && createdCategory) {
@@ -81,8 +80,6 @@ const AddCategory = () => {
       resetFormRef.current();
       dispatch(resetState());
       dispatch(getCategories(1));
-
-      // window.location.reload();
     }
     if (isSuccess && updatedCategory) {
       makeToast("success", "Category Updated Successfullly!");

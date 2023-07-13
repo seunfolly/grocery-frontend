@@ -3,11 +3,13 @@ import axios from "axios";
 import { Typography, Stack, Button, Grid } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ICard from "../../components/ui-elements/Card";
+import WishListCard from "./WishlistCard";
 import { useSelector } from "react-redux";
 import { base_url } from "../../utils/baseUrl";
 
 const WishList = () => {
   const [products, setProducts] = useState([]);
+  const [toggle, setToggle] = useState(false);
   const auth = useSelector((state) => state.auth);
   const { user } = auth;
 
@@ -25,7 +27,7 @@ const WishList = () => {
   };
   useEffect(() => {
     getWishList();
-  }, [user]);
+  }, [user, toggle]);
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -69,7 +71,7 @@ const WishList = () => {
       >
         {products.map((item) => (
           <Grid item xs={4}>
-            <ICard {...item} />
+            <WishListCard {...item} toggle={toggle} setToggle={setToggle} />
           </Grid>
         ))}
         <Grid></Grid>

@@ -13,7 +13,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import { signup, resetState } from "../../features/auth/authSlice";
+import { signup, resetState, resetLoggedInFlag } from "../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
 
@@ -43,13 +43,14 @@ const Signup = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
   const auth = useSelector((state) => state.auth);
-  const { isSuccess, message, isError, isLoading, user } = auth;
+  const { isSuccess, message, isError, isLoading, user, loggedFlag } = auth;
   const navigate = useNavigate();
   const resetFormRef = useRef();
 
   useEffect(() => {
-    if (isSuccess && user) {
+    if (isSuccess && user && loggedFlag) {
       makeToast("success", "Signing up was Sucessful!");
+      dispatch(resetLoggedInFlag())
       // resetFormRef.current();
       navigate("/");
     }
@@ -57,7 +58,7 @@ const Signup = () => {
       makeToast("error", message);
       dispatch(resetState());
     }
-  }, [isSuccess, isLoading, user]);
+  }, [isSuccess, isLoading, user,loggedFlag]);
 
   return (
     <Box

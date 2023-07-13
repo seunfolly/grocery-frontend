@@ -12,6 +12,7 @@ const initialState = {
   isLoading: false,
   isSuccess: false,
   userUpdated: false,
+  loggedFlag: false,
   cart: [],
   message: "",
 };
@@ -91,6 +92,7 @@ export const getCards = createAsyncThunk(
 
 export const resetState = createAction("Reset_Auth_State");
 export const resetUpdatedFlag = createAction("Reset_Updated_Flag");
+export const resetLoggedInFlag = createAction("Reset_LoggedIn_Flag");
 export const logout = createAction("auth/logout");
 export const authSlice = createSlice({
   name: "auth",
@@ -106,6 +108,7 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.user = action.payload;
+        state.loggedFlag = true;
         state.message = "success";
       })
       .addCase(signup.rejected, (state, action) => {
@@ -121,6 +124,7 @@ export const authSlice = createSlice({
         state.isError = false;
         state.isLoading = false;
         state.isSuccess = true;
+        state.loggedFlag = true;
         state.user = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
@@ -199,6 +203,8 @@ export const authSlice = createSlice({
       })
       .addCase(resetState, () => initialState)
       .addCase(resetUpdatedFlag, (state,action) => {state.userUpdated = false})
+      .addCase(resetLoggedInFlag, (state,action) => {state.loggedFlag = false})
+
 
       .addCase(logout, (state,action) => {
         // Reset the state to its initial values

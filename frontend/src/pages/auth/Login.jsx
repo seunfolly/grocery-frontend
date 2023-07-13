@@ -11,7 +11,7 @@ import {
 import { Formik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import { login, resetState } from "../../features/auth/authSlice";
+import { login, resetState,resetLoggedInFlag } from "../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
 
@@ -30,14 +30,14 @@ const CustomTextField = styled(TextField)({
 
 const Login = () => {
   const dispatch = useDispatch();
-  let [userCartFetched, setUserCartFetched] = useState(false);
   const auth = useSelector((state) => state.auth);
-  const { isSuccess, message, isError, isLoading, user } = auth;
+  const { isSuccess, message, isError, isLoading, user, loggedFlag } = auth;
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isSuccess && user) {
+    if (isSuccess && user && loggedFlag) {
       makeToast("success", "Login Sucessful!");
+      dispatch(resetLoggedInFlag())
       if(user.role === "admin") {
         navigate("/admin");
       }else {
@@ -50,7 +50,7 @@ const Login = () => {
       makeToast("error", message);
       dispatch(resetState());
     }
-  }, [isSuccess, isLoading, user]);
+  }, [isSuccess, isLoading, user,loggedFlag]);
   return (
     <Box
       sx={{
