@@ -1,44 +1,49 @@
-import { Typography, Box, Stack, IconButton, TextField, Grid } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Stack,
+  IconButton,
+  TextField,
+  Grid,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export const IReview = ({ image, product, price, count }) => {
   return (
     <Grid container spacing={2}>
-      <Grid item md={2.5}>
-      <Stack direction="row" spacing={2} flexGrow={1} alignItems="center">
-        <img
-          src={image}
-          style={{
-            width: "70px",
-            height: "70px",
-          }}
-        />
+      <Grid item md={2.8}>
+        <Stack direction="row" spacing={2} flexGrow={1} alignItems="center">
+          <img
+            src={image}
+            style={{
+              width: "70px",
+              height: "70px",
+            }}
+          />
 
-        <Stack>
-          <Typography variant="subtitle1" color="text.primary">
-            {product?.name}
-          </Typography>
+          <Stack>
+            <Typography variant="subtitle1" color="text.primary">
+              {product?.name}
+            </Typography>
 
-          <Typography color="text.secondary" variant="subtitle2">
-            {`₦ ${price} X ${count}`}
-          </Typography>
+            <Typography color="text.secondary" variant="subtitle2">
+              {`₦ ${price} X ${count}`}
+            </Typography>
+          </Stack>
         </Stack>
-      </Stack>
       </Grid>
-      
 
-      <Grid item md={7.5}>
-      <Typography variant="subtitle2" color="text.secondary">
-        {product?.description}
-      </Typography>
+      <Grid item md={7.2}>
+        <Typography variant="subtitle2" color="text.secondary">
+          {product?.description}
+        </Typography>
       </Grid>
 
       <Grid item md={2}>
-      <Typography  variant="subtitle2" color="primary.main">
-        Write A Review
-      </Typography>
+        <Typography variant="subtitle2" color="primary.main">
+          Write A Review
+        </Typography>
       </Grid>
-     
 
       {/* {icon && (
         <IconButton aria-label="Delete">

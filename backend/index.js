@@ -8,7 +8,6 @@ const userRouter = require("./routes/userRoute");
 const categoryRouter = require("./routes/categoryRoute");
 const brandRouter = require("./routes/brandRoute");
 const productRouter = require("./routes/productRoute");
-// const cartRouter = require("./routes/cartRoute");
 const addressRouter = require("./routes/addressRoute");
 const cardRouter = require("./routes/cardRoute");
 const cors = require("cors");
@@ -22,7 +21,6 @@ app.use("/api/user", userRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/brand", brandRouter);
 app.use("/api/product", productRouter);
-// app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/card", cardRouter);
 

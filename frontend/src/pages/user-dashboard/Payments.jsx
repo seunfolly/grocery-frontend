@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Typography,
   Stack,
@@ -9,25 +9,55 @@ import {
 } from "@mui/material";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import { base_url } from "../../utils/baseUrl";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getCards } from "../../features/auth/authSlice";
-import { Link } from "react-router-dom";
 
 export const getCardImage = (card) => {
   switch (card) {
     case "visa":
-      return <img src="https://bazaar.ui-lib.com/assets/images/payment-methods/Visa.svg" width="100%" />;
+      return (
+        <img
+          src="https://bazaar.ui-lib.com/assets/images/payment-methods/Visa.svg"
+          width="100%"
+        />
+      );
     case "master":
-      return <img src="https://bazaar.ui-lib.com/assets/images/payment-methods/Mastercard.svg" width="100%" />;
-      case "verve":
-        return <img src="https://bazaar.ui-lib.com/assets/images/payment-methods/Visa.svg" width="100%" />;
+      return (
+        <img
+          src="https://bazaar.ui-lib.com/assets/images/payment-methods/Mastercard.svg"
+          width="100%"
+        />
+      );
+    case "verve":
+      return (
+        <img
+          src="https://bazaar.ui-lib.com/assets/images/payment-methods/Visa.svg"
+          width="100%"
+        />
+      );
     default:
       return true;
   }
 };
 
-const Card = ({ _id, cardDetails }) => {
+const Card = ({ _id, cardDetails, isDeleted, setIsDeleted }) => {
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
+  const deleteCard = () => {
+    axios
+      .delete(`${base_url}card/${_id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      })
+      .then((response) => {
+        setIsDeleted(!isDeleted);
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <Paper
       elevation={0}
@@ -52,9 +82,7 @@ const Card = ({ _id, cardDetails }) => {
             borderRadius: "2px",
           }}
         >
-          {
-            getCardImage(cardDetails?.brand)
-          }
+          {getCardImage(cardDetails?.brand)}
         </Box>
         <Typography variant="subtitle1">{cardDetails?.account_name}</Typography>
       </Stack>
@@ -67,7 +95,7 @@ const Card = ({ _id, cardDetails }) => {
       </Typography>
 
       <Stack direction="row" justifyContent="end">
-        <IconButton>
+        <IconButton onClick={deleteCard}>
           <DeleteIcon
             sx={{
               fontSize: "1.3rem",
@@ -82,12 +110,13 @@ const Card = ({ _id, cardDetails }) => {
 const Payments = () => {
   const dispatch = useDispatch();
   const { cards } = useSelector((state) => state.auth);
+  const [isDeleted, setIsDeleted] = useState(false);
   useEffect(() => {
     const getUserCards = async () => {
       dispatch(getCards());
     };
     getUserCards();
-  }, []);
+  }, [isDeleted]);
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -103,12 +132,16 @@ const Payments = () => {
             Payment Methods
           </Typography>
         </Stack>
-
       </Stack>
 
       <Stack spacing={2}>
         {cards.map((card, index) => (
-          <Card {...card} key={index} />
+          <Card
+            {...card}
+            isDeleted={isDeleted}
+            setIsDeleted={setIsDeleted}
+            key={index}
+          />
         ))}
       </Stack>
     </Stack>
