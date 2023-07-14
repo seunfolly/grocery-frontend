@@ -3,7 +3,7 @@ import { config } from "../../utils/axiosconfig";
 import { base_url } from "../../utils/baseUrl";
 
 const getProducts = async (data) => {
-  const { minPrice, maxPrice, rating, selectedBrands, sort, sales,stock,featured } =
+  const { minPrice, maxPrice, rating, selectedBrands, sort, sales,stock,featured,pCategory } =
     data || {}; 
   const queryParams = `${minPrice ? `minPrice=${minPrice}&` : ""}${
     maxPrice ? `maxPrice=${maxPrice}&` : ""
@@ -11,7 +11,9 @@ const getProducts = async (data) => {
     selectedBrands ? `brands=${selectedBrands.join(",")}&` : ""
   }${sort ? `sort=${sort}&` : ""}${sales ? `sales=${sales}&` : ""}${
     sales ? `stock=${stock}&` : ""
-  }${sales ? `featured=${featured}&` : ""}`;
+  }${sales ? `featured=${featured}&` : ""}${
+    pCategory ? `categoryId=${pCategory}&` : ""
+  }`;
   const url = `${base_url}product?${queryParams}`;
   const response = await axios.get(url);
   return response.data;

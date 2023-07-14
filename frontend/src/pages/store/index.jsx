@@ -46,13 +46,16 @@ const Store = () => {
   const [sales, setSales] = useState(null);
   const [featured, setFeatured] = useState(null);
   const [stock, setStock] = useState(null);
+  const [pCategory, setPCategory] = useState(null);
 
   useEffect(() => {
+    if (category) {
+      setPCategory(category);
+    }
     if (!pageLoaded) {
       setPageLoaded(true);
       return;
     }
-
     if (
       rating !== null ||
       minPrice !== null ||
@@ -61,7 +64,8 @@ const Store = () => {
       sort !== null ||
       sales !== null ||
       featured !== null ||
-      stock !== null
+      stock !== null ||
+      pCategory !== null
     ) {
       dispatch(
         getProducts({
@@ -73,6 +77,7 @@ const Store = () => {
           sales,
           featured,
           stock,
+          pCategory,
         })
       );
     }
@@ -85,6 +90,8 @@ const Store = () => {
     sales,
     featured,
     stock,
+    pCategory,
+    category,
     dispatch,
   ]);
 
@@ -114,7 +121,7 @@ const Store = () => {
                   boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
                 }}
               >
-                <Category />
+                <Category pCategory={pCategory} />
                 <CustomDivider />
                 <Range
                   minPrice={minPrice}
@@ -154,8 +161,6 @@ const Store = () => {
         </Container>
       </Box>
       <Footer />
-
-      
     </>
   );
 };

@@ -77,9 +77,7 @@ const Reviews = ({ id }) => {
       </Stack>
 
       <Stack spacing={1.5}>
-        <Typography variant="h6" >
-          Write a Review for this product
-        </Typography>
+        <Typography variant="h6">Write a Review for this product</Typography>
         <form onSubmit={addComment}>
           <Typography>
             Your Rating <span style={{ color: "red" }}>*</span>
@@ -114,10 +112,9 @@ const Reviews = ({ id }) => {
                 style: { fontSize: "15px" },
               }}
               sx={{
-                "& .MuiInputBase-root" : {
-                  borderRadius: "10px"
-                }
-
+                "& .MuiInputBase-root": {
+                  borderRadius: "10px",
+                },
               }}
             />
           </Stack>
@@ -148,8 +145,7 @@ const Reviews = ({ id }) => {
         </form>
       </Stack>
 
-      <Stack>
-      </Stack>
+      <Stack></Stack>
     </Stack>
   );
 };

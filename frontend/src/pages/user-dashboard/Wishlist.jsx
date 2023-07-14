@@ -47,6 +47,7 @@ const WishList = () => {
         </Stack>
 
         <Button
+           disabled={products.length === 0}
            onClick={() => {
            const productItems = products.map((product) => ({
             id: product._id,

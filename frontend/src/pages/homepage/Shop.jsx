@@ -4,23 +4,10 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../features/product/productSlice";
 import { getCategories } from "../../features/category/categorySlice";
-
 import Comment from "./Comment";
 import Footer from "./Footer";
 import { Carousel, Carousel1, Carousel2 } from "./Carousel";
-import ICard from "../../components/ui-elements/Card";
 
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-const cats = [
-  "Fruit & Vegetable",
-  "Fish & Meat",
-  "Rice & Flour",
-  "Fruit & Vegetable",
-  "Personal Care",
-  "Baby Food",
-];
 
 const Category = ({ name, image, _id }) => {
   return (
@@ -114,7 +101,7 @@ const Shop = () => {
           title={"Snacks, Drinks, Dairy & More"}
           productList={products}
         />
-        <Comment />
+        <Comment products={products}/>
         <Footer />
       </Stack>
     </Box>

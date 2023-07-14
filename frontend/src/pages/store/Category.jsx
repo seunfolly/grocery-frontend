@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { base_url } from "../../utils/baseUrl";
 import axios from "axios";
 
-const Category = () => {
+const Category = ({ pCategory }) => {
   const [categories, setCategories] = useState([]);
   const getCategories = () => {
     axios
@@ -57,7 +57,7 @@ const Category = () => {
             style={{ textDecoration: "none", width: "100%" }}
           >
             <Typography
-              color="#4B566B"
+              color={category._id === pCategory ? "#D23F57" : "#4B566B"}
               fontSize={topLevel ? "16px" : "14.5px"}
               sx={{
                 "&:hover": {

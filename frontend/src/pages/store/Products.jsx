@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getProducts,
-  getProductByCategory,
   searchProduct,
 } from "../../features/product/productSlice";
 import { Stack, Grid, CircularProgress, Box } from "@mui/material";
@@ -15,7 +14,7 @@ const Products = ({ activeIcon, category, search }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     if (category) {
-      dispatch(getProductByCategory(category));
+      return
     } else if (search) {
       dispatch(searchProduct(search));
     } else {

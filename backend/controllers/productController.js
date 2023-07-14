@@ -54,8 +54,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     const removedImages = existingImages.filter(
       (existingImage) =>
         !parsedPreviousImages.some(
-          (previousImage) =>
-            previousImage.public_id === existingImage.public_id
+          (previousImage) => previousImage.public_id === existingImage.public_id
         )
     );
 
@@ -66,8 +65,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     updatedData.images = updatedData.images.filter(
       (updatedImage) =>
         !removedImages.some(
-          (removedImage) =>
-            removedImage.public_id === updatedImage.public_id
+          (removedImage) => removedImage.public_id === updatedImage.public_id
         )
     );
 
@@ -102,7 +100,7 @@ const getaProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
   try {
-    const findProduct = await Product.findById(id)  
+    const findProduct = await Product.findById(id)
       .populate("category")
       .populate("brand")
       .populate("ratings.postedby");
@@ -128,15 +126,24 @@ const getAllProduct = asyncHandler(async (req, res) => {
       "sales",
       "featured",
       "stock",
-    ]; 
+      "categoryId",
+    ];
     excludeFields.forEach((el) => delete queryObj[el]);
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     let query = Product.find(JSON.parse(queryStr));
-    const brands = req.query.brands; 
+    const brands = req.query.brands;
     const stock = req.query.stock;
     const featured = req.query.featured;
     const sales = req.query.sales;
+    const categoryId = req.query.categoryId;
+
+    if (categoryId) {
+      const category = await Category.findById(categoryId);
+      const productIds = await getNestedCategoryProductIds(category);
+      query = query.where("_id").in(productIds);
+    }
+
     if (brands) {
       const brandIds = brands.split(",").map((brandId) => brandId.trim());
       query = query.where("brand").in(brandIds);
