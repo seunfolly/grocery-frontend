@@ -60,21 +60,21 @@ const cartSlice = createSlice({
     },
     addAllToCart: (state, action) => {
       action.payload.forEach((prod) => {
-        const { id, price, image, name } = prod;
+        const { id, price, image, name, count = 1 } = prod;
         const existingProduct = state.products.find(
           (product) => product.id === id
         );
 
         if (existingProduct) {
-          existingProduct.count += 1;
+          existingProduct.count += count;
           existingProduct.total = calculateProductTotal(existingProduct);
         } else {
           const newProduct = {
             id,
-            count: 1,
+            count,
             price,
             image,
-            total: price,
+            total: price * count,
             name: name,
           };
           state.products.push(newProduct);
@@ -169,7 +169,7 @@ export const {
   decreaseQuantity,
   clearCart,
   initializeCart,
-  addAllToCart
+  addAllToCart,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -3,13 +3,17 @@ import axios from "axios";
 import { Typography, Box, Stack, Button, Container } from "@mui/material";
 import DashboardBox from "./DashboardBox";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import { addAllToCart } from "../../features/cart/cartSlice";
 import OrderedProducts from "./OrderedProducts";
 import Delivery from "./Delivery";
 import { base_url } from "../../utils/baseUrl";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Order = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const auth = useSelector((state) => state.auth);
@@ -49,6 +53,18 @@ const Order = () => {
           </Stack>
 
           <Button
+            onClick={() => {
+              const products = order?.products.map((product) => ({
+                id: product.product._id,
+                image: product.image,
+                price:
+                  product.product.salePrice || product.product.regularPrice,
+                name: product.product.name,
+                count: product.count,
+              }));
+              dispatch(addAllToCart(products));
+              navigate("/cart");
+            }}
             sx={{
               textTransform: "none",
               bgcolor: "#FCE9EC",
@@ -124,7 +140,7 @@ const Order = () => {
                   Shipping Fee:
                 </Typography>
                 <Typography variant="subtitle1" color="text.primary">
-                ₦ 0.00
+                  ₦ 0.00
                 </Typography>
               </Stack>
 
@@ -133,7 +149,7 @@ const Order = () => {
                   Discount:
                 </Typography>
                 <Typography variant="subtitle1" color="text.primary">
-                ₦ 0.00
+                  ₦ 0.00
                 </Typography>
               </Stack>
             </Stack>
@@ -151,8 +167,7 @@ const Order = () => {
               color="text.primary"
               textTransform="capitalize"
             >
-                          {order?.isPaid ? `Paid by ${order?.paymentMethod}` : "Pending"}
-
+              {order?.isPaid ? `Paid by ${order?.paymentMethod}` : "Pending"}
             </Typography>
           </Stack>
         </Stack>

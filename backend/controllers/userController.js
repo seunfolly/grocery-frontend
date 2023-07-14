@@ -243,7 +243,7 @@ const userCart = asyncHandler(async (req, res) => {
       let getProduct = await Product.findById(cart[i].id)
         .select("regularPrice salePrice")
         .exec();
-      object.price = getProduct.salePrice || getProduct.regularPrice;
+      object.price =  getProduct.salePrice || getProduct.regularPrice;
       object.name = getProduct.name;
       object.total = cart[i].total;
       object.image = cart[i].image;
@@ -417,7 +417,7 @@ const getUserOrders = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
+ 
 const getOrderById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
@@ -425,7 +425,7 @@ const getOrderById = asyncHandler(async (req, res) => {
     const userorders = await Order.findById({ _id: id })
       .populate({
         path: "products.product",
-        select: "name description",
+        select: "name description regularPrice salePrice",
       })
       .populate("orderBy")
       .populate("address")
