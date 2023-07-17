@@ -79,6 +79,8 @@ const Products = () => {
     publish: product.published,
     action: null,
     price: product.salePrice ? product.salePrice : product.regularPrice,
+    stock: product?.stock,
+
   }));
   return (
     <Stack spacing={3} bgcolor="background.paper" py={3}>
@@ -118,6 +120,8 @@ const Products = () => {
               ),
             },
             { field: "price", headerName: "Price", width: 150 },
+            { field: "stock", headerName: "Stock", width: 100 },
+
             {
               field: "publish",
               headerName: "Published",

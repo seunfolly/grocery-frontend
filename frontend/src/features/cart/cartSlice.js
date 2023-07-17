@@ -43,6 +43,7 @@ const cartSlice = createSlice({
 
       if (existingProduct) {
         existingProduct.count += 1;
+        existingProduct.price = price
         existingProduct.total = calculateProductTotal(existingProduct);
       } else {
         const newProduct = {
@@ -67,6 +68,7 @@ const cartSlice = createSlice({
 
         if (existingProduct) {
           existingProduct.count += count;
+          existingProduct.price = price;
           existingProduct.total = calculateProductTotal(existingProduct);
         } else {
           const newProduct = {

@@ -16,6 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import BlockIcon from "@mui/icons-material/Block";
 import { base_url } from "../../utils/baseUrl";
 import makeToast from "../../utils/toaster";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,6 +27,7 @@ const ICard = ({
   description,
   regularPrice,
   salePrice,
+  stock,
   totalstar,
   _id,
 }) => {
@@ -107,47 +109,83 @@ const ICard = ({
         </Box>
       </Link>
 
-      <Box
-        mt={2}
-        sx={{
-          alignSelf: "center",
-        }}
-      >
-        {product?.count > 0 ? (
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Button
-              onClick={() => handleRemoveCart()}
-              variant="outlined"
-              sx={{
-                padding: "1px",
-                minWidth: 0,
-                alignItems: "center",
-                textAlign: "center",
-              }}
-            >
-              <RemoveIcon />
-            </Button>
+      {stock > 0 ? (
+        <Box
+          mt={2}
+          sx={{
+            alignSelf: "center",
+          }}
+        >
+          {product?.count > 0 ? (
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Button
+                onClick={() => handleRemoveCart()}
+                variant="outlined"
+                sx={{
+                  padding: "1px",
+                  minWidth: 0,
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <RemoveIcon />
+              </Button>
 
-            <Typography>{product?.count}</Typography>
+              <Typography>{product?.count}</Typography>
 
+              <Button
+                onClick={() => handleAddToCart()}
+                variant="outlined"
+                sx={{
+                  padding: "1px",
+                  minWidth: 0,
+                }}
+              >
+                <AddIcon />
+              </Button>
+            </Stack>
+          ) : (
             <Button
               onClick={() => handleAddToCart()}
-              variant="outlined"
               sx={{
-                padding: "1px",
-                minWidth: 0,
+                textTransform: "none",
+                bgcolor: "primary.main",
+                color: "white",
+                fontSize: "14px",
+                paddingX: "20px",
+                fontWeight: 500,
+                paddingY: "8px",
+                alignSelf: "start",
+                borderRadius: "50px",
+                gap: 1,
+
+                "&:hover": {
+                  backgroundColor: "#E3364E",
+                },
               }}
             >
-              <AddIcon />
+              <ShoppingCartOutlinedIcon
+                sx={{
+                  fontSize: "20px",
+                }}
+              />
+              <Typography variant="subtitle1"> Add To Cart</Typography>{" "}
             </Button>
-          </Stack>
-        ) : (
+          )}
+        </Box>
+      ) : (
+        <Box
+          mt={2}
+          sx={{
+            alignSelf: "center",
+          }}
+        >
           <Button
-            onClick={() => handleAddToCart()}
+            disabled={true}
             sx={{
               textTransform: "none",
-              bgcolor: "primary.main",
-              color: "white",
+              bgcolor: "#0000001f",
+              // color: "rgba(0, 0, 0, 0.26) !important",
               fontSize: "14px",
               paddingX: "20px",
               fontWeight: 500,
@@ -155,21 +193,18 @@ const ICard = ({
               alignSelf: "start",
               borderRadius: "50px",
               gap: 1,
-
-              "&:hover": {
-                backgroundColor: "#E3364E",
-              },
+              cursor: "not-allowed",
             }}
           >
-            <ShoppingCartOutlinedIcon
+            <BlockIcon
               sx={{
                 fontSize: "20px",
               }}
             />
-            <Typography variant="subtitle1"> Add To Cart</Typography>{" "}
+            <Typography variant="subtitle1"> SOLD OUT</Typography>{" "}
           </Button>
-        )}
-      </Box>
+        </Box>
+      )}
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -192,6 +227,7 @@ const ICard = ({
 
         <Tooltip title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
           <IconButton
+            disabled={stock <= 0}
             onClick={() => addToWishList()}
             sx={{
               color: toggle ? "#D23F57" : "#00000042",

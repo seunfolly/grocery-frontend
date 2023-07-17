@@ -238,6 +238,7 @@ const AddProduct = () => {
                       categoryLevels={categoryLevels}
                       selectedCategories={selectedCategories}
                       field="category"
+                      errors={errors}
                     />
                   </Box>
                   <CustomTextField
@@ -564,7 +565,9 @@ const productSchema = yup.object().shape({
     .min(8, "Name must be at least 8 characters"),
   stock: yup.number().required("required"),
   regularPrice: yup.number().required("required"),
-
+  category: yup
+  .string()
+  .required("At least a category is required"),
   images: yup
     .array()
     .of(

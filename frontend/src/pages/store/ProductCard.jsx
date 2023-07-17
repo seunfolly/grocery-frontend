@@ -24,6 +24,7 @@ import {
   decreaseQuantity,
 } from "../../features/cart/cartSlice";
 import makeToast from "../../utils/toaster";
+import BlockIcon from "@mui/icons-material/Block";
 
 const ProductCard = ({
   images,
@@ -32,6 +33,7 @@ const ProductCard = ({
   salePrice,
   description,
   _id,
+  stock,
   totalstar,
 }) => {
   const [toggle, setToggle] = useState(false);
@@ -82,6 +84,7 @@ const ProductCard = ({
       }}
     >
       <IconButton
+        disabled={stock <= 0}
         onClick={() => addToWishList()}
         sx={{
           position: "absolute",
@@ -124,7 +127,31 @@ const ProductCard = ({
               <Typography color="text.secondary" variant="subtitle1">
                 <del>{salePrice ? `₦  ${regularPrice}` : ""}</del>
               </Typography>
-              {product?.count > 0 ? (
+              {stock <= 0 ? (
+                <Button
+                  disabled={true}
+                  sx={{
+                    textTransform: "none",
+                    bgcolor: "#0000001f",
+                    // color: "rgba(0, 0, 0, 0.26) !important",
+                    fontSize: "14px",
+                    paddingX: "20px",
+                    fontWeight: 500,
+                    paddingY: "8px",
+                    alignSelf: "start",
+                    borderRadius: "50px",
+                    gap: 1,
+                    cursor: "not-allowed",
+                  }}
+                >
+                  <BlockIcon
+                    sx={{
+                      fontSize: "20px",
+                    }}
+                  />
+                  <Typography variant="subtitle1"> SOLD OUT</Typography>{" "}
+                </Button>
+              ) : product?.count > 0 ? (
                 <Stack alignItems="center" direction="row" spacing={2}>
                   <Button
                     onClick={() => handleRemoveCart()}

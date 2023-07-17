@@ -18,16 +18,17 @@ const Dropdown = ({
   setSelectedCategories,
   setFieldValue,
   field,
+  errors,
 }) => {
   const [renderKey, setRenderKey] = useState(0);
-
+  const [touch, setTouched] = useState(false);
   const handleCategoryChange = (index, categoryId, setFieldValue) => {
     setRenderKey((prevKey) => prevKey + 1);
     const updatedSelectedCategories = selectedCategories.slice(0, index);
     updatedSelectedCategories.push(categoryId);
     setSelectedCategories(updatedSelectedCategories);
     setCategoryLevels(categoryLevels.slice(0, index + 1));
-    setFieldValue(field, categoryId); // Set the 'parent' field value using Formik setFieldValue
+    setFieldValue(field, categoryId); 
     fetchSubCategories(categoryId, index + 1);
   };
 
@@ -71,6 +72,11 @@ const Dropdown = ({
           }
           value={selectedCategories[index] || ""}
           name={fieldName}
+          onBlur={() => {
+            if (fieldName === "category") setTouched(true);
+          }}
+          error={touch && !!errors.category}
+          helperText={touch && errors.category}
           key={fieldName}
           InputLabelProps={{
             style: { fontSize: "15px" },
@@ -106,7 +112,6 @@ const Dropdown = ({
       </Box>
     );
   };
-
   return (
     <>
       {categoryLevels.map((level, index) =>

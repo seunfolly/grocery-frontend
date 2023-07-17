@@ -10,7 +10,7 @@ import {
   Typography,
   Button,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Footer from "../../components/layouts/Footer";
@@ -64,7 +64,7 @@ const ProductDescription = () => {
   useEffect(() => {
     dispatch(getProducts());
   }, []);
- 
+
   const handleAddToCart = () => {
     dispatch(
       addToCart({
@@ -200,7 +200,23 @@ const ProductDescription = () => {
                   <Stack spacing={0.3}>
                     <Typography variant="subtitle1">Brand: </Typography>
                     <Typography variant="subtitle1">Reference: </Typography>
-                    <Typography variant="subtitle1">In Stock: </Typography>
+                    {productDetails?.stock <= 0 ? (
+                      <Typography
+                        variant="subtitle2"
+                        color="white"
+                        p={0.4}
+                        px={2}
+                        sx={{
+                          backgroundColor: "#E3364E",
+                          borderRadius: "10px",
+                          marginTop: "10px !important",
+                        }}
+                      >
+                        Out Of Stock
+                      </Typography>
+                    ) : (
+                      <Typography variant="subtitle1">In Stock: </Typography>
+                    )}
                   </Stack>
                   <Stack spacing={0.3}>
                     <Typography variant="subtitle2">
@@ -209,9 +225,11 @@ const ProductDescription = () => {
                     <Typography variant="subtitle2" color="text.secondary">
                       {productDetails?.productId}
                     </Typography>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      {`${productDetails?.stock} Items`}
-                    </Typography>
+                    {productDetails?.stock > 0 && (
+                      <Typography variant="subtitle2" color="text.secondary">
+                        {`${productDetails?.stock} Items`}
+                      </Typography>
+                    )}
                   </Stack>
                 </Stack>
                 <Typography variant="subtitle2" color="text.secondary">
@@ -240,16 +258,21 @@ const ProductDescription = () => {
                       alignItems: "center",
                     }}
                   >
-                    <ExpandMoreIcon
+                    <IconButton
+                      disabled={productDetails?.stock <= 0}
                       onClick={() => handleRemoveCart(productDetails._id)}
-                      sx={{
-                        cursor: "pointer",
-                        fontSize: "25px",
-                        "&:hover": {
-                          color: "#E3364E",
-                        },
-                      }}
-                    />
+                    >
+                      <ExpandMoreIcon
+                        sx={{
+                          cursor: "pointer",
+                          fontSize: "25px",
+                          "&:hover": {
+                            color: "#E3364E",
+                          },
+                        }}
+                      />
+                    </IconButton>
+
                     {cartProduct?.count && cartProduct?.count > 0 ? (
                       <Typography variant="subtitle1">
                         {cartProduct?.count}
@@ -258,20 +281,24 @@ const ProductDescription = () => {
                       0
                     )}
 
-                    <ExpandLessIcon
+                    <IconButton
+                      disabled={productDetails?.stock <= 0}
                       onClick={() => handleAddToCart()}
-                      sx={{
-                        cursor: "pointer",
-                        fontSize: "25px",
+                    >
+                      <ExpandLessIcon
+                        sx={{
+                          fontSize: "25px",
 
-                        "&:hover": {
-                          color: "#E3364E",
-                        },
-                      }}
-                    />
+                          "&:hover": {
+                            color: "#E3364E",
+                          },
+                        }}
+                      />
+                    </IconButton>
                   </Box>
 
                   <Button
+                    disabled={productDetails?.stock <= 0}
                     onClick={() => handleAddToCart()}
                     sx={{
                       textTransform: "none",
@@ -293,25 +320,26 @@ const ProductDescription = () => {
                     <ShoppingCartOutlinedIcon />
                     <Typography variant="subtitle1"> Add To Cart</Typography>
                   </Button>
- 
-                  <Tooltip title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
-                  <IconButton
-                    onClick={() => addToWishList()}
-                    sx={{
-                      backgroundColor: toggle? "#D23F57" : "#e9ecef",
-                      borderRadius: "16px",
-                      paddingX: "12px",
-                      color: toggle? "white" : "black",
-                      "&:hover": {
-                        backgroundColor: "#D23F57",
-                        color: "white",
-                      },
-                    }}
+
+                  { productDetails?.stock > 0 && <Tooltip
+                    title={toggle ? "Remove from wishlist" : "Add to wishlist"}
                   >
-                    <FavoriteBorderIcon />
-                  </IconButton>
-                     </Tooltip>
-                 
+                    <IconButton
+                      onClick={() => addToWishList()}
+                      sx={{
+                        backgroundColor: toggle ? "#D23F57" : "#e9ecef",
+                        borderRadius: "16px",
+                        paddingX: "12px",
+                        color: toggle ? "white" : "black",
+                        "&:hover": {
+                          backgroundColor: "#D23F57",
+                          color: "white",
+                        },
+                      }}
+                    >
+                      <FavoriteBorderIcon />
+                    </IconButton>
+                  </Tooltip>}
                 </Box>
                 <Stack direction="row" spacing={5}>
                   <Stack spacing={0.3}>

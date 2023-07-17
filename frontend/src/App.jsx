@@ -34,7 +34,6 @@ function App() {
       return;
     }
     // if (user && cart.products && cart.products.length > 0) {
-
     if (user && cart.products) {
       const data = {
         cart: cart.products,

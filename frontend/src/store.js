@@ -22,7 +22,6 @@ export const store = configureStore({
   },
 });
 
-//  let userCartFetched = false;
 const persistedCartState = localStorage.getItem('cartState');
 if (persistedCartState) {
   store.dispatch(initializeCart(JSON.parse(persistedCartState)));
@@ -32,10 +31,3 @@ store.subscribe(() => {
   const { cart } = store.getState();
   localStorage.setItem('cartState', JSON.stringify(cart));
 });
-// store.subscribe(() => {
-//   const { auth } = store.getState();
-//   if (auth.user && !userCartFetched) { 
-//     userCartFetched = true; 
-//     store.dispatch(getUserCart());
-//   }
-// });

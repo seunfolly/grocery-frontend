@@ -229,38 +229,48 @@ const userCart = asyncHandler(async (req, res) => {
   try {
     let products = [];
     const user = await User.findById(_id);
-
     // Check if the user already has a cart and remove it
     const alreadyExistCart = await Cart.findOne({ orderBy: user._id });
     if (alreadyExistCart) {
-      const a = await Cart.deleteMany({ _id: alreadyExistCart._id });
+      await Cart.deleteMany({ _id: alreadyExistCart._id });
     }
 
     for (let i = 0; i < cart.length; i++) {
+      const product = await Product.findById(cart[i].id)
+        .select("regularPrice salePrice stock")
+        .exec();
+      if (!product) {
+        continue;
+      }
+      if (product.stock <= 0 || product.sold >= product.stock) {
+        continue;
+      }
       let object = {};
       object.id = cart[i].id;
       object.count = cart[i].count;
-      let getProduct = await Product.findById(cart[i].id)
-        .select("regularPrice salePrice")
-        .exec();
-      object.price =  getProduct.salePrice || getProduct.regularPrice;
-      object.name = getProduct.name;
-      object.total = cart[i].total;
+      object.price = product.salePrice || product.regularPrice;
+      object.name = product.name;
       object.image = cart[i].image;
-      object.name = cart[i].name;
       products.push(object);
     }
     let cartTotal = 0;
     for (let i = 0; i < products.length; i++) {
       cartTotal += products[i].price * products[i].count;
     }
-
-    let newCart = await new Cart({
-      products,
-      cartTotal,
-      orderBy: user?._id,
-    }).save();
-    res.json(newCart);
+    const existingCart = await Cart.findOne({ orderBy: user._id });
+    if (existingCart) {
+      existingCart.products = products;
+      existingCart.cartTotal = cartTotal;
+      await existingCart.save();
+     return  res.json(existingCart);
+    } else {
+      let newCart = await new Cart({
+        products,
+        cartTotal,
+        orderBy: user?._id,
+      }).save();
+     return  res.json(newCart);
+    }
   } catch (error) {
     console.log(error);
     throw new Error(error);
