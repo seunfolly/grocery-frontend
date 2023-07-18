@@ -114,10 +114,6 @@ const Customers = () => {
               align: "center",
               renderCell: ({ row }) => (
                 <Stack direction="row">
-                  <IconButton aria-label="Edit">
-                    <EditIcon />
-                  </IconButton>
-
                   <IconButton
                     aria-label="Delete"
                     disabled={isLoading}

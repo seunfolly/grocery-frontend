@@ -46,7 +46,7 @@ const CheckoutPage = ({updateStepCompletion}) => {
             <Typography variant="subtitle2" color="text.secondary">
               Subtotal:
             </Typography>
-            <Typography fontWeight="600">{`₦ ${cartTotal}`}</Typography>
+            <Typography fontWeight="600">{`₦ ${cartTotal.toLocaleString()}`}</Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" mt={0.7}>
             <Typography variant="subtitle2" color="text.secondary">
@@ -68,7 +68,7 @@ const CheckoutPage = ({updateStepCompletion}) => {
           </Stack>
           <CustomDivider />
           <Typography variant="h5" textAlign="right" my={1}>
-          {`₦ ${cartTotal}`}
+          {`₦ ${cartTotal.toLocaleString()}`}
             </Typography>
           <Stack spacing={1.5}>
             <TextField

@@ -135,7 +135,9 @@ const ProductDescription = () => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} spacing={1}>
+            <Grid item xs={12} md={6} sx={{
+              gap: 1
+            }}>
               <div>
                 <Slider {...settings} ref={mainSliderRef}>
                   {productDetails?.images.map((image) => (

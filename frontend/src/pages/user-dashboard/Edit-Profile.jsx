@@ -17,9 +17,10 @@ import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PersonIcon from "@mui/icons-material/Person";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfile, resetUpdatedFlag } from "../../features/auth/authSlice";
+import { updateProfile, resetState, resetUpdatedFlag } from "../../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
-
+import makeToast from "../../utils/toaster";
+makeToast
 const EditProfile = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePictureFile, setProfilePictureFile] = useState(null);
@@ -48,8 +49,8 @@ const EditProfile = () => {
       dispatch(resetUpdatedFlag())
     }
     if (isError) {
-      makeToast("error", "Something went wrong");
-      // dispatch(resetState())
+      makeToast("error", "Something went wrong, Please Try Again");
+      dispatch(resetState())
     }
   }, [isSuccess,userUpdated,isError]);
   const initialValues = {
@@ -297,6 +298,5 @@ const editSchema = yup.object().shape({
     .string()
     .matches(phoneRegExp, "Phone number is not valid")
     .required("required"),
-  dob: yup.date().required("required"),
 });
 export default EditProfile;

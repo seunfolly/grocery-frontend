@@ -51,7 +51,7 @@ const columns = [
           {(value === "Pending" || value === "Cancelled") && (
             <Chip
               label={value}
-              sx={{ color: "#4E97FD", bgcolor: "#DBF0FE", height: "25px" }}
+              sx={{ color: "#e94560", bgcolor: "#ffeaea", height: "25px" }}
             />
           )}
           {(value === "Processing" || value === "Dispatched") && (
@@ -91,13 +91,11 @@ const Orders = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { orders } = useSelector((state) => state.order);
 
-  const filteredOrders = orders.filter(
-    (order) =>
-      order.orderId.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredOrders = orders.filter((order) =>
+    order.orderId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
-  const orderData = filteredOrders .map((order) => ({
+  const orderData = filteredOrders.map((order) => ({
     _id: order?._id,
     id: order?.orderId.substring(0, 8),
     date: new Date(order.orderDate).toLocaleDateString("en-US", {
@@ -107,7 +105,8 @@ const Orders = () => {
     }),
     qty: order?.products.reduce((sum, product) => sum + product.count, 0),
     address: `${order?.address.address} ${order?.address.state}`,
-    amount: order?.totalPrice,
+    amount: `₦ ${order?.totalPrice.toLocaleString()}`,
+
     status: order?.orderStatus,
     action: null,
   }));
@@ -124,7 +123,6 @@ const Orders = () => {
       <Header
         title={"Order List"}
         placeholder="Search Order..."
-        button="Create Order"
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />

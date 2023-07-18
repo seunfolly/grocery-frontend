@@ -52,7 +52,7 @@ const Order = ({ _id, orderId, orderStatus, orderDate, totalPrice }) => {
           })}
         </Typography>
         <Typography variant="subtitle2" flex="1 1 0" marginLeft="40px">
-          {`₦ ${totalPrice}`}
+          {`₦ ${totalPrice.toLocaleString()}`}
         </Typography>
 
         <Typography>

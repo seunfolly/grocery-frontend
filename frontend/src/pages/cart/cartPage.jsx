@@ -71,10 +71,10 @@ const CartCard = ({ name, image, id, price, count, total }) => {
               </Typography>
               <Stack direction="row" spacing={2}>
                 <Typography color="text.secondary" variant="subtitle2">
-                  {`₦ ${price}`} X {count}
+                  {`₦ ${price.toLocaleString()}`} X {count}
                 </Typography>
                 <Typography color="primary.main" variant="subtitle1">
-                  {`₦ ${total}`}
+                  {`₦ ${total.toLocaleString()}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -142,7 +142,7 @@ const CartPage = ({ updateStepCompletion }) => {
             <Typography variant="subtitle2" color="text.secondary">
               Total:
             </Typography>
-            <Typography fontWeight="600">{`₦ ${cartTotal}`}</Typography>
+            <Typography fontWeight="600">{`₦ ${cartTotal.toLocaleString()}`}</Typography>
           </Stack>
           <CustomDivider />
           <Stack spacing={1.5}>

@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Dropzone from "react-dropzone";
 import ClearIcon from "@mui/icons-material/Clear";
+import axios from "axios";
+import { base_url } from "../../utils/baseUrl";
 
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -47,6 +49,7 @@ const AddProduct = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [categoryLevels, setCategoryLevels] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [editMode, setEditMode] = useState(false);
   const [touch, setTouched] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const newProduct = useSelector((state) => state.product);
@@ -71,9 +74,18 @@ const AddProduct = () => {
   useEffect(() => {
     if (id !== "create") {
       dispatch(getProduct(id));
+      setEditMode(true);
     } else {
       dispatch(resetState());
     }
+
+    return () => {
+      dispatch(resetState());
+      setCategoryLevels([categories]);
+      setSelectedCategories([]);
+      setSelectedFiles([]);
+
+    };
   }, [id]);
 
   useEffect(() => {
@@ -117,12 +129,12 @@ const AddProduct = () => {
       setCategoryLevels([categories]);
     }
   }, [categories]);
-
   useEffect(() => {
     if (productData) {
       setSelectedFiles(productData?.images);
     }
   }, [productData]);
+ 
   return (
     <Box bgcolor="background.paper" p={4}>
       <Stack spacing={3}>
@@ -239,6 +251,8 @@ const AddProduct = () => {
                       selectedCategories={selectedCategories}
                       field="category"
                       errors={errors}
+                      editMode={editMode}
+                      categoryId={productData?.category?._id}
                     />
                   </Box>
                   <CustomTextField
@@ -565,9 +579,7 @@ const productSchema = yup.object().shape({
     .min(8, "Name must be at least 8 characters"),
   stock: yup.number().required("required"),
   regularPrice: yup.number().required("required"),
-  category: yup
-  .string()
-  .required("At least a category is required"),
+  category: yup.string().required("At least a category is required"),
   images: yup
     .array()
     .of(

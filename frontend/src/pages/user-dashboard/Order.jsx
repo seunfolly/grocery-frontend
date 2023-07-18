@@ -131,7 +131,7 @@ const Order = () => {
                   Subtotal:
                 </Typography>
                 <Typography variant="subtitle1" color="text.primary">
-                  {`₦ ${order?.totalPrice}`}
+                  {`₦ ${order?.totalPrice.toLocaleString()}`}
                 </Typography>
               </Stack>
 
@@ -158,7 +158,7 @@ const Order = () => {
                 Total:
               </Typography>
               <Typography variant="subtitle1" color="text.primary">
-                {`₦ ${order?.totalPrice}`}
+                {`₦ ${order?.totalPrice.toLocaleString()}`}
               </Typography>
             </Stack>
 

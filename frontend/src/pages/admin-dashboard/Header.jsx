@@ -50,7 +50,7 @@ const Header = ({ title, button, placeholder, route, searchQuery, setSearchQuery
           variant="outlined"
           size="small"
         />
-        <Link to={`/admin/${route}`}>
+        { button && <Link to={`/admin/${route}`}>
           <Button
             sx={{
               textTransform: "none",
@@ -73,7 +73,7 @@ const Header = ({ title, button, placeholder, route, searchQuery, setSearchQuery
             <AddIcon />
             <Typography variant="subtitle1">{button}</Typography>
           </Button>
-        </Link>
+        </Link>}
       </Stack>
     </Stack>
   );

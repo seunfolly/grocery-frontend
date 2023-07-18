@@ -21,7 +21,7 @@ const OrderDetails = () => {
                   marginRight: "8px",
                 }}
               >
-                {`₦ ${product.price}`} X {product.count}
+                {`₦ ${product.price.toLocaleString()}`} X {product.count}
               </span>
               {`- ${product.name}`}
             </Typography>
@@ -37,7 +37,7 @@ const OrderDetails = () => {
             Subtotal:
           </Typography>
           <Typography variant="subtitle1" color="text.primary">
-            {`₦ ${cartTotal}`}
+            {`₦ ${cartTotal.toLocaleString()}`}
           </Typography>
         </Stack>
 
@@ -65,7 +65,7 @@ const OrderDetails = () => {
           Total:
         </Typography>
         <Typography variant="subtitle1" color="text.primary">
-          {`₦ ${cartTotal}`}
+          {`₦ ${cartTotal.toLocaleString()}`}
         </Typography>
       </Stack>
     </Stack>

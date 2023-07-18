@@ -19,6 +19,8 @@ const Dropdown = ({
   setFieldValue,
   field,
   errors,
+  editMode,
+  categoryId,
 }) => {
   const [renderKey, setRenderKey] = useState(0);
   const [touch, setTouched] = useState(false);
@@ -28,7 +30,7 @@ const Dropdown = ({
     updatedSelectedCategories.push(categoryId);
     setSelectedCategories(updatedSelectedCategories);
     setCategoryLevels(categoryLevels.slice(0, index + 1));
-    setFieldValue(field, categoryId); 
+    setFieldValue(field, categoryId); // Set the 'parent' field value using Formik setFieldValue
     fetchSubCategories(categoryId, index + 1);
   };
 
@@ -64,7 +66,7 @@ const Dropdown = ({
       <Box position="relative">
         <CustomTextField
           select
-          label={`Select Category Level ${index + 1}`}
+          label={`Select Category`}
           fullWidth
           variant="outlined"
           onChange={(event) =>
@@ -111,6 +113,63 @@ const Dropdown = ({
         )}
       </Box>
     );
+  };
+  
+
+  useEffect(() => {
+    if (editMode && categoryId) {
+      setSelectedCategories([]);
+      setCategoryLevels([]);
+
+      axios
+        .get(`${base_url}category/${categoryId}`)
+        .then((response) => {
+          const categoryData = response.data;
+          const categoryLevel = categoryData.level;
+  
+          axios
+            .get(`${base_url}category?level=${categoryLevel}`)
+            .then((response) => {
+              setCategoryLevels([response.data]);
+              let updatedSelectedCategories = [];
+              updatedSelectedCategories.push(categoryId);
+              setSelectedCategories(updatedSelectedCategories);
+  
+              if (categoryData.parent) {
+                fetchAncestorCategories(categoryData.parent._id, updatedSelectedCategories);
+              }
+            })
+            .catch((error) => console.log(error));
+        })
+        .catch((error) => console.log(error));
+    }
+    
+  }, [editMode, categoryId ]);
+  
+  const fetchAncestorCategories = (parentId, updatedSelectedCategories) => {
+    axios
+      .get(`${base_url}category/${parentId}`)
+      .then((response) => {
+        const parentCategory = response.data;
+        updatedSelectedCategories.unshift(parentCategory._id);
+  
+        axios
+          .get(`${base_url}category?level=${response.data.level}`)
+          .then((response) => {
+            const ancestorCategories = response.data;
+            setCategoryLevels((prevCategoryLevels) => {
+              const updatedCategoryLevels = [...prevCategoryLevels];
+              updatedCategoryLevels.unshift(ancestorCategories);
+              return updatedCategoryLevels;
+            });
+  
+            if (parentCategory.parent) {
+              fetchAncestorCategories(parentCategory.parent._id, updatedSelectedCategories);
+            }
+          })
+          .catch((error) => console.log(error));
+      })
+      .catch((error) => console.log(error));
   };
   return (
     <>

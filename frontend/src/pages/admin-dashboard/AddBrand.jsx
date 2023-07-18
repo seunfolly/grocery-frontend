@@ -76,6 +76,11 @@ const AddBrand = () => {
       makeToast("error", "Something went wrong");
     }
   }, [isSuccess, isError, isLoading]);
+
+  const initialValues = {
+    name: brandData?.name || "",
+    isFeatured: brandData?.isFeatured || false,
+  }
   return (
     <Box
       bgcolor="background.paper"
@@ -102,10 +107,7 @@ const AddBrand = () => {
         >
           <Formik
             enableReinitialize={true}
-            initialValues={{
-              name: brandData?.name || "",
-              isFeatured: brandData?.isFeatured || false,
-            }}
+            initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values, { resetForm }) => {
               if (id !== "create") {
@@ -186,12 +188,14 @@ const AddBrand = () => {
                 />
                 <Button
                   type="submit"
-                  disabled={!isValid || !dirty}
+                  disabled={!isValid || (!dirty && id === "create")}
                   sx={{
                     textTransform: "none",
                     bgcolor:
-                      !isValid || !dirty || isLoading ? "#0000001f" : "#4e97fd",
-                    color: "white",
+                      !isValid || (!dirty && id === "create") || isLoading
+                        ? "#0000001f"
+                        : "#4e97fd",
+                    color: isLoading ? "#00000042" : "white",
                     fontSize: "14px",
                     paddingX: "15px",
                     fontWeight: 400,

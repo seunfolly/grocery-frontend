@@ -225,7 +225,8 @@ const ICard = ({
           </Typography>
         </Stack>
 
-        <Tooltip title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
+        <Tooltip  title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
+          <span>
           <IconButton
             disabled={stock <= 0}
             onClick={() => addToWishList()}
@@ -235,6 +236,8 @@ const ICard = ({
           >
             <FavoriteIcon fontSize="small" />
           </IconButton>
+          </span>
+          
         </Tooltip>
       </Stack>
     </Paper>

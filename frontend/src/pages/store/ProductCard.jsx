@@ -122,10 +122,10 @@ const ProductCard = ({
 
             <Stack spacing={1} direction="row" mt={1} alignItems="center">
               <Typography color="primary.main" variant="subtitle1">
-                {`₦ ${salePrice ? salePrice : regularPrice}`}
+                {`₦ ${salePrice ? salePrice.toLocaleString() : regularPrice.toLocaleString()}`}
               </Typography>
               <Typography color="text.secondary" variant="subtitle1">
-                <del>{salePrice ? `₦  ${regularPrice}` : ""}</del>
+                <del>{salePrice ? `₦  ${regularPrice.toLocaleString()}` : ""}</del>
               </Typography>
               {stock <= 0 ? (
                 <Button

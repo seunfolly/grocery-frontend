@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Box,
   Stack,
@@ -6,36 +7,56 @@ import {
   Paper,
   Button,
   Chip,
+  IconButton,
 } from "@mui/material";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { Link } from "react-router-dom";
 import { mockData, mockData2 } from "./data";
 import { DataGrid } from "@mui/x-data-grid";
 import Table from "./Table";
-import { useSelector } from "react-redux";
-const columns = [
+import { useSelector, useDispatch } from "react-redux";
+import { getProducts } from "../../features/product/productSlice";
+import { getOrders } from "../../features/order/orderSlice";
+
+import { useNavigate } from "react-router-dom";
+
+const orderColumns = [
   { field: "id", headerName: "Order ID", flex: 1 },
-  { field: "product", headerName: "Product", flex: 1 },
   {
-    field: "payment",
+    field: "qty",
+    headerName: "Quantity",
+    width: 70,
+    headerAlign: "center",
+    align: "center",
+  },
+  {
+    field: "status",
     headerName: "Payment",
     flex: 1,
     renderCell: ({ value }) => {
       return (
         <Box>
-          {value === "Success" && (
+          {value === "Delivered" && (
             <Chip
               label={value}
               sx={{ color: "#33d067", bgcolor: "#e7f9ed", height: "25px" }}
             />
           )}
-          {value !== "Success" && (
+          {(value === "Pending" || value === "Cancelled") && (
             <Chip
               label={value}
               sx={{ color: "#e94560", bgcolor: "#ffeaea", height: "25px" }}
             />
           )}
+          {(value === "Processing" || value === "Dispatched") && (
+            <Chip
+              label={value}
+              sx={{ color: "#ffcd4e", bgcolor: "#FFF8E5", height: "25px" }}
+            />
+          )}
         </Box>
       );
-    }
+    },
   },
   {
     field: "amount",
@@ -44,9 +65,25 @@ const columns = [
     // headerAlign: "left",
     // align: "left",
   },
+  {
+    field: "action",
+    headerName: "Action",
+    // flex: 1,
+    headerAlign: "center",
+    align: "center",
+    renderCell: ({ row }) => (
+      <Stack direction="row">
+        <Link to={`/admin/order/${row._id}`}>
+          <IconButton aria-label="View">
+            <RemoveRedEyeIcon />
+          </IconButton>
+        </Link>
+      </Stack>
+    ),
+  },
 ];
 
-const columnPurchase = [
+const productColumns = [
   {
     field: "product",
     headerName: "Product",
@@ -64,83 +101,6 @@ const columnPurchase = [
   },
 ];
 
-export const mockDataPurchase = [
-  {
-    id: "#6d3webo3",
-    product: "Amazon Headphone",
-    payment: "Success",
-    amount: "$674",
-  },
-  {
-    id: "#6d3gfdo1",
-    product: "Black Pant",
-    payment: "Pending",
-    amount: "$240",
-  },
-  {
-    id: "#6d3eedo4",
-    product: "Jean Skirt",
-    payment: "Pending",
-    amount: "$446",
-  },
-  {
-    id: "#6d3wedo3",
-    product: "Aavic Headphone",
-    payment: "Success",
-    amount: "$674",
-  },
-  {
-    id: "#6d3wedo1",
-    product: "Jeans Pant",
-    payment: "Pending",
-    amount: "$245",
-  },
-  {
-    id: "#6d3wedo4",
-    product: "Polo T-shirt",
-    payment: "Success",
-    amount: "$356",
-  },
-];
-
-export const mockDataProduct = [
-  {
-    id: "#6d3webo3",
-    product: "Amazon Headphone",
-    stock: "000",
-    amount: "$674",
-  },
-  {
-    id: "#6d3gfdo1",
-    product: "Black Pant",
-    stock: "000",
-    amount: "$240",
-  },
-  {
-    id: "#6d3eedo4",
-    product: "Jean Skirt",
-    stock: "000",
-    amount: "$446",
-  },
-  {
-    id: "#6d33ebo3",
-    product: "Amazon Headphone",
-    stock: "000",
-    amount: "$674",
-  },
-  {
-    id: "#6d3g3do1",
-    product: "Black Pant",
-    stock: "000",
-    amount: "$240",
-  },
-  {
-    id: "#6d3ee0o4",
-    product: "Jean Skirt",
-    stock: "000",
-    amount: "$446",
-  },
-];
 const Card1 = ({ name, amount, amount1, percentage, color }) => {
   return (
     <Stack
@@ -204,7 +164,39 @@ const Card2 = ({ name, amount, percentage, Icon }) => {
 };
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { products } = useSelector((state) => state.product);
+  const { orders } = useSelector((state) => state.order);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(getProducts());
+      dispatch(getOrders());
+    };
+    fetchData();
+  }, []);
+
+  const filteredProducts = products.filter((product) => product.stock <= 0);
+  const productData = filteredProducts.map((product) => ({
+    _id: product._id,
+    id: product?.productId,
+    product: product?.name,
+    amount: product.salePrice
+      ? `₦ ${product.salePrice.toLocaleString()}`
+      : `₦ ${product.regularPrice.toLocaleString()}`,
+    stock: product?.stock,
+  }));
+  const orderData = orders.map((order) => ({
+    _id: order?._id,
+    id: order?.orderId.substring(0, 8),
+    qty: order?.products.reduce((sum, product) => sum + product.count, 0),
+    amount: `₦ ${order?.totalPrice.toLocaleString()}`,
+    status: order?.orderStatus,
+    action: null,
+  }));
+  const filteredOrders = orders.filter((order) => order.isPaid === true);
 
   return (
     <Box bgcolor="background.paper" p={4}>
@@ -220,7 +212,12 @@ const Dashboard = () => {
             sx={{ boxShadow: " 0px 1px 3px rgba(3, 0, 71, 0.09)" }}
           >
             <Stack spacing={0.5}>
-              <Typography variant="subtitle1" color="#4E97FD" fontSize="16px" textTransform="capitalize">
+              <Typography
+                variant="subtitle1"
+                color="#4E97FD"
+                fontSize="16px"
+                textTransform="capitalize"
+              >
                 {`Welcome ${user?.fullName}`}
               </Typography>
               <Typography variant="subtitle2" color="text.secondary">
@@ -230,7 +227,7 @@ const Dashboard = () => {
 
             <Stack direction="row" justifyContent="space-between">
               <Stack spacing={2.5}>
-                <Stack>
+                {/* <Stack>
                   <Typography
                     variant="subtitle1"
                     fontSize="20px"
@@ -241,17 +238,19 @@ const Dashboard = () => {
                   <Typography variant="subtitle2" color="text.secondary">
                     Today’s Visit
                   </Typography>
-                </Stack>
+                </Stack> */}
                 <Stack>
                   <Typography
                     variant="subtitle1"
                     fontSize="20px"
                     fontWeight="700"
                   >
-                    $10,360.66
+                    
+                    {`₦ ${filteredOrders.reduce((sum, order) => sum + order.totalPrice, 0).toLocaleString()}`}
+
                   </Typography>
                   <Typography variant="subtitle2" color="text.secondary">
-                    Today’s total sales
+                    Total sales
                   </Typography>
                 </Stack>
               </Stack>
@@ -263,7 +262,7 @@ const Dashboard = () => {
                 }}
               >
                 <img
-                  src= "	https://bazaar.ui-lib.com/assets/images/illustrations/dashboard/welcome.svg"
+                  src="	https://bazaar.ui-lib.com/assets/images/illustrations/dashboard/welcome.svg"
                   style={{
                     width: "100%",
                     height: "100%",
@@ -314,6 +313,7 @@ const Dashboard = () => {
               </Typography>
 
               <Button
+                onClick={() => navigate("/admin/orders")}
                 variant="outlined"
                 sx={{
                   textTransform: "none",
@@ -336,7 +336,7 @@ const Dashboard = () => {
             </Stack>
 
             <Table>
-              <DataGrid rows={mockDataPurchase} columns={columns} />
+              <DataGrid rows={orderData} columns={orderColumns} />
             </Table>
           </Paper>
         </Grid>
@@ -359,6 +359,7 @@ const Dashboard = () => {
               </Typography>
 
               <Button
+                onClick={() => navigate("/admin/products")}
                 variant="outlined"
                 sx={{
                   textTransform: "none",
@@ -381,7 +382,7 @@ const Dashboard = () => {
             </Stack>
 
             <Table>
-              <DataGrid rows={mockDataProduct} columns={columnPurchase} />
+              <DataGrid rows={productData} columns={productColumns} />
             </Table>
           </Paper>
         </Grid>
