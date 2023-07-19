@@ -15,6 +15,7 @@ const initialState = {
   loggedFlag: false,
   cart: [],
   message: "",
+  wishlist:[]
 };
 
 export const signup = createAsyncThunk(
@@ -84,6 +85,17 @@ export const getCards = createAsyncThunk(
   async (thunkAPI) => {
     try {
       return await authService.getCards();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const getWishList = createAsyncThunk(
+  "user/get-wishlist",
+  async (thunkAPI) => {
+    try {
+      return await authService.getWishList();
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -196,6 +208,21 @@ export const authSlice = createSlice({
         state.cards = action.payload;
       })
       .addCase(getCards.rejected, (state, action) => {
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+        state.isLoading = false;
+      })
+      .addCase(getWishList.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getWishList.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.wishlist = action.payload;
+      })
+      .addCase(getWishList.rejected, (state, action) => {
         state.isError = true;
         state.isSuccess = false;
         state.message = action.error;

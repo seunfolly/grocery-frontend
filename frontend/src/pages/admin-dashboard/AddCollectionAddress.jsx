@@ -7,12 +7,14 @@ import {
   styled,
   Typography,
   Button,
+  Autocomplete,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { Formik } from "formik";
 import * as yup from "yup";
+import { statesInNigeria } from "../user-dashboard/data";
 import {
   createAddress,
   resetState,
@@ -188,22 +190,38 @@ const AddCollectionAddress = () => {
                       style: { fontSize: "15px" },
                     }}
                   />{" "}
-                  <CustomTextField
+                  <Autocomplete
                     fullWidth
-                    variant="outlined"
-                    type="text"
-                    label="State"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
+                    options={statesInNigeria}
                     value={values.state}
-                    name="state"
-                    error={!!touched.state && !!errors.state}
-                    helperText={touched.state && errors.state}
+                    isOptionEqualToValue={(option, value) => option === value}
+                    onChange={(event, newValue) => {
+                      handleChange({
+                        target: {
+                          name: "state",
+                          value: newValue,
+                        },
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <CustomTextField
+                        {...params}
+                        fullWidth
+                        variant="outlined"
+                        type="text"
+                        label="State"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        name="state"
+                        error={!!touched.state && !!errors.state}
+                        helperText={touched.state && errors.state}
+                        InputLabelProps={{
+                          style: { fontSize: "15px" },
+                        }}
+                      />
+                    )}
                     sx={{
                       gridColumn: "span 2",
-                    }}
-                    InputLabelProps={{
-                      style: { fontSize: "15px" },
                     }}
                   />
                   <CustomTextField

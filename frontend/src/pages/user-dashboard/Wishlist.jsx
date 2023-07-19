@@ -4,32 +4,22 @@ import { Typography, Stack, Button, Grid } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ICard from "../../components/ui-elements/Card";
 import WishListCard from "./WishlistCard";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { base_url } from "../../utils/baseUrl";
+import { getWishList } from "../../features/auth/authSlice";
 import { addAllToCart } from "../../features/cart/cartSlice";
 
 const WishList = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
   const [toggle, setToggle] = useState(false);
   const auth = useSelector((state) => state.auth);
-  const { user } = auth;
+  const { user, wishlist } = auth;
 
-  const getWishList = () => {
-    axios
-      .get(`${base_url}user/wishlist`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      })
-      .then((response) => {
-        setProducts(response.data.wishlist);
-      })
-      .catch((error) => console.log(error));
-  };
   useEffect(() => {
+    dispatch(getWishList());
     getWishList();
-  }, [user, toggle]);
+  }, [toggle]);
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -47,16 +37,18 @@ const WishList = () => {
         </Stack>
 
         <Button
-           disabled={products.length === 0}
-           onClick={() => {
-           const productItems = products.map((product) => ({
-            id: product._id,
-            image: product.images[0].url,
-            price: product.salePrice ? product.salePrice : product.regularPrice,
-            name: product.name,
-           }))
-           dispatch(addAllToCart(productItems))
-           }}
+          disabled={wishlist.length === 0}
+          onClick={() => {
+            const productItems = wishlist.map((product) => ({
+              id: product._id,
+              image: product.images[0].url,
+              price: product.salePrice
+                ? product.salePrice
+                : product.regularPrice,
+              name: product.name,
+            }));
+            dispatch(addAllToCart(productItems));
+          }}
           sx={{
             textTransform: "none",
             bgcolor: "#FCE9EC",
@@ -81,7 +73,7 @@ const WishList = () => {
           marginLeft: "-24px !important",
         }}
       >
-        {products.map((item) => (
+        {wishlist.map((item) => (
           <Grid item xs={4}>
             <WishListCard {...item} toggle={toggle} setToggle={setToggle} />
           </Grid>

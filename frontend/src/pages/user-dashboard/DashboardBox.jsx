@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Typography, Box, Stack, Button, Link as MuiLink } from "@mui/material";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -7,25 +8,15 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PaymentIcon from "@mui/icons-material/Payment";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logout,resetState } from "../../features/auth/authSlice";
-
-const dashboards = [
-  { text: "Orders", no: 5, Icon: <ShoppingBagOutlinedIcon />, url: "orders" },
-  { text: "Wishlist", no: 19, Icon: <FavoriteBorderIcon />, url: "wishlist" },
-  { text: "Support", no: 11, Icon: <HeadsetMicIcon />, url: "support" },
-];
-
-const account = [
-  {
-    text: "Profile Info",
-    no: 4,
-    Icon: <PersonOutlineOutlinedIcon />,
-    url: "profile",
-  },
-  { text: "Addresses", no: 39, Icon: <LocationOnIcon />, url: "addresses" },
-  { text: "Payment Method", no: 9, Icon: <PaymentIcon />, url: "payments" },
-];
+import { useDispatch, useSelector } from "react-redux";
+import {
+  logout,
+  resetState,
+  getWishList,
+  getOrders,
+  getCards,
+} from "../../features/auth/authSlice";
+import { getAddresses } from "../../features/address/addressSlice";
 
 const ILink = ({ text, no, Icon, url }) => {
   const location = useLocation();
@@ -63,13 +54,59 @@ const ILink = ({ text, no, Icon, url }) => {
 };
 
 const DashboardBox = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getOrders());
+    dispatch(getCards());
+    dispatch(getAddresses());
+    dispatch(getWishList());
+  }, []);
+  const { orders, cards, wishlist } = useSelector((state) => state.auth);
+  const { addresses } = useSelector((state) => state.address);
+
+  const dashboards = [
+    {
+      text: "Orders",
+      no: orders?.length || 0,
+      Icon: <ShoppingBagOutlinedIcon />,
+      url: "orders",
+    },
+    {
+      text: "Wishlist",
+      no: wishlist?.length || 0,
+      Icon: <FavoriteBorderIcon />,
+      url: "wishlist",
+    },
+    { text: "Support", no: 0, Icon: <HeadsetMicIcon />, url: "support" },
+  ];
+
+  const account = [
+    {
+      text: "Profile Info",
+      no: 0,
+      Icon: <PersonOutlineOutlinedIcon />,
+      url: "profile",
+    },
+    {
+      text: "Addresses",
+      no: addresses?.length || 0,
+      Icon: <LocationOnIcon />,
+      url: "addresses",
+    },
+    {
+      text: "Payment Method",
+      no: cards?.length || 0,
+      Icon: <PaymentIcon />,
+      url: "payments",
+    },
+  ];
+  const navigate = useNavigate();
   return (
     <Box
       bgcolor="#fff"
       py={5}
       borderRadius={2}
+      pr={2}
       sx={{
         boxShadow: " 0px 1px 3px rgba(3, 0, 71, 0.09)",
       }}
@@ -97,9 +134,9 @@ const DashboardBox = () => {
 
           <Button
             variant="text"
-            onClick={()=> {
-              dispatch(logout())
-              navigate("/")
+            onClick={() => {
+              dispatch(logout());
+              navigate("/");
             }}
             sx={{
               textTransform: "none",
@@ -115,9 +152,8 @@ const DashboardBox = () => {
               },
             }}
           >
-            <LogoutIcon/>
+            <LogoutIcon />
             <Typography variant="subtitle2">LOGOUT</Typography>
-            
           </Button>
         </Stack>
       </Stack>

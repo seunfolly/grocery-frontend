@@ -38,7 +38,7 @@ const Address = ({ _id, fullName, address, phone, state }) => {
         {address}
       </Typography>
       <Typography variant="subtitle2" flex="1 1 0">
-        {state}
+        { ` ${state} State`}
       </Typography>
       <Stack direction="row" justifyContent="end">
         <Link

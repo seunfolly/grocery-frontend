@@ -7,10 +7,12 @@ import {
   Stack,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { statesInNigeria } from "./data";
 // import Header from "../../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import PlaceIcon from "@mui/icons-material/Place";
@@ -214,26 +216,45 @@ const Address = () => {
                   }}
                 />
 
-                <TextField
+                <Autocomplete
                   fullWidth
-                  variant="outlined"
-                  type="text"
-                  label="State"
-                  size="small"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.state}
-                  name="state"
-                  error={!!touched.state && !!errors.state}
-                  helperText={touched.state && errors.state}
+                  options={statesInNigeria}
+                  value={values.state} 
+                  isOptionEqualToValue={(option, value) => option === value}
+                  onChange={(event, newValue) => {
+                    handleChange({
+                      target: {
+                        name: "state",
+                        value: newValue,
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      label="State"
+                      size="small"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      name="state"
+                      error={!!touched.state && !!errors.state}
+                      helperText={touched.state && errors.state}
+                      InputLabelProps={{
+                        style: { fontSize: "14px" },
+                      }}
+                      sx={{
+                        gridColumn: "span 2",
+                        "& .MuiInputBase-root": {
+                          fontSize: "15px",
+                        },
+                      }}
+                    />
+                  )}
                   sx={{
                     gridColumn: "span 2",
-                    "& .MuiInputBase-root": {
-                      fontSize: "15px",
-                    },
-                  }}
-                  InputLabelProps={{
-                    style: { fontSize: "14px" },
                   }}
                 />
               </Box>

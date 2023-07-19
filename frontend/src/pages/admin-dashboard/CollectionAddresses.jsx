@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Stack,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Stack, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "./Header";
@@ -51,7 +47,7 @@ const CollectionAddress = () => {
     email: address?.email,
   }));
   return (
-    <Stack spacing={3} bgcolor="background.paper" py={3}>
+    <Stack spacing={3} bgcolor="background.paper" py={3} textTransform="capitalize">
       <Header
         title={"Collection Addresses List"}
         placeholder="Search Address..."
@@ -66,6 +62,7 @@ const CollectionAddress = () => {
             {
               field: "name",
               headerName: "Name",
+              
               flex: 1,
             },
             {
@@ -87,7 +84,6 @@ const CollectionAddress = () => {
             {
               field: "state",
               headerName: "State",
-
               flex: 1,
             },
 

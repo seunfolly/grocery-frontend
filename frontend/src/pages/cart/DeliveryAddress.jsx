@@ -6,7 +6,7 @@ import {
   TextField,
   Paper,
   Avatar,
-  MenuItem,
+  Autocomplete,
   Button,
   IconButton,
   Box,
@@ -14,6 +14,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { statesInNigeria } from "../user-dashboard/data";
 import { Formik } from "formik";
 import * as yup from "yup";
 import {
@@ -68,7 +69,7 @@ const Address = (prop) => {
       <Stack>
         <Typography variant="subtitle1">{fullName}</Typography>
         <Typography fontSize="13px">{address}</Typography>
-        <Typography fontSize="13px">{state}</Typography>
+        <Typography fontSize="13px">{`${state} State`}</Typography>
         <Typography fontSize="13px">{phone}</Typography>
       </Stack>
       <Stack alignSelf="self-start" direction="row">
@@ -351,29 +352,47 @@ export const DeliveryAddress = ({ updateStepCompletion }) => {
                       style: { fontSize: "14px" },
                     }}
                   />
-
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    type="text"
-                    label="State"
-                    size="small"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.state}
-                    name="state"
-                    error={!!touched.state && !!errors.state}
-                    helperText={touched.state && errors.state}
-                    sx={{
-                      gridColumn: "span 2",
-                      "& .MuiInputBase-root": {
-                        fontSize: "15px",
+<Autocomplete
+                  fullWidth
+                  options={statesInNigeria}
+                  value={values.state} 
+                  isOptionEqualToValue={(option, value) => option === value}
+                  onChange={(event, newValue) => {
+                    handleChange({
+                      target: {
+                        name: "state",
+                        value: newValue,
                       },
-                    }}
-                    InputLabelProps={{
-                      style: { fontSize: "14px" },
-                    }}
-                  />
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      variant="outlined"
+                      type="text"
+                      label="State"
+                      size="small"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      name="state"
+                      error={!!touched.state && !!errors.state}
+                      helperText={touched.state && errors.state}
+                      InputLabelProps={{
+                        style: { fontSize: "14px" },
+                      }}
+                      sx={{
+                        gridColumn: "span 2",
+                        "& .MuiInputBase-root": {
+                          fontSize: "15px",
+                        },
+                      }}
+                    />
+                  )}
+                  sx={{
+                    gridColumn: "span 2",
+                  }}
+                />
                 </Box>
                 <Button
                   type="submit"
