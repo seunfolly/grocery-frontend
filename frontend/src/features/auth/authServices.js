@@ -46,7 +46,7 @@ const editProfile = async (userData) => {
     phone: response.data.phone,
     dob: response.data.dob,
     orders: response.data.orderCount,
-    image: response.data.image.url
+    image: response?.data?.image?.url
   }
   return data;
 };

@@ -42,7 +42,7 @@ export const login = createAsyncThunk(
 export const updateProfile = createAsyncThunk(
   "auth/edit-profile",
   async (data, thunkAPI) => {
-
+   console.log(data.dob)
     try {
       const formData = new FormData();
       formData.append("fullName", data.fullName);

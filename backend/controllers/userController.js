@@ -123,19 +123,19 @@ const getLoggedInUserProfile = asyncHandler(async (req, res) => {
 const updatedUserProfile = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
-
   try {
     const user = await User.findById(_id);
+    delete req.body.image;
     const updateObject = { ...req.body };
-    if (req.images) {
+    if (req.images && req.images.length > 0) {
       updateObject.image = req.images[0];
-      await cloudinaryDeleteImg(user.image.public_id);
+      if(user.image && user.image.public_id) {
+        await cloudinaryDeleteImg(user.image.public_id);
+      }
     }
     const updatedUser = await User.findByIdAndUpdate(
       _id,
-
       updateObject,
-
       {
         new: true,
       }
@@ -186,7 +186,6 @@ const updateAUser = asyncHandler(async (req, res) => {
         email: req?.body?.email,
         phone: req?.body?.phone,
         dob: req?.body?.dob,
-        image: req?.body?.image,
       },
       {
         new: true,
@@ -262,14 +261,14 @@ const userCart = asyncHandler(async (req, res) => {
       existingCart.products = products;
       existingCart.cartTotal = cartTotal;
       await existingCart.save();
-     return  res.json(existingCart);
+      return res.json(existingCart);
     } else {
       let newCart = await new Cart({
         products,
         cartTotal,
         orderBy: user?._id,
       }).save();
-     return  res.json(newCart);
+      return res.json(newCart);
     }
   } catch (error) {
     console.log(error);
@@ -301,7 +300,14 @@ const emptyCart = asyncHandler(async (req, res) => {
 });
 
 const createOrder = asyncHandler(async (req, res) => {
-  const { paymentMethod, address, deliveryDate, deliveryTime, comment, cardId } = req.body;
+  const {
+    paymentMethod,
+    address,
+    deliveryDate,
+    deliveryTime,
+    comment,
+    cardId,
+  } = req.body;
   const { _id } = req.user;
   validateMongoDbId(_id);
   let orderStatus;
@@ -342,7 +348,7 @@ const createOrder = asyncHandler(async (req, res) => {
             deliveryDate,
             deliveryTime,
             paystackPayment.reference
-          );     
+          );
           user.orderCount += 1;
           await user.save();
           await updateProductStock(userCart.products);
@@ -373,7 +379,7 @@ const createOrder = asyncHandler(async (req, res) => {
           deliveryDate,
           deliveryTime,
           paystackPayment.reference
-        );  
+        );
         user.orderCount += 1;
         await user.save();
         await updateProductStock(userCart.products);
@@ -427,7 +433,7 @@ const getUserOrders = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
- 
+
 const getOrderById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
@@ -504,9 +510,9 @@ const paystackWebhook = asyncHandler(async (req, res) => {
   if (event === "charge.success") {
     const paymentReference = data.reference;
     try {
-      const order = await Order.findOne({ reference: paymentReference }); 
+      const order = await Order.findOne({ reference: paymentReference });
       await Order.findByIdAndUpdate(
-        { _id: order._id }, 
+        { _id: order._id },
         {
           isPaid: true,
         },
@@ -568,17 +574,20 @@ async function initializePaystackCheckout(amount, email, userId) {
   };
 }
 
-
-async function initializePaystackCheckoutWithCard(amount, email, authorization_code) {
+async function initializePaystackCheckoutWithCard(
+  amount,
+  email,
+  authorization_code
+) {
   const { data } = await paystack.post("/transaction/charge_authorization", {
     email: email,
     amount: amount * 100,
-  authorization_code: authorization_code
+    authorization_code: authorization_code,
   });
 
   return {
     reference: data.data.reference,
-    status: data.data.status
+    status: data.data.status,
   };
 }
 

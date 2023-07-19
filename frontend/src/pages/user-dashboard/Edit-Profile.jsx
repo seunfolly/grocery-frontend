@@ -17,10 +17,14 @@ import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PersonIcon from "@mui/icons-material/Person";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfile, resetState, resetUpdatedFlag } from "../../features/auth/authSlice";
+import {
+  updateProfile,
+  resetState,
+  resetUpdatedFlag,
+} from "../../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import makeToast from "../../utils/toaster";
-makeToast
+makeToast;
 const EditProfile = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePictureFile, setProfilePictureFile] = useState(null);
@@ -33,7 +37,7 @@ const EditProfile = () => {
   const { isSuccess, isError, user, isLoading, userUpdated } = auth;
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    setProfilePictureFile(file)
+    setProfilePictureFile(file);
     if (file) {
       const reader = new FileReader();
 
@@ -44,21 +48,21 @@ const EditProfile = () => {
     }
   };
   useEffect(() => {
-    if (isSuccess && userUpdated ) {
-      navigate("/user/profile")
-      dispatch(resetUpdatedFlag())
+    if (isSuccess && userUpdated) {
+      navigate("/user/profile");
+      dispatch(resetUpdatedFlag());
     }
     if (isError) {
       makeToast("error", "Something went wrong, Please Try Again");
-      dispatch(resetState())
+      dispatch(resetState());
     }
-  }, [isSuccess,userUpdated,isError]);
+  }, [isSuccess, userUpdated, isError]);
   const initialValues = {
     fullName: user?.fullName,
     email: user?.email,
     phone: user?.phone,
     dob: user?.dob,
-    image: user?.image
+    image: user?.image,
   };
   return (
     <Stack spacing={3}>
@@ -112,9 +116,8 @@ const EditProfile = () => {
         <Formik
           enableReinitialize={true}
           onSubmit={(values) => {
-            // console.log({...values,image:profilePictureFile});
-            dispatch(updateProfile({...values,image:profilePictureFile}));
-            // navigate("/user/profile");
+            dispatch(updateProfile({ ...values, image: profilePictureFile }));
+            
           }}
           initialValues={initialValues}
           validationSchema={editSchema}
@@ -126,7 +129,7 @@ const EditProfile = () => {
             handleBlur,
             handleChange,
             handleSubmit,
-
+             setFieldValue,
             isValid,
             dirty,
           }) => (
@@ -134,10 +137,7 @@ const EditProfile = () => {
               <Box display="flex" alignItems="flex-end" mb={3}>
                 <Avatar
                   alt="profile-picture"
-                  src={
-                    profilePicture ||
-                    user?.image
-                  }
+                  src={profilePicture || user?.image}
                   sx={{ width: 64, height: 64 }}
                 />
                 <Box ml="-15px">
@@ -157,13 +157,14 @@ const EditProfile = () => {
                         padding: "7px",
                         "&:hover": {
                           backgroundColor: "#0f34600a !important",
-                          
-                        }
+                        },
                       }}
                     >
-                      <CameraEnhanceIcon sx={{
-                        fontSize:"1.2rem"
-                      }}/>
+                      <CameraEnhanceIcon
+                        sx={{
+                          fontSize: "1.2rem",
+                        }}
+                      />
                     </IconButton>
                   </label>
                 </Box>
@@ -246,13 +247,19 @@ const EditProfile = () => {
                 <DatePicker
                   fullWidth
                   label="Birth Date"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={dayjs(values.dob)}
-                  name="dob"
-                  error={!!touched.dob && !!errors.dob}
-                  helperText={touched.dob && errors.dob}
-                  slotProps={{ textField: { size: "small" } }}
+                  value={ values.dob ? dayjs(values.dob) : null}
+                  onChange={(date) => {
+                    setFieldValue("dob", date.toISOString());
+                  }}
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      helperText: touched.dob && errors.dob,
+                      error: !!touched.dob && !!errors.dob,
+                      name: "dob",
+                      onBlur: handleBlur,
+                    },
+                  }}
                   sx={{
                     gridColumn: "span 2",
                     "& .MuiInputBase-root": {
@@ -263,7 +270,7 @@ const EditProfile = () => {
               </Box>
               <Button
                 type="submit"
-                disabled={!isValid || isLoading}
+                disabled={!isValid || isLoading }
                 sx={{
                   mt: 4,
                   textTransform: "none",
@@ -294,6 +301,7 @@ const phoneRegExp =
 const editSchema = yup.object().shape({
   fullName: yup.string().required("required"),
   email: yup.string().email("invalid email").required("required"),
+  dob: yup.date().required("Birth Date is required"),
   phone: yup
     .string()
     .matches(phoneRegExp, "Phone number is not valid")
