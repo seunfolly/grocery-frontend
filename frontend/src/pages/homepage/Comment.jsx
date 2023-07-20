@@ -10,27 +10,27 @@ const ReviewBox = ({ customer, image, comment }) => {
   return (
     <Box
       bgcolor="white"
-      px="3rem"
-      py="2rem"
+      // px="3rem"
+      // py="2rem"
       borderRadius="8px"
       sx={{
         boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
       }}
-      height="200px"
+      // height=""
     >
       <Stack
-        direction="row"
+        direction={{xs:"column",sm:"row"}}
         spacing={2}
-        px="6rem"
+        px={{xs:"3rem",sm:"6rem"}}
         py="3rem"
         alignItems="center"
       >
         <Avatar
           alt="Remy Sharp"
-          src={image.url}
+          src={image?.url}
           sx={{ width: 60, height: 60 }}
         />
-        <Stack spacing={1}>
+        <Stack spacing={1} textAlign={{xs:"center", sm:"left"}}>
           <Typography variant="subtitle2" lineHeight="1.7" color="#4B566B">
             {comment}
           </Typography>

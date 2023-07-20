@@ -87,7 +87,7 @@ const ICard = ({
       }}
     >
       <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-        <img src={images[0].url} style={{ width: "100%", height: "250px" }} />
+        <img src={images[0]?.url} className="card-image" />
         {/* {images[0].url} */}
       </Link>
 

@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { base_url } from "../../utils/baseUrl";
 
-const SearchInput = () => {
+const SearchInput = ({ handleDrawerClose, drawerOpen }) => {
   const [value, setValue] = useState("");
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
@@ -24,11 +24,20 @@ const SearchInput = () => {
   };
   const handleOptionSelect = (event, option) => {
     setValue(option);
+    if (option !== null) {
+      navigate(`/store?search=${option}`);
+      if (drawerOpen) {
+        handleDrawerClose();
+      }
+    }
   };
 
   const handleSearch = () => {
     navigate(`/store?search=${value}`);
     setValue("");
+    if (drawerOpen) {
+      handleDrawerClose();
+    }
   };
 
   const filterOptions = (options, { inputValue }) => {

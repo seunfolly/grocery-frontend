@@ -580,6 +580,7 @@ const productSchema = yup.object().shape({
   stock: yup.number().required("required"),
   regularPrice: yup.number().required("required"),
   category: yup.string().required("At least a category is required"),
+  brand: yup.string().required("required"),
   images: yup
     .array()
     .of(

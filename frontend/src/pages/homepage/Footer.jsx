@@ -56,13 +56,13 @@ const IconSvg = ({ className }) => {
 
 const Footer = () => {
   return (
-    <Box bgcolor="#141850" p={6} borderRadius="8px">
+    <Box bgcolor="#141850" p={{xs:3,sm:6}} borderRadius="8px">
       <Stack color="#AEB4BE">
         <Box marginBottom="5px">
           <img src="	https://bazaar.ui-lib.com/assets/images/logo.svg" />
         </Box>
 
-        <Grid container spacing={7} marginLeft="-40px">
+        <Grid container spacing={{xs:4,md:7}} >
           <Grid item md={6}>
             <Typography variant="subtitle2" color="#AEB4BE" lineHeight={1.75}>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor

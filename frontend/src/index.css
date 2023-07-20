@@ -74,8 +74,17 @@ body {
 .carousel-card{
   padding: 10px;
 }
+.card-image{
+  height: 250px;
+  width: 100%;
+}
 @media (max-width: 600px) {
   .MuiContainer-root {
     padding: 0 10px !important;
+  }
+}
+@media (max-width: 500px) {
+  .card-image{
+    height: 100%;
   }
 }

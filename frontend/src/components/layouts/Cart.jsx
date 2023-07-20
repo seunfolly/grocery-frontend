@@ -39,7 +39,7 @@ const Cart = ({ open, onClose }) => {
     >
       <Box
         sx={{
-          width: "380px",
+          width: "350px",
           bgcolor: "white",
           display: "flex",
           flexDirection: "column",

@@ -104,9 +104,6 @@ const Header = () => {
                     width: "45px",
                     height: "45px",
                   }}
-                  // aria-controls={open ? "basic-menu" : undefined}
-                  // aria-haspopup="true"
-                  // aria-expanded={open ? "true" : undefined}
                   onClick={handleClick}
                 >
                   <PersonOutlineOutlinedIcon />
@@ -193,7 +190,13 @@ const Header = () => {
             </IconButton>
           </Stack>
         </Stack>
-        <MobileHeader handleCartOpen={handleCartOpen} />
+        <MobileHeader
+          handleCartOpen={handleCartOpen}
+          handleClick={handleClick}
+          handleClose={handleClose}
+          handleLogout={handleLogout}
+          anchorEl={anchorEl}
+        />
       </Container>
       <Cart open={cartOpen} onClose={handleCartClose} />
     </Box>

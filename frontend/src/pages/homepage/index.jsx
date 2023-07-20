@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Stack,
@@ -9,6 +9,7 @@ import {
   styled,
   Badge,
   Grid,
+  Drawer,
 } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Category from "./Category";
@@ -29,9 +30,18 @@ import { Link } from "react-router-dom";
 const Homepage = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const handleDrawerOpen = () => {
+    setDrawerOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+  };
   const queryParams = new URLSearchParams(location.search);
   const reference = queryParams.get("reference");
   const { products } = useSelector((state) => state.cart);
+  const user = useSelector((state) => state.auth.user);
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
@@ -70,6 +80,7 @@ const Homepage = () => {
         }}
       >
         <Link
+          to="/"
           style={{
             textDecoration: "none",
             flex: "1 1 0",
@@ -83,9 +94,10 @@ const Homepage = () => {
           <HomeOutlined />
           <Typography fontSize="13px">Home</Typography>
         </Link>
-        <Link
+        <IconButton
+          component="span"
+          onClick={handleDrawerOpen}
           style={{
-            textDecoration: "none",
             flex: "1 1 0",
             display: "flex",
             alignItems: "center",
@@ -97,8 +109,9 @@ const Homepage = () => {
           {" "}
           <CategoryOutlined />
           <Typography fontSize="13px">Category</Typography>
-        </Link>
+        </IconButton>
         <Link
+          to="/cart"
           style={{
             textDecoration: "none",
             flex: "1 1 0",
@@ -120,21 +133,64 @@ const Homepage = () => {
 
           <Typography fontSize="13px">Cart</Typography>
         </Link>
-        <Link
-          style={{
-            textDecoration: "none",
-            flex: "1 1 0",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#2b3445",
-            flexDirection: "column",
+        {user && (
+          <Link
+            to="/user/profile"
+            style={{
+              textDecoration: "none",
+              flex: "1 1 0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#2b3445",
+              flexDirection: "column",
+            }}
+          >
+            <PersonOutlineOutlined />
+            <Typography fontSize="13px" textTransform="capitalize">{`${
+              user?.fullName.split(" ")[0]
+            }`}</Typography>
+          </Link>
+        )}
+      </Box>
+
+      <Drawer
+        open={drawerOpen}
+        onClose={handleDrawerClose}
+        anchor="left"
+        bgcolor="white"
+        sx={{
+          zIndex: "1200",
+          "& .MuiPaper-root": {
+            backgroundColor: "white",
+          },
+        }}
+      >
+        <Box
+          bgcolor="white"
+          py={3}
+          px={2.2}
+          borderRadius="5px"
+          sx={{
+            width: "250px",
+            height: "100vh",
+
+            overflowY: "scroll",
+            "&::-webkit-scrollbar": {
+              width: "5px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "transparent",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#ebeff7",
+              borderRadius: "100px",
+            },
           }}
         >
-          <PersonOutlineOutlined />
-          <Typography fontSize="13px">Account</Typography>
-        </Link>
-      </Box>
+          <Category />
+        </Box>
+      </Drawer>
 
       <Header />
       <Box
@@ -146,8 +202,34 @@ const Homepage = () => {
         <Container maxWidth="lg">
           <Stack direction="row" position="relative">
             <Grid container spacing={{ xs: 0, md: 4 }} position="relative">
-              <Grid item md={3}>
-                <Category />
+              <Grid item md={3} display={{ xs: "none", md: "block" }}>
+                <Box
+                  bgcolor="white"
+                  py={3}
+                  px={2.2}
+                  borderRadius="5px"
+                  sx={{
+                    // width: "278px",
+                    // minWidth: "278px",
+                    height: "calc(100vh - 140px)",
+                    boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
+                    position: "sticky",
+                    top: "80px",
+                    overflowY: "scroll",
+                    "&::-webkit-scrollbar": {
+                      width: "5px",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      background: "transparent",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      background: "#ebeff7",
+                      borderRadius: "100px",
+                    },
+                  }}
+                >
+                  <Category />
+                </Box>
               </Grid>
               <Grid item xs={12} md={9}>
                 <Shop />
