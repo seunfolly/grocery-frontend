@@ -17,7 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
     if (req.body.name) {
       req.body.slug = slugify(req.body.name);
     }
-    // console.log(req.images);
+    console.log(req.body)
     const newProduct = await Product.create({
       ...req.body,
       productId: generateRandomHex(),
