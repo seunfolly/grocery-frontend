@@ -84,7 +84,6 @@ const AddProduct = () => {
       setCategoryLevels([categories]);
       setSelectedCategories([]);
       setSelectedFiles([]);
-
     };
   }, [id]);
 
@@ -115,13 +114,14 @@ const AddProduct = () => {
   const initialValues = {
     name: productData?.name || "",
     description: productData?.description || "",
-    stock: productData?.stock || "",
+    stock: productData?.stock || 0,
     regularPrice: productData?.regularPrice || "",
     salePrice: productData?.salePrice || "",
     tags: productData?.tags || [],
     category: productData?.category?._id || "",
     brand: productData?.brand?._id || "",
     published: productData?.published || false,
+    reStock: productData?.reStock || false,
     images: [],
   };
   useEffect(() => {
@@ -134,7 +134,7 @@ const AddProduct = () => {
       setSelectedFiles(productData?.images);
     }
   }, [productData]);
- 
+  console.log(productData)
   return (
     <Box bgcolor="background.paper" p={4}>
       <Stack spacing={3}>
@@ -492,7 +492,10 @@ const AddProduct = () => {
                     }}
                   />
                 </Box>
-                <Box mt="20px">
+                <Box mt="20px" sx={{
+                  display: "flex",
+                  gap: 4
+                }}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -527,6 +530,31 @@ const AddProduct = () => {
                     label={
                       <Typography component="span" sx={{ fontSize: "17px" }}>
                         Publish Product
+                      </Typography>
+                    }
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={values.reStock}
+                        onChange={(e) => {
+                          setFieldValue("reStock", e.target.checked);
+                        }}
+                        name="reStock"
+                        sx={{
+                          "& .MuiSwitch-thumb": {
+                            color: "#2756b6",
+                          },
+                          "& .Mui-checked+.MuiSwitch-track": {
+                            backgroundColor: "#4e97fd !important",
+                          },
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography component="span" sx={{ fontSize: "17px" }}>
+                        Product will be Restocked
                       </Typography>
                     }
                   />

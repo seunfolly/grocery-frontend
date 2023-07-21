@@ -16,7 +16,7 @@ import Cart from "./pages/cart";
 import { useDispatch, useSelector } from "react-redux";
 import { userCart, logout, resetState } from "./features/auth/authSlice";
 import { getUserCart } from "./features/cart/cartSlice";
-
+import NotFound from "./pages/NotFound";
 function PrivateRoute({ children, authorizedRoles }) {
   const user = useSelector((state) => state.auth.user);
   const isAuthorized = user && authorizedRoles.includes(user?.role);
@@ -99,6 +99,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path='*' element={<NotFound />}/>
           <Route
             path="/cart"
             element={

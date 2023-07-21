@@ -26,6 +26,7 @@ export const createProducts = createAsyncThunk(
       formData.append("category", productData.category);
       formData.append("brand", productData.brand);
       formData.append("published", productData.published);
+      formData.append("reStock", productData.reStock);
       productData.images.forEach((image) => {
         formData.append(`images`, image);
       });
@@ -64,7 +65,7 @@ export const updateProduct = createAsyncThunk(
       formData.append("brand", productData.brand);
       formData.append("category", productData.category);
       formData.append("published", productData.published);
-      // formData.append("previousImages", productData.previousImages);
+      formData.append("reStock", productData.reStock);
       productData.previousImages.forEach((image,index) => {
         formData.append(`previousImages[${index}]`, JSON.stringify(image));
       });

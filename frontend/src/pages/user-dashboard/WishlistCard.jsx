@@ -59,7 +59,7 @@ const WishListCard = ({
       }}
     >
       <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-        <img src={images[0].url} style={{ width: "100%", height: "250px" }} />
+        <img src={images[0]?.url} style={{ width: "100%", height: "250px" }} />
         {/* {images[0].url} */}
       </Link>
 

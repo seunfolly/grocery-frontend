@@ -45,7 +45,7 @@ const ProductCard = ({
     dispatch(
       addToCart({
         id: _id,
-        image: images[0].url,
+        image: images[0]?.url,
         price: salePrice ? salePrice : regularPrice,
         name: name,
       })
@@ -84,7 +84,6 @@ const ProductCard = ({
       }}
     >
       <IconButton
-        disabled={stock <= 0}
         onClick={() => addToWishList()}
         sx={{
           position: "absolute",
@@ -149,7 +148,7 @@ const ProductCard = ({
                       fontSize: "20px",
                     }}
                   />
-                  <Typography variant="subtitle1"> SOLD OUT</Typography>{" "}
+                  <Typography variant="subtitle1"> BACK SOON</Typography>{" "}
                 </Button>
               ) : product?.count > 0 ? (
                 <Stack alignItems="center" direction="row" spacing={2}>

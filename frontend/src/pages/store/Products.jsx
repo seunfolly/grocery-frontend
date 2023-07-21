@@ -21,7 +21,9 @@ const Products = ({ activeIcon, category, search }) => {
       dispatch(getProducts());
     }
   }, [category, search]);
-  const productState = useSelector((state) => state.product.products);
+  const {products} = useSelector((state) => state.product);
+  const productState = products.filter((product,index) => product.stock > 0 || (product.stock <= 0 && product.reStock === true))
+
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
 

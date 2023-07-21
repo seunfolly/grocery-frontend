@@ -201,7 +201,7 @@ const ICard = ({
                 fontSize: "20px",
               }}
             />
-            <Typography variant="subtitle1"> SOLD OUT</Typography>{" "}
+            <Typography variant="subtitle1"> BACK SOON</Typography>{" "}
           </Button>
         </Box>
       )}
@@ -228,7 +228,6 @@ const ICard = ({
         <Tooltip  title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
           <span>
           <IconButton
-            disabled={stock <= 0}
             onClick={() => addToWishList()}
             sx={{
               color: toggle ? "#D23F57" : "#00000042",

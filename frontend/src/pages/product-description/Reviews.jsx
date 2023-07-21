@@ -50,7 +50,7 @@ const Reviews = ({ id }) => {
           <Stack spacing={1}>
             <Stack direction="row" spacing={2}>
               <Avatar
-                src={rating?.postedby.image.url}
+                src={rating?.postedby?.image?.url}
                 sx={{
                   height: "50px",
                   width: "50px",

@@ -17,7 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
     if (req.body.name) {
       req.body.slug = slugify(req.body.name);
     }
-    console.log(req.body)
+    // console.log(req.images);
     const newProduct = await Product.create({
       ...req.body,
       productId: generateRandomHex(),
@@ -113,7 +113,7 @@ const getaProduct = asyncHandler(async (req, res) => {
 const getAllProduct = asyncHandler(async (req, res) => {
   try {
     // Filtering
-    // console.log(req.query);
+  
     const queryObj = { ...req.query };
     const excludeFields = [
       "page",

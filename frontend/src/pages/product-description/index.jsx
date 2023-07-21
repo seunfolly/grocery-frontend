@@ -143,7 +143,7 @@ const ProductDescription = () => {
                   {productDetails?.images.map((image) => (
                     <div key={image._id}>
                       <img
-                        src={image.url}
+                        src={image?.url}
                         alt={`Image ${image._id}`}
                         style={{
                           width: "100%",
@@ -222,7 +222,7 @@ const ProductDescription = () => {
                   </Stack>
                   <Stack spacing={0.3}>
                     <Typography variant="subtitle2">
-                      {productDetails?.brand?.name || "Brand"}
+                      {productDetails?.brand?.name || "No Brand"}
                     </Typography>
                     <Typography variant="subtitle2" color="text.secondary">
                       {productDetails?.productId}
@@ -323,7 +323,7 @@ const ProductDescription = () => {
                     <Typography variant="subtitle1"> Add To Cart</Typography>
                   </Button>
 
-                  { productDetails?.stock > 0 && <Tooltip
+                  <Tooltip
                     title={toggle ? "Remove from wishlist" : "Add to wishlist"}
                   >
                     <IconButton
@@ -341,7 +341,7 @@ const ProductDescription = () => {
                     >
                       <FavoriteBorderIcon />
                     </IconButton>
-                  </Tooltip>}
+                  </Tooltip>
                 </Box>
                 <Stack direction="row" spacing={5}>
                   <Stack spacing={0.3}>
@@ -350,7 +350,7 @@ const ProductDescription = () => {
                   </Stack>
                   <Stack spacing={0.3}>
                     <Typography variant="subtitle2" color="text.secondary">
-                      {productDetails?.category.name}
+                      {productDetails?.category?.name}
                     </Typography>
                     <Typography variant="subtitle2" color="text.secondary">
                       {productDetails?.tags.join(", ")}

@@ -8,11 +8,10 @@ import Comment from "./Comment";
 import Footer from "./Footer";
 import { Carousel, Carousel1, Carousel2 } from "./Carousel";
 
-
 const Category = ({ name, image, _id }) => {
   return (
     <Link
-    to={`/store?category=${_id}`}
+      to={`/store?category=${_id}`}
       style={{
         textDecoration: "none",
       }}
@@ -32,7 +31,7 @@ const Category = ({ name, image, _id }) => {
         }}
       >
         <img
-          src= {image.url}
+          src={image?.url}
           alt={name}
           style={{ width: "60px", height: "60px", borderRadius: "8px" }}
         />
@@ -47,7 +46,7 @@ const Category = ({ name, image, _id }) => {
 
 const Shop = () => {
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     dispatch(getProducts());
     dispatch(getCategories(1));
@@ -56,6 +55,10 @@ const Shop = () => {
   const { products, isLoading } = useSelector((state) => state.product);
   const { categories } = useSelector((state) => state.category);
 
+  const filteredProduct = products.filter(
+    (product, index) =>
+      product.stock > 0 || (product.stock <= 0 && product.reStock === true)
+  );
 
   if (isLoading) {
     return (
@@ -65,7 +68,6 @@ const Shop = () => {
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
-
         }}
       >
         <CircularProgress />
@@ -74,7 +76,7 @@ const Shop = () => {
   }
 
   return (
-    <Box >
+    <Box>
       <Stack spacing={6}>
         <Carousel2 />
         <Stack spacing={1}>
@@ -94,14 +96,17 @@ const Shop = () => {
             ))}
           </Grid>
         </Stack>
-       
-        <Carousel title={"Best Selling in Your Area"} productList={products} />
+
+        <Carousel
+          title={"Best Selling in Your Area"}
+          productList={filteredProduct}
+        />
         <Carousel1 />
         <Carousel
           title={"Snacks, Drinks, Dairy & More"}
-          productList={products}
+          productList={filteredProduct}
         />
-        <Comment products={products}/>
+        <Comment products={filteredProduct} />
         <Footer />
       </Stack>
     </Box>
