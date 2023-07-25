@@ -5,61 +5,97 @@ import {
   Button,
   Paper,
   Avatar,
+  IconButton,
   Grid,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-const Profile = () => {
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Header from "./Header";
+
+const Profile = ({ openDrawer }) => {
+  const isNonMobile = useMediaQuery("(min-width:968px)");
+  const Mobile = useMediaQuery("(min-width:600px)");
+
   const auth = useSelector((state) => state.auth);
   const { user } = auth;
   return (
     <Stack spacing={3}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={2} alignItems="center">
-          <PersonIcon
-            sx={{
-              color: "#D23F57",
-              fontSize: "30px",
-            }}
-          />
-
-          <Typography variant="h5" fontSize="23px">
-            My Profile
-          </Typography>
-        </Stack>
-        <Link
-          to={`/user/profile/${user?._id}`}
-          style={{
-            textDecoration: "none",
-          }}
+      <Header
+        Icon={PersonIcon}
+        title={"My Profile"}
+        openDrawer={openDrawer}
+        button="Edit Profile"
+        link={`/user/profile/${user?._id}`}
+      />
+      {/* <Stack direction="row" justifyContent="space-between" alignItems="start">
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems="center"
+          width={{ xs: "auto", md: "100%" }}
         >
-          <Button
-            sx={{
-              textTransform: "none",
-              bgcolor: "#FCE9EC",
-              color: "primary.main",
-              fontSize: "subtitle2",
-              paddingX: "40px",
-              fontWeight: 600,
-              paddingY: "6px",
-              "&:hover": {
-                backgroundColor: "rgba(210, 63, 87, 0.04)",
-              },
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            mb={{ xs: 1.5, md: 0 }}
+          >
+            <PersonIcon
+              sx={{
+                color: "#D23F57",
+                fontSize: "30px",
+              }}
+            />
+
+            <Typography variant="h5" fontSize="23px">
+              My Profile
+            </Typography>
+          </Stack>
+          <Link
+            to={`/user/profile/${user?._id}`}
+            style={{
+              textDecoration: "none",
             }}
           >
-            Edit Profile
-          </Button>
-        </Link>
-      </Stack>
+            <Button
+              sx={{
+                textTransform: "none",
+                bgcolor: "#FCE9EC",
+                color: "primary.main",
+                fontSize: "subtitle2",
+                paddingX: "40px",
+                fontWeight: 600,
+                paddingY: "6px",
+                "&:hover": {
+                  backgroundColor: "rgba(210, 63, 87, 0.04)",
+                },
+              }}
+            >
+              Edit Profile
+            </Button>
+          </Link>
+        </Stack>
+
+        <IconButton
+           onClick={openDrawer}
+          sx={{
+            display: isNonMobile ? "none" : "inline-flex",
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+      </Stack> */}
 
       <Grid container justifyContent="space-between">
-        <Grid item sm={6}>
+        <Grid item xs={12} sm={6}>
           <Paper
             elevation={0}
             sx={{
               paddingY: 2,
-              paddingX: 3,
+              paddingX: Mobile ? 3 : 1.5,
               bgcolor: "white",
               display: "flex",
               justifyContent: "space-between",
@@ -86,7 +122,14 @@ const Profile = () => {
           </Paper>
         </Grid>
 
-        <Grid item sm={1.5}>
+        <Grid
+          item
+          xs={12}
+          sm={2}
+          sx={{
+            marginTop: Mobile ? 0 : 2,
+          }}
+        >
           <Paper
             elevation={0}
             sx={{
@@ -119,9 +162,11 @@ const Profile = () => {
         elevation={0}
         sx={{
           paddingY: 2,
-          paddingX: 3,
+          paddingX: Mobile ? 3 : 1.5,
+
           display: "flex",
           bgcolor: "white",
+          flexDirection: isNonMobile ? "row" : "column",
         }}
       >
         <Box

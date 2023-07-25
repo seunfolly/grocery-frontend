@@ -66,7 +66,7 @@ const Header = () => {
     <Box
       sx={{
         bgcolor: "white",
-        zIndex: 4,
+        zIndex: 50,
         position: "sticky",
         top: 0,
         py: 0.7,

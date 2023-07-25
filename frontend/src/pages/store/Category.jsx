@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { base_url } from "../../utils/baseUrl";
 import axios from "axios";
 
-const Category = ({ pCategory }) => {
+const Category = ({ pCategory, closeDrawer }) => {
   const [categories, setCategories] = useState([]);
   const getCategories = () => {
     axios
@@ -55,6 +55,7 @@ const Category = ({ pCategory }) => {
           <Link
             to={`/store?category=${category._id}`}
             style={{ textDecoration: "none", width: "100%" }}
+            onClick={closeDrawer}
           >
             <Typography
               color={category._id === pCategory ? "#D23F57" : "#4B566B"}
@@ -89,7 +90,12 @@ const Category = ({ pCategory }) => {
   };
 
   return (
-    <Box>{categories.map((category) => renderCategory(category, true))}</Box>
+    <Box>
+      <Typography variant="subtitle1" fontSize="15px">
+        Categories
+      </Typography>
+      {categories.map((category) => renderCategory(category, true))}
+    </Box>
   );
 };
 

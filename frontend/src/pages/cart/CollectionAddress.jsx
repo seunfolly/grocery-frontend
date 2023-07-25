@@ -7,6 +7,7 @@ import {
 import {
   setSelectedAddress
 } from "../../features/order/orderSlice";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Address = (prop) => {
   const {
@@ -54,6 +55,7 @@ const Address = (prop) => {
 
 export const CollectionAddress = ({ updateStepCompletion }) => {
   const dispatch = useDispatch();
+  const isNonMobile = useMediaQuery("(min-width:600px)");
   const { collectionAddresses} = useSelector(
     (state) => state.address
   );
@@ -70,7 +72,7 @@ export const CollectionAddress = ({ updateStepCompletion }) => {
       elevation={1}
       sx={{
         backgroundColor: "white",
-        p: 3,
+        p: isNonMobile? 3: 1.5,
         pb: 6,
         display: "flex",
         flexDirection: "column",
@@ -86,7 +88,7 @@ export const CollectionAddress = ({ updateStepCompletion }) => {
       <Typography variant="subtitle2">Collection Address</Typography>
       <Grid container spacing={2}>
         {collectionAddresses.map((address) => (
-          <Grid item sm={4}>
+          <Grid item xs={12} sm={4}>
             <Address
               {...address}
               activeId={selectedAddress}

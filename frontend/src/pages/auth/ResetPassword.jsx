@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -27,6 +29,7 @@ const CustomTextField = styled(TextField)({
 });
 
 const ResetPassword = () => {
+  const isNonMobile = useMediaQuery("(min-width:600px)");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -54,8 +57,8 @@ const ResetPassword = () => {
         sx={{
           bgcolor: "white",
           radius: "8px",
-          width: "500px",
-          padding: "2rem 3rem",
+          width: isNonMobile ? "500px" : "95%",
+          padding: isNonMobile ? "2rem 3rem" : "2rem 2rem",
           boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
         }}
       >

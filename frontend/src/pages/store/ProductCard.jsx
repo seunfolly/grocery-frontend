@@ -96,17 +96,25 @@ const ProductCard = ({
       </IconButton>
 
       <Grid container alignItems="center">
-        <Grid item sm={3}>
+        <Grid item xs={12} sm={5} md={4} lg={3}>
           <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-            <Box width="195px" height="195px">
+            <Box
+              width="195px"
+              height="195px"
+              margin={{ xs: "0 auto", sm: "0" }}
+            >
               <img src={images[0].url} alt={name} style={{ width: "100%" }} />
             </Box>
           </Link>
         </Grid>
-        <Grid item sm={9}>
+        <Grid item xs={12} sm={7} md={8} lg={9}>
           <Stack spacing={1.1}>
             <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-              <Typography variant="body2" color="#373F50">
+              <Typography
+                variant="body2"
+                color="#373F50"
+                textAlign={{ xs: "center", sm: "left" }}
+              >
                 {name}
               </Typography>
             </Link>
@@ -114,17 +122,34 @@ const ProductCard = ({
             {/* <Rating value={totalstar || 0} readOnly />
              */}
             <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-              <Typography variant="subtitle2" color="text.secondary" mt={1}>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                mt={1}
+                textAlign={{ xs: "center", sm: "left" }}
+              >
                 {description}
               </Typography>
             </Link>
 
-            <Stack spacing={1} direction="row" mt={1} alignItems="center">
+            <Stack
+              spacing={1}
+              direction="row"
+              mt={1}
+              alignItems="center"
+              alignSelf="center"
+            >
               <Typography color="primary.main" variant="subtitle1">
-                {`₦ ${salePrice ? salePrice.toLocaleString() : regularPrice.toLocaleString()}`}
+                {`₦ ${
+                  salePrice
+                    ? salePrice.toLocaleString()
+                    : regularPrice.toLocaleString()
+                }`}
               </Typography>
               <Typography color="text.secondary" variant="subtitle1">
-                <del>{salePrice ? `₦  ${regularPrice.toLocaleString()}` : ""}</del>
+                <del>
+                  {salePrice ? `₦  ${regularPrice.toLocaleString()}` : ""}
+                </del>
               </Typography>
               {stock <= 0 ? (
                 <Button

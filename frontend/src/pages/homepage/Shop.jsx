@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { Box, Stack, Grid, Typography, CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../features/product/productSlice";
-import { getCategories } from "../../features/category/categorySlice";
+import { useSelector } from "react-redux";
 import Comment from "./Comment";
 import Footer from "./Footer";
 import { Carousel, Carousel1, Carousel2 } from "./Carousel";
@@ -33,7 +31,7 @@ const Category = ({ name, image, _id }) => {
         <img
           src={image?.url}
           alt={name}
-          style={{ width: "60px", height: "60px", borderRadius: "8px" }}
+          style={{ width: "70px", height: "70px", borderRadius: "8px" }}
         />
 
         <Typography variant="subtitle1" color="#4B566B" sx={{}}>
@@ -45,13 +43,6 @@ const Category = ({ name, image, _id }) => {
 };
 
 const Shop = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getProducts());
-    dispatch(getCategories(1));
-  }, []);
-
   const { products, isLoading } = useSelector((state) => state.product);
   const { categories } = useSelector((state) => state.category);
 
@@ -59,21 +50,6 @@ const Shop = () => {
     (product, index) =>
       product.stock > 0 || (product.stock <= 0 && product.reStock === true)
   );
-
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <Box>

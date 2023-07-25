@@ -5,6 +5,7 @@ import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import EastIcon from "@mui/icons-material/East";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrders } from "../../features/auth/authSlice";
+import Header from "./Header";
 
 const Order = ({ _id, orderId, orderStatus, orderDate, totalPrice }) => {
   return (
@@ -23,6 +24,7 @@ const Order = ({ _id, orderId, orderStatus, orderDate, totalPrice }) => {
           bgcolor: "white",
           borderRadius: "10px",
           alignItems: "center",
+          flexWrap: "wrap",
         }}
       >
         <Typography variant="subtitle1" flex="1 1 0">
@@ -40,9 +42,10 @@ const Order = ({ _id, orderId, orderStatus, orderDate, totalPrice }) => {
         <Typography
           variant="subtitle2"
           flex="1 1 0"
-          marginLeft="40px"
+          // marginLeft="40px"
+          whiteSpace={{ xs: "pre", sm: "normal" }}
           sx={{
-            marginLeft: "40px",
+            margin: "6px",
           }}
         >
           {new Date(orderDate).toLocaleDateString("en-US", {
@@ -51,11 +54,16 @@ const Order = ({ _id, orderId, orderStatus, orderDate, totalPrice }) => {
             year: "numeric",
           })}
         </Typography>
-        <Typography variant="subtitle2" flex="1 1 0" marginLeft="40px">
+        <Typography
+          variant="subtitle2"
+          flex="1 1 0"
+          margin="6px"
+          whiteSpace={{ xs: "pre", sm: "normal" }}
+        >
           {`₦ ${totalPrice.toLocaleString()}`}
         </Typography>
 
-        <Typography>
+        <Typography display={{ xs: "none", sm: "block" }}>
           <IconButton>
             <EastIcon />
           </IconButton>
@@ -65,7 +73,7 @@ const Order = ({ _id, orderId, orderStatus, orderDate, totalPrice }) => {
   );
 };
 
-const Orders = () => {
+const Orders = ({ openDrawer }) => {
   const dispatch = useDispatch();
   const { orders } = useSelector((state) => state.auth);
   useEffect(() => {
@@ -77,22 +85,13 @@ const Orders = () => {
 
   return (
     <Stack spacing={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={2} alignItems="center">
-          <ShoppingBagIcon
-            sx={{
-              color: "#D23F57",
-              fontSize: "30px",
-            }}
-          />
+      <Header
+        Icon={ShoppingBagIcon}
+        title={"My Orders"}
+        openDrawer={openDrawer}
+      />
 
-          <Typography variant="h5" fontSize="23px">
-            My Orders
-          </Typography>
-        </Stack>
-      </Stack>
-
-      <Box display="flex" px={2} color="#7d879c">
+      <Box display={{ xs: "none", sm: "flex" }} px={2} color="#7d879c">
         <Typography variant="body2" flex="1 1 0">
           Order#
         </Typography>

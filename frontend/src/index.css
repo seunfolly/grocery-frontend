@@ -47,44 +47,67 @@ body {
   justify-content: center;
   /* Add other styles as needed */
 }
-.caur{
+.caur {
   padding: 10px;
 }
-.slick-next{
+.slick-next {
   display: block;
-    
-    color: #111;
-    z-index: 22;
-    background: transparent;
-    right: -5px;
+
+  color: #111;
+  z-index: 22;
+  background: transparent;
+  right: -5px;
 }
-.slick-prev{
+.slick-prev {
   display: block;
   color: #111;
-    z-index: 22;
-    background: transparent;
-    left: -15px;
+  z-index: 22;
+  background: transparent;
+  left: -15px;
 }
 .slick-next:before {
   color: black;
 }
- .slick-prev:before{
+.slick-prev:before {
   color: black;
 }
-.carousel-card{
+.carousel-card {
   padding: 10px;
 }
-.card-image{
+.card-image {
   height: 250px;
   width: 100%;
+}
+.desc-carousel-image {
+  height: auto;
+  width: 130px;
+}
+
+@keyframes scaleAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 @media (max-width: 600px) {
   .MuiContainer-root {
     padding: 0 10px !important;
   }
+  .desc-carousel-image {
+    width: 100px;
+  }
+  .image-r {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
 }
-@media (max-width: 500px) {
-  .card-image{
+@media (max-width: 968px) {
+  .card-image {
     height: 100%;
   }
 }

@@ -14,7 +14,7 @@ import {
 import Header from "../../components/layouts/Header";
 import Category from "./Category";
 import Shop from "./Shop";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { resetState } from "../../features/cart/cartSlice";
 import { resetState as resetOrderState } from "../../features/order/orderSlice";
@@ -30,6 +30,7 @@ import { Link } from "react-router-dom";
 const Homepage = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
@@ -73,7 +74,7 @@ const Homepage = () => {
           bottom: 0,
           justifyContent: "space-around",
           alignItems: "center",
-          zIndex: "1201",
+          zIndex: "1000",
           height: "64px",
           backgroundColor: "#fff",
           boxShadow: "0px 1px 4px 3px rgba(0, 0, 0, 0.1)",
@@ -110,8 +111,10 @@ const Homepage = () => {
           <CategoryOutlined />
           <Typography fontSize="13px">Category</Typography>
         </IconButton>
-        <Link
-          to="/cart"
+        <IconButton
+          component="span"
+          onClick={() => navigate("/cart")}
+          disabled={products.length < 1}
           style={{
             textDecoration: "none",
             flex: "1 1 0",
@@ -132,7 +135,7 @@ const Homepage = () => {
           </StyledBadge>
 
           <Typography fontSize="13px">Cart</Typography>
-        </Link>
+        </IconButton>
         {user && (
           <Link
             to="/user/profile"
@@ -195,6 +198,7 @@ const Homepage = () => {
       <Header />
       <Box
         paddingTop={{ xs: "12px", sm: "30px" }}
+        paddingBottom={{ xs: "90px", md: "30px" }}
         sx={{
           bgcolor: "#F6F9FC",
         }}

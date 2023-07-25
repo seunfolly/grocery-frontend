@@ -8,7 +8,7 @@ import {
   Box,
   Divider,
   styled,
-  CircularProgress,
+  Drawer,
 } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Footer from "../../components/layouts/Footer";
@@ -47,6 +47,14 @@ const Store = () => {
   const [featured, setFeatured] = useState(null);
   const [stock, setStock] = useState(null);
   const [pCategory, setPCategory] = useState(null);
+  const [drawer, setDrawer] = useState(false);
+  const openDrawer = () => {
+    setDrawer(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawer(false);
+  };
 
   useEffect(() => {
     if (category) {
@@ -99,6 +107,7 @@ const Store = () => {
     <>
       <Header />
       <Box
+        px={{ xs: 0, sm: 0 }}
         sx={{
           bgcolor: "#F6F9FC",
           paddingY: "40px",
@@ -110,9 +119,10 @@ const Store = () => {
             setActiveIcon={setActiveIcon}
             sort={sort}
             setSort={setSort}
+            openDrawer={openDrawer}
           />
           <Grid container spacing={3} marginTop={4}>
-            <Grid item md={3}>
+            <Grid item md={3} display={{ xs: "none", md: "block" }}>
               <Box
                 bgcolor="white"
                 p={3}
@@ -150,7 +160,7 @@ const Store = () => {
                 <Rating rating={rating} setRating={setRating} />
               </Box>
             </Grid>
-            <Grid item md={9}>
+            <Grid item xs={12} md={9}>
               <Products
                 activeIcon={activeIcon}
                 category={category}
@@ -160,6 +170,70 @@ const Store = () => {
           </Grid>
         </Container>
       </Box>
+
+      <Drawer
+        open={drawer}
+        onClose={closeDrawer}
+        anchor="left"
+        bgcolor="white"
+        sx={{
+          zIndex: "1200",
+          "& .MuiPaper-root": {
+            backgroundColor: "white",
+          },
+        }}
+      >
+        <Box
+          bgcolor="white"
+          py={3}
+          px={2.2}
+          borderRadius="5px"
+          sx={{
+            width: "300px",
+            height: "100vh",
+
+            overflowY: "scroll",
+            "&::-webkit-scrollbar": {
+              width: "5px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "transparent",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#ebeff7",
+              borderRadius: "100px",
+            },
+          }}
+        >
+          <Category pCategory={pCategory}  closeDrawer={closeDrawer}/>
+          <CustomDivider />
+          <Range
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            setMinPrice={setMinPrice}
+            setMaxPrice={setMaxPrice}
+          />
+          <CustomDivider />
+
+          <Brand
+            selectedBrands={selectedBrands}
+            setSelectedBrands={setSelectedBrands}
+          />
+          <CustomDivider />
+
+          <Features
+            sales={sales}
+            setSales={setSales}
+            featured={featured}
+            setFeatured={setFeatured}
+            stock={stock}
+            setStock={setStock}
+          />
+          <CustomDivider />
+
+          <Rating rating={rating} setRating={setRating} />
+        </Box>
+      </Drawer>
       <Footer />
     </>
   );

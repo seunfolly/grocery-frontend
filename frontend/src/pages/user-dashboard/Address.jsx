@@ -24,10 +24,11 @@ import {
   updateAddress,
 } from "../../features/address/addressSlice";
 import makeToast from "../../utils/toaster";
+import Header from "./Header";
 
-const Address = () => {
+const Address = ({openDrawer}) => {
   const { id } = useParams();
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const isNonMobile = useMediaQuery("(min-width:968px)");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -69,50 +70,20 @@ const Address = () => {
   };
   return (
     <Stack spacing={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={2} alignItems="center">
-          <PlaceIcon
-            sx={{
-              color: "#D23F57",
-              fontSize: "30px",
-            }}
-          />
+      <Header
+        Icon={PlaceIcon}
+        title={id === "new" ? "Add Address" : "Edit Address"}
+        openDrawer={openDrawer}
+        button="Back To Address"
+        link={`/user/addresses`}
+      />
 
-          <Typography variant="h5" fontSize="23px">
-            {id === "new" ? "Add Address" : "Edit Address"}
-          </Typography>
-        </Stack>
-
-        <Link
-          to={`/user/addresses`}
-          style={{
-            textDecoration: "none",
-          }}
-        >
-          <Button
-            sx={{
-              textTransform: "none",
-              bgcolor: "#FCE9EC",
-              color: "primary.main",
-              fontSize: "subtitle2",
-              paddingX: "40px",
-              fontWeight: 600,
-              paddingY: "6px",
-              "&:hover": {
-                backgroundColor: "rgba(210, 63, 87, 0.04)",
-              },
-            }}
-          >
-            Back To Address
-          </Button>
-        </Link>
-      </Stack>
 
       <Paper
         elevation={0}
         sx={{
           bgcolor: "white",
-          paddingX: 5,
+          paddingX: isNonMobile? 5: 2,
           paddingY: 4,
         }}
       >

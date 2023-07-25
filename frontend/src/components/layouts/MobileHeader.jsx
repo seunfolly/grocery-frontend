@@ -91,26 +91,26 @@ const MobileHeader = ({
       >
         <IconButton
           onClick={handleDrawerOpen}
-          sx={{
-            color: "rgba(0, 0, 0, 0.54)",
-          }}
+          // sx={{
+          //   color: "rgba(0, 0, 0, 0.54)",
+          // }}
         >
           <SearchIcon
             sx={{
-              fontSize: "20px",
+              fontSize: "23px",
             }}
           />
         </IconButton>
         <div>
           <IconButton
-            sx={{
-              color: "rgba(0, 0, 0, 0.54)",
-            }}
+            // sx={{
+            //   color: "rgba(0, 0, 0, 0.54)",
+            // }}
             onClick={handleClick}
           >
             <PersonOutlineOutlinedIcon
               sx={{
-                fontSize: "20px",
+                fontSize: "23px",
               }}
             />
           </IconButton>
@@ -170,9 +170,9 @@ const MobileHeader = ({
 
         <IconButton
           onClick={handleCartOpen}
-          sx={{
-            color: "rgba(0, 0, 0, 0.54)",
-          }}
+          // sx={{
+          //   color: "rgba(0, 0, 0, 0.54)",
+          // }}
         >
           <StyledBadge
             badgeContent={products.reduce(
@@ -182,7 +182,7 @@ const MobileHeader = ({
           >
             <ShoppingBagOutlinedIcon
               sx={{
-                fontSize: "20px",
+                fontSize: "23px",
               }}
             />
           </StyledBadge>

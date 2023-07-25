@@ -22,6 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { resetState } from "../../features/cart/cartSlice";
 import { resetState as resetOrderState } from "../../features/order/orderSlice";
 import { useNavigate } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const CustomDivider = styled(Divider)`
   margin: 5px 0px 5px;
@@ -33,6 +34,7 @@ export const CustomDivider = styled(Divider)`
 const PaymentPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const Mobile = useMediaQuery("(min-width:600px)");
   const { cartTotal } = useSelector((state) => state.cart);
   const auth = useSelector((state) => state.auth);
   const { orderMessage, selectedCard, selectedAddress } = useSelector(
@@ -99,8 +101,8 @@ const PaymentPage = () => {
     }
   };
   return (
-    <Grid container spacing={3} mt={5}>
-      <Grid item sm={8}>
+    <Grid container spacing={3} mt={{ xs: 0, sm: 4 }}>
+      <Grid item xs={12} md={8}>
         <Paper
           elevation={1}
           sx={{
@@ -115,7 +117,7 @@ const PaymentPage = () => {
             <FormControlLabel
               sx={{
                 paddingY: 2,
-                paddingX: 3,
+                paddingX: Mobile ? 3 : 2,
               }}
               control={
                 <Radio
@@ -124,7 +126,11 @@ const PaymentPage = () => {
                   onChange={handleSelectedOption}
                 />
               }
-              label="Pay with Card"
+              label={
+                <Typography variant={{ xs: "subtitle2", sm: "body2" }}>
+                  Pay with Card
+                </Typography>
+              }
             />
             {option === "card" && (
               <Stack spacing={2}>
@@ -133,7 +139,7 @@ const PaymentPage = () => {
                   color="text.secondary"
                   sx={{
                     paddingBottom: 2,
-                    paddingX: 3,
+                    paddingX: Mobile ? 3 : 2,
                   }}
                 >
                   Kindly note that you will be redirected to Paystack Checkout
@@ -148,7 +154,7 @@ const PaymentPage = () => {
             <FormControlLabel
               sx={{
                 paddingY: 2,
-                paddingX: 3,
+                paddingX: Mobile ? 3 : 2,
               }}
               control={
                 <Radio
@@ -157,13 +163,17 @@ const PaymentPage = () => {
                   onChange={handleSelectedOption}
                 />
               }
-              label="Pay with Cash on Collection or Delivery"
+              label={
+                <Typography variant={{ xs: "subtitle2", sm: "body2" }}>
+                  Pay with Cash on Collection or Delivery
+                </Typography>
+              }
             />
             <CustomDivider />
             <FormControlLabel
               sx={{
                 paddingY: 2,
-                paddingX: 3,
+                paddingX: Mobile ? 3 : 2,
               }}
               control={
                 <Radio
@@ -172,19 +182,29 @@ const PaymentPage = () => {
                   onChange={handleSelectedOption}
                 />
               }
-              label="I have a Voucher"
+              label={
+                <Typography variant={{ xs: "subtitle2", sm: "body2" }}>
+                  I have a Voucher
+                </Typography>
+              }
             />
             {option === "voucher" && (
               <>
                 <CustomDivider />
-                <Stack py={2} px={3} pb={3} direction="row" spacing={3}>
+                <Stack
+                  py={2}
+                  px={{ xs: 2, sm: 3 }}
+                  pb={3}
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={3}
+                >
                   <TextField
                     variant="outlined"
                     type="text"
                     placeholder="Enter voucher code here"
                     size="small"
                     sx={{
-                      width: "50%",
+                      width: Mobile ? "50%" : "100%",
                       "& .MuiInputBase-root": {
                         fontSize: "15px",
                       },
@@ -202,7 +222,7 @@ const PaymentPage = () => {
                       fontSize: "14px",
                       paddingX: "20px",
                       fontWeight: 500,
-                      alignSelf: "start",
+                      alignSelf: Mobile ? "start" : "stretch",
                       "&:hover": {
                         backgroundColor: "#E3364E",
                       },
@@ -215,34 +235,8 @@ const PaymentPage = () => {
             )}
           </FormGroup>
         </Paper>
-        <Button
-          fullWidth
-          disabled={!option}
-          onClick={() => createOrder()}
-          sx={{
-            mt: 4,
-            textTransform: "none",
-            bgcolor: !option ? "#0000001f" : "primary.main",
-            color: "white",
-            fontSize: "14px",
-            paddingX: "20px",
-            fontWeight: 500,
-            gap: 1,
-
-            "&:hover": {
-              backgroundColor: "#E3364E",
-            },
-          }}
-        >
-          <ShoppingCartOutlinedIcon
-              sx={{
-                fontSize: "20px",
-              }}
-            />
-          Buy now{" "}
-        </Button>
       </Grid>
-      <Grid item sm={4}>
+      <Grid item xs={12} md={4}>
         <Paper
           sx={{
             bgcolor: "white",
@@ -282,6 +276,34 @@ const PaymentPage = () => {
             {`₦ ${cartTotal.toLocaleString()}`}
           </Typography>
         </Paper>
+      </Grid>
+      <Grid item xs={12} md={8}>
+        <Button
+          fullWidth
+          disabled={!option}
+          onClick={() => createOrder()}
+          sx={{
+            mt: 4,
+            textTransform: "none",
+            bgcolor: !option ? "#0000001f" : "primary.main",
+            color: "white",
+            fontSize: "14px",
+            paddingX: "20px",
+            fontWeight: 500,
+            gap: 1,
+
+            "&:hover": {
+              backgroundColor: "#E3364E",
+            },
+          }}
+        >
+          <ShoppingCartOutlinedIcon
+            sx={{
+              fontSize: "20px",
+            }}
+          />
+          Buy now{" "}
+        </Button>
       </Grid>
     </Grid>
   );

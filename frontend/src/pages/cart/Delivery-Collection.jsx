@@ -10,13 +10,14 @@ import {
 } from "@mui/material";
 import { DeliveryAddress } from "./DeliveryAddress";
 import { CollectionAddress } from "./CollectionAddress";
-// import BillingAddressForm from "./BillingAddressForm";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { setDeliveryOption } from "../../features/order/orderSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const DeliveryCollection = ({ updateStepCompletion }) => {
   const dispatch = useDispatch();
-  const { selectedAddress, deliveryOption } = useSelector(
+  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const { deliveryOption } = useSelector(
     (state) => state.order
   );
   const handleSelectedOption = (event) => {
@@ -35,7 +36,7 @@ const DeliveryCollection = ({ updateStepCompletion }) => {
         elevation={1}
         sx={{
           backgroundColor: "white",
-          p: 3,
+          p: isNonMobile? 3: 1.5,
           pb: 6,
           display: "flex",
           flexDirection: "column",
@@ -43,7 +44,7 @@ const DeliveryCollection = ({ updateStepCompletion }) => {
           borderRadius: "8px",
         }}
       >
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction="row" spacing={{xs:1,sm:2}} alignItems="center">
           <Avatar sx={{ bgcolor: "#d23f57" }}>1</Avatar>
           <Typography variant="body2">Delivery/Collection</Typography>
         </Stack>

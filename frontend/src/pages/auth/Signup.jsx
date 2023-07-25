@@ -13,8 +13,13 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import { signup, resetState, resetLoggedInFlag } from "../../features/auth/authSlice";
+import {
+  signup,
+  resetState,
+  resetLoggedInFlag,
+} from "../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import makeToast from "../../utils/toaster";
 
 const CustomTextField = styled(TextField)({
@@ -32,6 +37,7 @@ const CustomTextField = styled(TextField)({
 
 const Signup = () => {
   const dispatch = useDispatch();
+  const isNonMobile = useMediaQuery("(min-width:600px)");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -50,7 +56,7 @@ const Signup = () => {
   useEffect(() => {
     if (isSuccess && user && loggedFlag) {
       makeToast("success", "Signing up was Sucessful!");
-      dispatch(resetLoggedInFlag())
+      dispatch(resetLoggedInFlag());
       // resetFormRef.current();
       navigate("/");
     }
@@ -58,13 +64,13 @@ const Signup = () => {
       makeToast("error", message);
       dispatch(resetState());
     }
-  }, [isSuccess, isLoading, user,loggedFlag]);
+  }, [isSuccess, isLoading, user, loggedFlag]);
 
   return (
     <Box
       sx={{
         display: "flex",
-        // justifyContent: "center",
+        justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
         minHeight: "100vh",
@@ -76,8 +82,8 @@ const Signup = () => {
         sx={{
           bgcolor: "white",
           radius: "8px",
-          width: "500px",
-          padding: "2rem 3rem",
+          width: isNonMobile ? "500px" : "95%",
+          padding: isNonMobile ? "2rem 3rem" : "2rem 2rem",
           boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
         }}
       >

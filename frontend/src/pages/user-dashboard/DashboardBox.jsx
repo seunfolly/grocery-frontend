@@ -18,7 +18,7 @@ import {
 } from "../../features/auth/authSlice";
 import { getAddresses } from "../../features/address/addressSlice";
 
-const ILink = ({ text, no, Icon, url }) => {
+const ILink = ({ text, no, Icon, url, closeDrawer }) => {
   const location = useLocation();
   const isActive =
     location.pathname === `/user/${url}` ||
@@ -27,6 +27,7 @@ const ILink = ({ text, no, Icon, url }) => {
     <MuiLink
       component={Link}
       to={`/user/${url}`}
+      onClick={closeDrawer}
       underline="none"
       variant="subtitle2"
       color={isActive ? "primary.main" : "text.primary"}
@@ -53,7 +54,7 @@ const ILink = ({ text, no, Icon, url }) => {
   );
 };
 
-const DashboardBox = () => {
+const DashboardBox = ({ closeDrawer }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getOrders());
@@ -77,7 +78,7 @@ const DashboardBox = () => {
       Icon: <FavoriteBorderIcon />,
       url: "wishlist",
     },
-    { text: "Support", no: 0, Icon: <HeadsetMicIcon />, url: "support" },
+    // { text: "Support", no: 0, Icon: <HeadsetMicIcon />, url: "support" },
   ];
 
   const account = [
@@ -102,15 +103,7 @@ const DashboardBox = () => {
   ];
   const navigate = useNavigate();
   return (
-    <Box
-      bgcolor="#fff"
-      py={5}
-      borderRadius={2}
-      pr={2}
-      sx={{
-        boxShadow: " 0px 1px 3px rgba(3, 0, 71, 0.09)",
-      }}
-    >
+    <>
       <Stack spacing={5}>
         <Stack spacing={1.5}>
           <Typography pl={3.5} variant="subtitle2">
@@ -118,7 +111,7 @@ const DashboardBox = () => {
           </Typography>
           <Stack spacing={2}>
             {dashboards.map((dashboard, index) => (
-              <ILink key={index} {...dashboard} />
+              <ILink key={index} {...dashboard} closeDrawer={closeDrawer} />
             ))}
           </Stack>
         </Stack>
@@ -128,7 +121,7 @@ const DashboardBox = () => {
           </Typography>
           <Stack spacing={2}>
             {account.map((dashboard, index) => (
-              <ILink key={index} {...dashboard} />
+              <ILink key={index} {...dashboard} closeDrawer={closeDrawer} />
             ))}
           </Stack>
 
@@ -157,7 +150,7 @@ const DashboardBox = () => {
           </Button>
         </Stack>
       </Stack>
-    </Box>
+    </>
   );
 };
 

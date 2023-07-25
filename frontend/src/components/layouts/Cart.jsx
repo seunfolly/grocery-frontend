@@ -38,8 +38,8 @@ const Cart = ({ open, onClose }) => {
       }}
     >
       <Box
+        width={{ xs: "300px", sm: "350px" }}
         sx={{
-          width: "350px",
           bgcolor: "white",
           display: "flex",
           flexDirection: "column",
@@ -57,7 +57,7 @@ const Cart = ({ open, onClose }) => {
             justifyContent="space-between"
             alignItems="center"
             p={2}
-            px={3}
+            px={{ xs: 2, sm: 3 }}
           >
             <Stack
               color="text.secondary"
@@ -79,7 +79,7 @@ const Cart = ({ open, onClose }) => {
             {products.map((product, index) => (
               <Box
                 py={2}
-                px={3}
+                px={{ xs: 2, sm: 3 }}
                 key={index}
                 sx={{
                   borderBottom: "1px solid rgb(243, 245, 249)",
@@ -109,7 +109,7 @@ const Cart = ({ open, onClose }) => {
                     >
                       <RemoveIcon />
                     </Button>
-                    <Typography>{product.count}</Typography>
+                    <Typography>{product?.count}</Typography>
                     <Button
                       onClick={() => dispatch(increaseQuantity(product.id))}
                       variant="outlined"
@@ -124,21 +124,24 @@ const Cart = ({ open, onClose }) => {
                   </Stack>
                   <Stack direction="row" spacing={1.5} flex={1}>
                     <Avatar
-                      alt={product.name}
-                      src={product.image}
+                      alt={product?.name}
+                      src={product?.image}
                       sx={{ width: 70, height: 70, borderRadius: "0" }}
                     />
                     <Stack>
-                      <Typography>{product.name}</Typography>
+                      <Typography variant="subtitle1">
+                        {product?.name}
+                      </Typography>
                       <Typography
                         color="text.secondary"
                         variant="subtitle2"
                         fontSize="10px"
                       >
-                        {`₦ ${product.price.toLocaleString()}`} X {product.count}
+                        {`₦ ${product?.price?.toLocaleString()}`} X{" "}
+                        {product?.count}
                       </Typography>
                       <Typography color="primary.main" variant="subtitle1">
-                        {`₦ ${product.total.toLocaleString()}`}
+                        {`₦ ${product?.total?.toLocaleString()}`}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -176,7 +179,6 @@ const Cart = ({ open, onClose }) => {
                 width: "100%",
                 textAlign: "center",
                 borderRadius: "3px",
-
               }}
             >
               {`TOTAL (₦ ${cartTotal.toLocaleString()})`}

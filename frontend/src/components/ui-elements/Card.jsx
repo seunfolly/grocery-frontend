@@ -103,7 +103,7 @@ const ICard = ({
             mt={1}
           >
             {description.length > 100
-              ? `${description.substring(0, 90)}...`
+              ? `${description.substring(0, 85)}...`
               : description}
           </Typography>
         </Box>
@@ -225,18 +225,17 @@ const ICard = ({
           </Typography>
         </Stack>
 
-        <Tooltip  title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
+        <Tooltip title={toggle ? "Remove from wishlist" : "Add to wishlist"}>
           <span>
-          <IconButton
-            onClick={() => addToWishList()}
-            sx={{
-              color: toggle ? "#D23F57" : "#00000042",
-            }}
-          >
-            <FavoriteIcon fontSize="small" />
-          </IconButton>
+            <IconButton
+              onClick={() => addToWishList()}
+              sx={{
+                color: toggle ? "#D23F57" : "#00000042",
+              }}
+            >
+              <FavoriteIcon fontSize="small" />
+            </IconButton>
           </span>
-          
         </Tooltip>
       </Stack>
     </Paper>

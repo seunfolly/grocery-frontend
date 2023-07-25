@@ -3,7 +3,6 @@ import { config } from "../../utils/axiosconfig";
 import { base_url } from "../../utils/baseUrl";
 
 const getProducts = async (data) => {
-  console.log(data)
   const { minPrice, maxPrice, rating, selectedBrands, sort, sales,stock,featured,pCategory } =
     data || {}; 
   const queryParams = `${minPrice ? `minPrice=${minPrice}&` : ""}${

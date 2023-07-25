@@ -14,6 +14,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { login, resetState,resetLoggedInFlag } from "../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -30,6 +32,7 @@ const CustomTextField = styled(TextField)({
 
 const Login = () => {
   const dispatch = useDispatch();
+  const isNonMobile = useMediaQuery("(min-width:600px)");
   const auth = useSelector((state) => state.auth);
   const { isSuccess, message, isError, isLoading, user, loggedFlag } = auth;
   const navigate = useNavigate();
@@ -67,8 +70,8 @@ const Login = () => {
         sx={{
           bgcolor: "white",
           radius: "8px",
-          width: "500px",
-          padding: "2rem 3rem",
+          width: isNonMobile ? "500px" : "95%",
+          padding: isNonMobile ? "2rem 3rem": "2rem 2rem",
           boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
         }}
       >

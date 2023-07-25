@@ -13,6 +13,9 @@ import { base_url } from "../../utils/baseUrl";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getCards } from "../../features/auth/authSlice";
+import Header from "./Header";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
 
 export const getCardImage = (card) => {
   switch (card) {
@@ -44,6 +47,8 @@ export const getCardImage = (card) => {
 
 const Card = ({ _id, cardDetails, isDeleted, setIsDeleted }) => {
   const auth = useSelector((state) => state.auth);
+  const isNonMobile = useMediaQuery("(min-width:600px)");
+
   const { user } = auth;
   const deleteCard = () => {
     axios
@@ -61,6 +66,7 @@ const Card = ({ _id, cardDetails, isDeleted, setIsDeleted }) => {
   return (
     <Paper
       elevation={0}
+      
       sx={{
         paddingX: 2,
         paddingY: 1,
@@ -68,7 +74,8 @@ const Card = ({ _id, cardDetails, isDeleted, setIsDeleted }) => {
         bgcolor: "white",
         borderRadius: "10px",
         alignItems: "center",
-        // justifyContent: "space-between"
+        flexDirection: isNonMobile? "row" : "column",
+        columnGap: 1.5,
       }}
     >
       <Stack direction="row" spacing={1.5} alignItems="center" flex="1 1 0">
@@ -87,10 +94,10 @@ const Card = ({ _id, cardDetails, isDeleted, setIsDeleted }) => {
         <Typography variant="subtitle1">{cardDetails?.account_name}</Typography>
       </Stack>
 
-      <Typography variant="subtitle2" flex="1 1 0">
+      <Typography variant="subtitle2" flex="1 1 0" textAlign={{xs:"center", sm:"left"}}>
         {`**** **** **** ${cardDetails?.last4}`}
       </Typography>
-      <Typography variant="subtitle2" flex="1 1 0">
+      <Typography variant="subtitle2" mx={{xs:2,sm:3}}>
         {`${cardDetails?.exp_month}/${cardDetails?.exp_year.substr(2)}`}
       </Typography>
 
@@ -98,7 +105,7 @@ const Card = ({ _id, cardDetails, isDeleted, setIsDeleted }) => {
         <IconButton onClick={deleteCard}>
           <DeleteIcon
             sx={{
-              fontSize: "1.3rem",
+              fontSize: "1.8rem",
             }}
           />
         </IconButton>
@@ -107,7 +114,7 @@ const Card = ({ _id, cardDetails, isDeleted, setIsDeleted }) => {
   );
 };
 
-const Payments = () => {
+const Payments = ({openDrawer}) => {
   const dispatch = useDispatch();
   const { cards } = useSelector((state) => state.auth);
   const [isDeleted, setIsDeleted] = useState(false);
@@ -119,23 +126,15 @@ const Payments = () => {
   }, [isDeleted]);
   return (
     <Stack spacing={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={2} alignItems="center">
-          <CreditCardIcon
-            sx={{
-              color: "#D23F57",
-              fontSize: "30px",
-            }}
-          />
-
-          <Typography variant="h5" fontSize="23px">
-            Payment Methods
-          </Typography>
-        </Stack>
-      </Stack>
-
-      <Stack spacing={2}>
-        {cards.map((card, index) => (
+      
+      <Header
+        Icon={CreditCardIcon}
+        title="Payment Methods"
+        openDrawer={openDrawer}
+        
+      />
+      <Stack spacing={2} >
+        {cards.map((card, index) => ( 
           <Card
             {...card}
             isDeleted={isDeleted}

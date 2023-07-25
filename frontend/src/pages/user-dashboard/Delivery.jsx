@@ -1,4 +1,4 @@
-import { Typography,Box,Stack,Avatar } from "@mui/material";
+import { Typography, Box, Stack, Avatar } from "@mui/material";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 
@@ -14,7 +14,7 @@ const Delivery = () => {
         flexDirection: "column",
       }}
     >
-      <Stack direction="row" alignItems="center" my={4}>
+      <Stack direction={{ xs: "column", sm: "row" }} alignItems="center" my={4}>
         <Avatar
           sx={{
             bgcolor: "primary.main",
@@ -30,11 +30,12 @@ const Delivery = () => {
         </Avatar>
 
         <Box
+          height={{ xs: "50px", sm: "4px" }}
+          flex={{ sm: "1 1 0" }}
+          width={{ xs: "5px", sm: "auto" }}
           sx={{
             bgcolor: "primary.main",
-            height: "4px",
-            flex: "1 1 0",
-            minWidth: "50px",
+            // width: "5px",
           }}
         />
         <Avatar
@@ -51,11 +52,13 @@ const Delivery = () => {
           />
         </Avatar>
         <Box
+          height={{ xs: "50px", sm: "4px" }}
+          flex={{ sm: "1 1 0" }}
+          width={{ xs: "5px", sm: "auto" }}
           sx={{
             bgcolor: "#DAE1E7",
-            height: "4px",
-            flex: "1 1 0",
-            minWidth: "50px",
+
+            // width: "5px",
           }}
         />
         <Avatar
@@ -73,13 +76,14 @@ const Delivery = () => {
         </Avatar>
       </Stack>{" "}
       <Typography
-        alignSelf="end"
-        px={2}
+        alignSelf={{ xs: "center", sm: "end" }}
+        px={{ xs: 1.5, sm: 2 }}
         py={0.8}
         borderRadius="300px"
         bgcolor="#FCE9EC"
         color="primary.main"
         variant="subtitle2"
+        fontSize={{ xs: "12px", sm: "14px" }}
       >
         Estimated Delivery Date <b>4th October</b>{" "}
       </Typography>

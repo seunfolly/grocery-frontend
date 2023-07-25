@@ -1,32 +1,20 @@
 import { useEffect } from "react";
-import {
-  Stack,
-  Grid,
-  Typography,
-  Button,
-  Box,
-} from "@mui/material";
+import { Stack, Grid, Typography, Button, Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCards
-} from "../../features/auth/authSlice";
-import {
-  setSelectedCard
-} from "../../features/order/orderSlice";
+import { getCards } from "../../features/auth/authSlice";
+import { setSelectedCard } from "../../features/order/orderSlice";
 import { getCardImage } from "../user-dashboard/Payments";
 import { base_url } from "../../utils/baseUrl";
 import axios from "axios";
 import makeToast from "../../utils/toaster";
 
 const Card = ({ _id, cardDetails }) => {
-   const {brand,account_name,last4} = cardDetails
-   const { selectedCard } = useSelector((state) => state.order);
-   const dispatch = useDispatch();
-   const isSelected = selectedCard === _id;
-   const handleClick = () => {
-    dispatch(
-      setSelectedCard(_id)
-    );
+  const { brand, account_name, last4 } = cardDetails;
+  const { selectedCard } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
+  const isSelected = selectedCard === _id;
+  const handleClick = () => {
+    dispatch(setSelectedCard(_id));
   };
 
   return (
@@ -34,44 +22,41 @@ const Card = ({ _id, cardDetails }) => {
       bgcolor="#f6f9fc"
       borderRadius="8px"
       p={2}
-      spacing={1}   
+      spacing={1}
       onClick={handleClick}
       sx={{
         cursor: "pointer",
         border: isSelected ? "1px solid #d23f57" : "none",
         textTransform: "capitalize",
-      }}  
+      }}
     >
       <Box
-          sx={{
-            backgroundColor: "#fff",
-            boxShadow: "rgba(3, 0, 71, 0.09) 0px 1px 3px",
-            overflow: "hidden",
-            width: "42px",
-            height: "28px",
-            borderRadius: "2px",
-          }}
-        >
-          {
-            getCardImage(brand)
-          }
-        </Box>
+        sx={{
+          backgroundColor: "#fff",
+          boxShadow: "rgba(3, 0, 71, 0.09) 0px 1px 3px",
+          overflow: "hidden",
+          width: "42px",
+          height: "28px",
+          borderRadius: "2px",
+        }}
+      >
+        {getCardImage(brand)}
+      </Box>
 
       <Typography variant="subtitle2" flex="1 1 0">
         {`**** **** **** ${last4}`}
       </Typography>
       <Typography variant="subtitle1">{account_name}</Typography>
-
-      </Stack>
-      
+    </Stack>
   );
 };
 
-
-const Cards = ({option}) => {
+const Cards = ({ option }) => {
   const dispatch = useDispatch();
-  const { cards,user } = useSelector((state) => state.auth);
-  const { orderMessage, selectedCard,selectedAddress } = useSelector((state) => state.order);
+  const { cards, user } = useSelector((state) => state.auth);
+  const { orderMessage, selectedCard, selectedAddress } = useSelector(
+    (state) => state.order
+  );
 
   const createOrder = async () => {
     if (option === "voucher") {
@@ -100,9 +85,9 @@ const Cards = ({option}) => {
       if (option === "card" && response.data.authorizationUrl) {
         window.location.href = response.data.authorizationUrl;
         localStorage.removeItem("cartState");
-      } 
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       makeToast("error", "Please try again, something went wrong");
     }
   };
@@ -113,8 +98,8 @@ const Cards = ({option}) => {
     };
     getUserCards();
   }, []);
- 
-  if(cards.length === 0) return null
+
+  if (cards.length === 0) return null;
 
   return (
     <Box
@@ -126,13 +111,17 @@ const Cards = ({option}) => {
         gap: 2,
       }}
     >
-      <Stack direction="row" justifyContent="end" alignItems="center">
-       
+      <Stack
+        direction="row"
+        justifyContent={{ xs: "start", sm: "end" }}
+        alignItems="center"
+      >
         <Button
           variant="outlined"
           onClick={() => {
-            dispatch(setSelectedCard(null))
-            createOrder()}}
+            dispatch(setSelectedCard(null));
+            createOrder();
+          }}
           sx={{
             textTransform: "none",
             bgcolor: "white",
@@ -152,16 +141,13 @@ const Cards = ({option}) => {
       <Typography variant="subtitle2">Saved Cards</Typography>
       <Grid container spacing={2}>
         {cards.map((card) => (
-          <Grid item sm={4}>
-            <Card
-              {...card}
-             
-            />
+          <Grid item xs={12} sm={4}>
+            <Card {...card} />
           </Grid>
         ))}
       </Grid>
     </Box>
-  )
+  );
 };
 
 export default Cards;

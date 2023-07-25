@@ -113,6 +113,7 @@ const Address = (prop) => {
 
 export const DeliveryAddress = ({ updateStepCompletion }) => {
   const [editMode, setEditMode] = useState(false);
+  const Mobile = useMediaQuery("(min-width:968px)");
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const dispatch = useDispatch();
   const {
@@ -179,7 +180,7 @@ export const DeliveryAddress = ({ updateStepCompletion }) => {
       elevation={1}
       sx={{
         backgroundColor: "white",
-        p: 3,
+        p: isNonMobile ? 3 : 1.5,
         pb: 6,
         display: "flex",
         flexDirection: "column",
@@ -187,10 +188,15 @@ export const DeliveryAddress = ({ updateStepCompletion }) => {
         borderRadius: "8px",
       }}
     >
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={2} alignItems="center">
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent={{ sm: "space-between" }}
+        spacing={{ xs: 1.5, sm: 0 }}
+        alignItems={{ xs: "start", sm: "center" }}
+      >
+        <Stack direction="row" spacing={{ xs: 1, sm: 2 }} alignItems="center">
           <Avatar sx={{ bgcolor: "#d23f57" }}>2</Avatar>
-          <Typography variant="body2">Delivery Address</Typography>
+          <Typography variant={"body2"}>Delivery Address</Typography>
         </Stack>
         <Button
           onClick={handleOpen}
@@ -200,7 +206,7 @@ export const DeliveryAddress = ({ updateStepCompletion }) => {
             bgcolor: "white",
             color: "primary.main",
             fontSize: "subtitle2",
-            paddingX: "20px",
+            paddingX: isNonMobile ? "20px" : "10px",
             fontWeight: 600,
             paddingY: "6px",
             "&:hover": {
@@ -214,7 +220,7 @@ export const DeliveryAddress = ({ updateStepCompletion }) => {
       <Typography variant="subtitle2">Delivery Address</Typography>
       <Grid container spacing={2}>
         {addresses.map((address) => (
-          <Grid item sm={4}>
+          <Grid item xs={12} sm={4}>
             <Address
               {...address}
               activeId={selectedAddress}
@@ -240,7 +246,7 @@ export const DeliveryAddress = ({ updateStepCompletion }) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 650,
+            width: isNonMobile ? 600 : "95%",
             p: 3,
             pb: 6,
             display: "flex",
@@ -352,47 +358,47 @@ export const DeliveryAddress = ({ updateStepCompletion }) => {
                       style: { fontSize: "14px" },
                     }}
                   />
-<Autocomplete
-                  fullWidth
-                  options={statesInNigeria}
-                  value={values.state} 
-                  isOptionEqualToValue={(option, value) => option === value}
-                  onChange={(event, newValue) => {
-                    handleChange({
-                      target: {
-                        name: "state",
-                        value: newValue,
-                      },
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      variant="outlined"
-                      type="text"
-                      label="State"
-                      size="small"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      name="state"
-                      error={!!touched.state && !!errors.state}
-                      helperText={touched.state && errors.state}
-                      InputLabelProps={{
-                        style: { fontSize: "14px" },
-                      }}
-                      sx={{
-                        gridColumn: "span 2",
-                        "& .MuiInputBase-root": {
-                          fontSize: "15px",
+                  <Autocomplete
+                    fullWidth
+                    options={statesInNigeria}
+                    value={values.state}
+                    isOptionEqualToValue={(option, value) => option === value}
+                    onChange={(event, newValue) => {
+                      handleChange({
+                        target: {
+                          name: "state",
+                          value: newValue,
                         },
-                      }}
-                    />
-                  )}
-                  sx={{
-                    gridColumn: "span 2",
-                  }}
-                />
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        variant="outlined"
+                        type="text"
+                        label="State"
+                        size="small"
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        name="state"
+                        error={!!touched.state && !!errors.state}
+                        helperText={touched.state && errors.state}
+                        InputLabelProps={{
+                          style: { fontSize: "14px" },
+                        }}
+                        sx={{
+                          gridColumn: "span 2",
+                          "& .MuiInputBase-root": {
+                            fontSize: "15px",
+                          },
+                        }}
+                      />
+                    )}
+                    sx={{
+                      gridColumn: "span 2",
+                    }}
+                  />
                 </Box>
                 <Button
                   type="submit"

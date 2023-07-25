@@ -17,6 +17,7 @@ import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PersonIcon from "@mui/icons-material/Person";
 import { useDispatch, useSelector } from "react-redux";
+import Header from "./Header";
 import {
   updateProfile,
   resetState,
@@ -25,11 +26,11 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import makeToast from "../../utils/toaster";
 makeToast;
-const EditProfile = () => {
+const EditProfile = ({ openDrawer }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePictureFile, setProfilePictureFile] = useState(null);
 
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const isNonMobile = useMediaQuery("(min-width:968px)");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -66,50 +67,19 @@ const EditProfile = () => {
   };
   return (
     <Stack spacing={3}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={2} alignItems="center">
-          <PersonIcon
-            sx={{
-              color: "#D23F57",
-              fontSize: "30px",
-            }}
-          />
-
-          <Typography variant="h5" fontSize="23px">
-            Edit Profile
-          </Typography>
-        </Stack>
-
-        <Link
-          to={`/user/profile`}
-          style={{
-            textDecoration: "none",
-          }}
-        >
-          <Button
-            sx={{
-              textTransform: "none",
-              bgcolor: "#FCE9EC",
-              color: "primary.main",
-              fontSize: "subtitle2",
-              paddingX: "40px",
-              fontWeight: 600,
-              paddingY: "6px",
-              "&:hover": {
-                backgroundColor: "rgba(210, 63, 87, 0.04)",
-              },
-            }}
-          >
-            Back To Profile
-          </Button>
-        </Link>
-      </Stack>
+      <Header
+        Icon={PersonIcon}
+        title={"Edit Profile"}
+        openDrawer={openDrawer}
+        button="Back To Profile"
+        link={`/user/profile`}
+      />
 
       <Paper
         elevation={0}
         sx={{
           bgcolor: "white",
-          paddingX: 5,
+          paddingX: isNonMobile ? 5 : 2,
           paddingY: 4,
         }}
       >
@@ -117,7 +87,6 @@ const EditProfile = () => {
           enableReinitialize={true}
           onSubmit={(values) => {
             dispatch(updateProfile({ ...values, image: profilePictureFile }));
-            
           }}
           initialValues={initialValues}
           validationSchema={editSchema}
@@ -129,12 +98,17 @@ const EditProfile = () => {
             handleBlur,
             handleChange,
             handleSubmit,
-             setFieldValue,
+            setFieldValue,
             isValid,
             dirty,
           }) => (
             <form onSubmit={handleSubmit}>
-              <Box display="flex" alignItems="flex-end" mb={3}>
+              <Box
+                display="flex"
+                alignItems={{ xs: "center", md: "flex-end" }}
+                justifyContent={{ xs: "center", md: "flex-start" }}
+                mb={3}
+              >
                 <Avatar
                   alt="profile-picture"
                   src={profilePicture || user?.image}
@@ -247,7 +221,7 @@ const EditProfile = () => {
                 <DatePicker
                   fullWidth
                   label="Birth Date"
-                  value={ values.dob ? dayjs(values.dob) : null}
+                  value={values.dob ? dayjs(values.dob) : null}
                   onChange={(date) => {
                     setFieldValue("dob", date.toISOString());
                   }}
@@ -270,7 +244,7 @@ const EditProfile = () => {
               </Box>
               <Button
                 type="submit"
-                disabled={!isValid || isLoading }
+                disabled={!isValid || isLoading}
                 sx={{
                   mt: 4,
                   textTransform: "none",

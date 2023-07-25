@@ -26,8 +26,8 @@ const OrderConfirmationPage = ({ updateStepCompletion }) => {
   }, []);
 
   return (
-    <Grid container spacing={3} mt={5}>
-      <Grid item sm={8}>
+    <Grid container spacing={3} mt={{ xs: 0, sm: 4 }}>
+      <Grid item xs={12}  md={8}>
         <Paper
           elevation={1}
           sx={{
@@ -43,7 +43,7 @@ const OrderConfirmationPage = ({ updateStepCompletion }) => {
           <OrderDetails />
         </Paper>
       </Grid>
-      <Grid item sm={4}>
+      <Grid item xs={12}  md={4}>
         <Paper
           sx={{
             bgcolor: "white",

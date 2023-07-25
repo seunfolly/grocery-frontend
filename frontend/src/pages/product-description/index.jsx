@@ -131,13 +131,19 @@ const ProductDescription = () => {
         sx={{
           bgcolor: "#F6F9FC",
           paddingY: "40px",
+          // paddingX: 1
         }}
       >
         <Container maxWidth="lg">
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} sx={{
-              gap: 1
-            }}>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{
+                gap: 1,
+              }}
+            >
               <div>
                 <Slider {...settings} ref={mainSliderRef}>
                   {productDetails?.images.map((image) => (
@@ -164,7 +170,8 @@ const ProductDescription = () => {
                         <img
                           src={image.url}
                           alt={`Thumbnail ${image._id}`}
-                          style={{ width: "130px", height: "auto" }}
+                          className="desc-carousel-image"
+                          // style={{ width: "130px", height: "auto" }}
                         />
                       </div>
                     ))}
@@ -176,7 +183,7 @@ const ProductDescription = () => {
             <Grid item xs={12} md={6}>
               <Stack spacing={2}>
                 <Typography variant="h5">{productDetails?.name}</Typography>
-                <Stack direction="row" spacing={2} alignItems="end">
+                <Stack direction="row" spacing={productDetails?.salePrice ? 2 : 0} alignItems="end">
                   <Typography
                     color="text.secondary"
                     variant="subtitle2"
@@ -390,7 +397,7 @@ const ProductDescription = () => {
             }}
           >
             {itemArray.map((item, index) => (
-              <Grid key={index} item md={3}>
+              <Grid key={index} item xs={6} md={3}>
                 <Item {...item} />
               </Grid>
             ))}
@@ -415,7 +422,7 @@ const ProductDescription = () => {
               }}
             >
               {productState.map((item) => (
-                <Grid item xs={3} key={item._id}>
+                <Grid item xs={12} sm={6} md={3} key={item._id}>
                   <ICard {...item} />
                 </Grid>
               ))}

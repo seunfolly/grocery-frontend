@@ -21,6 +21,7 @@ import { getOrderMessage } from "../../features/order/orderSlice";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const CustomDivider = styled(Divider)`
   margin: 16px 0px 20px;
@@ -31,15 +32,16 @@ const CustomDivider = styled(Divider)`
 
 const CartCard = ({ name, image, id, price, count, total }) => {
   const dispatch = useDispatch();
+  const Mobile = useMediaQuery("(min-width:600px)");
 
   return (
     <Paper
       elevation={1}
       sx={{
         bgcolor: "white",
-        borderRadius: "8px",
-        paddingY: 1,
-        paddingX: 2,
+        borderRadius: "10px",
+        paddingY: Mobile ? 2 : 0,
+        paddingX: Mobile ? 2 : 0,
         position: "relative",
       }}
     >
@@ -55,18 +57,27 @@ const CartCard = ({ name, image, id, price, count, total }) => {
         <ClearIcon />
       </IconButton>
 
-      <Stack direction="row" spacing={3} alignItems="center">
-        <Box width="150px" height="150px">
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={3}
+        alignItems={{ sm: "center" }}
+      >
+        <Box width={{ sm: "160px" }}>
           <img
             src={image}
             alt={name}
+            className="image-r"
             style={{ width: "100%", objectFit: "cover" }}
           />
         </Box>
-        <Box>
+        <Box padding={{ xs: 2, sm: 0 }}>
           <Stack spacing={1.5}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle1" color="#373F50" fontSize="16px">
+              <Typography
+                variant="subtitle1"
+                color="#373F50"
+                fontSize={{ xs: "14px", md: "16px" }}
+              >
                 {name}
               </Typography>
               <Stack direction="row" spacing={2}>
@@ -112,15 +123,13 @@ const CartCard = ({ name, image, id, price, count, total }) => {
 
 const CartPage = ({ updateStepCompletion }) => {
   const { products, cartTotal } = useSelector((state) => state.cart);
-  const { orderMessage } = useSelector((state) => state.order);
   const dispatch = useDispatch();
-
   useEffect(() => {
     updateStepCompletion("Cart");
   }, []);
   return (
-    <Grid container spacing={3} mt={5}>
-      <Grid item sm={8}>
+    <Grid container spacing={3} mt={{ xs: 0, sm: 4 }}>
+      <Grid item xs={12} md={8}>
         <Stack spacing={2.5}>
           {products.map((product, index) => (
             <CartCard key={index} {...product} />
@@ -128,7 +137,7 @@ const CartPage = ({ updateStepCompletion }) => {
         </Stack>
       </Grid>
 
-      <Grid item sm={4}>
+      <Grid item xs={12} md={4}>
         <Paper
           sx={{
             bgcolor: "white",
@@ -142,7 +151,7 @@ const CartPage = ({ updateStepCompletion }) => {
             <Typography variant="subtitle2" color="text.secondary">
               Total:
             </Typography>
-            <Typography fontWeight="600">{`₦ ${cartTotal.toLocaleString()}`}</Typography>
+            <Typography variant="subtitle1">{`₦ ${cartTotal.toLocaleString()}`}</Typography>
           </Stack>
           <CustomDivider />
           <Stack spacing={1.5}>

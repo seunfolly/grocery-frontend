@@ -1,8 +1,5 @@
-import {
-  Box,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import LockPersonOutlinedIcon from "@mui/icons-material/LockPersonOutlined";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import SupportAgentOutlinedIcon from "@mui/icons-material/SupportAgentOutlined";
@@ -52,26 +49,32 @@ export const item1Array = [
 ];
 
 export const Item = ({ title, Icon, details }) => {
+  const isNonMobile = useMediaQuery("(min-width:600px)");
+
   return (
     <Box
+      padding={{ xs: 1.5, sm: 2.5 }}
       sx={{
         display: "flex",
         gap: "10px",
         border: "1px solid #dee2e6",
         borderRadius: "10px",
-        padding: "20px",
       }}
     >
       <Icon
         sx={{
-          fontSize: "30px",
+          fontSize: isNonMobile ? "30px" : "2.4rem",
         }}
       />
       <Stack spacing={0.5}>
-        <Typography variant="h6" fontSize="20px">
+        <Typography variant="h6" fontSize={{ xs: "15px", sm: "18px" }}>
           {title}
         </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
+        <Typography
+          variant="subtitle2"
+          fontSize={{ xs: "12px", sm: "14px" }}
+          color="text.secondary"
+        >
           {details}
         </Typography>
       </Stack>
@@ -93,9 +96,7 @@ export const Item1 = ({ title, Icon, details }) => {
       <Icon />
       <Box>
         <Typography variant="subtitle2">{title}</Typography>
-        <Typography variant="subtitle2">
-          {details}
-        </Typography>
+        <Typography variant="subtitle2">{details}</Typography>
       </Box>
     </Stack>
   );

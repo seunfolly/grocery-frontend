@@ -9,6 +9,8 @@ import {
   Rating,
   styled,
 } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
 import { Link } from "react-router-dom";
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -24,6 +26,8 @@ const CustomTextField = styled(TextField)({
 });
 
 const ForgotPassword = () => {
+  const isNonMobile = useMediaQuery("(min-width:600px)");
+
   return (
     <Box
       sx={{
@@ -40,8 +44,8 @@ const ForgotPassword = () => {
         sx={{
           bgcolor: "white",
           radius: "8px",
-          width: "500px",
-          padding: "2rem 3rem",
+          width: isNonMobile ? "500px" : "95%",
+          padding: isNonMobile ? "2rem 3rem" : "2rem 2rem",
           boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
         }}
       >
