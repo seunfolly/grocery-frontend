@@ -263,7 +263,7 @@ const userCart = asyncHandler(async (req, res) => {
       await existingCart.save();
       return res.json(existingCart);
     } else {
-      let newCart = await new Cart({
+      let newCart = await new Cart({ 
         products,
         cartTotal,
         orderBy: user?._id,
