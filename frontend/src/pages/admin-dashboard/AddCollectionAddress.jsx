@@ -36,7 +36,7 @@ const CustomTextField = styled(TextField)({
 const AddCollectionAddress = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const isNonMobile = useMediaQuery("(min-width:968px)");
   const addressState = useSelector((state) => state.address);
   const {
     isSuccess,
@@ -83,9 +83,9 @@ const AddCollectionAddress = () => {
   };
 
   return (
-    <Box bgcolor="background.paper" p={4}>
+    <Box bgcolor="background.paper" px={{ xs: 2, md: 4 }} py={{ xs: 4, md: 4 }} height="calc(100vh - 75px)">
       <Stack spacing={3}>
-        <Typography variant="h6" fontSize="21px">
+        <Typography variant="h6" fontSize={{ xs: "19px", sm: "21px" }}>
           {id === "create"
             ? "Add Collection Address"
             : "Edit Collection Address"}
@@ -95,7 +95,7 @@ const AddCollectionAddress = () => {
           sx={{
             borderRadius: "8px",
             bgcolor: "white",
-            padding: 6,
+            padding: isNonMobile ? 6 : 3,
           }}
         >
           <Formik

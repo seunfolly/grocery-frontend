@@ -59,9 +59,10 @@ const MobileHeader = ({
       alignItems="center"
       pt={0.8}
       p={1}
+      justifyContent="space-between"
       display={{ xs: "flex", lg: "none" }}
     >
-      <Box
+      {/* <Box
         sx={{
           flex: "1 1 0%",
         }}
@@ -69,16 +70,16 @@ const MobileHeader = ({
         <IconButton>
           <MenuIcon />
         </IconButton>
-      </Box>
+      </Box> */}
 
-      <Link to="/">
-        <Box height="40px" width="auto">
-          <img
-            src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
-            width="100%"
-            height="100%"
-          />
-        </Box>
+      <Link to="/" style={{display: "flex"}}>
+        {/* <Box height="40px" width="auto"> */}
+        <img
+          src="https://bazaar.ui-lib.com/assets/images/logo2.svg"
+          // width="100%"
+          // height="100%"
+        />
+        {/* </Box> */}
       </Link>
 
       <Stack
@@ -91,28 +92,20 @@ const MobileHeader = ({
       >
         <IconButton
           onClick={handleDrawerOpen}
-          // sx={{
-          //   color: "rgba(0, 0, 0, 0.54)",
-          // }}
+          sx={{
+            color: "black",
+          }}
         >
-          <SearchIcon
-            sx={{
-              fontSize: "23px",
-            }}
-          />
+          <SearchIcon />
         </IconButton>
         <div>
           <IconButton
-            // sx={{
-            //   color: "rgba(0, 0, 0, 0.54)",
-            // }}
+            sx={{
+              color: "black",
+            }}
             onClick={handleClick}
           >
-            <PersonOutlineOutlinedIcon
-              sx={{
-                fontSize: "23px",
-              }}
-            />
+            <PersonOutlineOutlinedIcon />
           </IconButton>
           <Menu
             anchorEl={anchorEl}
@@ -170,9 +163,9 @@ const MobileHeader = ({
 
         <IconButton
           onClick={handleCartOpen}
-          // sx={{
-          //   color: "rgba(0, 0, 0, 0.54)",
-          // }}
+          sx={{
+            color: "black",
+          }}
         >
           <StyledBadge
             badgeContent={products.reduce(
@@ -180,11 +173,7 @@ const MobileHeader = ({
               0
             )}
           >
-            <ShoppingBagOutlinedIcon
-              sx={{
-                fontSize: "23px",
-              }}
-            />
+            <ShoppingBagOutlinedIcon />
           </StyledBadge>
         </IconButton>
       </Stack>

@@ -21,18 +21,18 @@ const renderNameCell = (params) => {
 };
 
 const columns = [
-  { field: "name", headerName: "Name", flex: 1, renderCell: renderNameCell },
+  { field: "name", headerName: "Name", width: 200, renderCell: renderNameCell },
   {
     field: "customer",
     headerName: "Customer",
-    flex: 1,
+    width: 160,
     headerAlign: "center",
     align: "center",
   },
   {
     field: "comment",
     headerName: "Comment",
-    flex: 1,
+    width: 500,
     headerAlign: "center",
     align: "center",
     cellClassName: "comment-column--cell",
@@ -70,7 +70,7 @@ const columns = [
   {
     field: "action",
     headerName: "Action",
-    flex: 1,
+    width: 200,
     headerAlign: "center",
     align: "center",
     renderCell: ({ row }) => (

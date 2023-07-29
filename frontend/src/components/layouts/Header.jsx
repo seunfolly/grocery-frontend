@@ -64,12 +64,12 @@ const Header = () => {
 
   return (
     <Box
+      py={{xs:1, md: 0.7}}
       sx={{
         bgcolor: "white",
         zIndex: 50,
         position: "sticky",
         top: 0,
-        py: 0.7,
       }}
     >
       <Container maxWidth="lg">

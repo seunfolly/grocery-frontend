@@ -98,8 +98,8 @@ const OrderDetails = () => {
     );
 
   return (
-    <Stack spacing={3} bgcolor="background.paper" p={3}>
-      <Typography variant="h6" fontSize="21px">
+    <Stack spacing={3} bgcolor="background.paper" p={{xs:2, sm:3}}>
+      <Typography variant="h6" fontSize={{xs: "19px",  sm:"21px"}}>
         Order Details
       </Typography>
 
@@ -114,8 +114,8 @@ const OrderDetails = () => {
           gap: 3,
         }}
       >
-        <Stack spacing={2} direction="row">
-          <Stack direction="row">
+        <Stack spacing={2} direction={{ xs:"column", md:"row"}}>
+          <Stack direction={"row"}>
             <Typography color="text.secondary" variant="subtitle2">
               Order ID:{" "}
             </Typography>
@@ -200,16 +200,16 @@ const OrderDetails = () => {
         </Stack>
       </Paper>
 
-      <Stack spacing={3} direction="row">
+      <Stack spacing={3} direction={{ xs:"column",  md:"row"}}>
         <Stack
           spacing={6}
           flex={1}
           py={3}
           px={5}
           borderRadius={3}
+          alignSelf={{ xs:"stretch", md: "start"}}
           sx={{
             background: "white",
-            alignSelf: "start",
             boxShadow: " 0px 1px 3px rgba(3, 0, 71, 0.09)",
           }}
         >
@@ -222,7 +222,7 @@ const OrderDetails = () => {
               color="text.primary"
               textTransform="capitalize"
             >
-              {`${order?.address.address} ${order?.address.state}`}
+              {`${order?.address?.address} ${order?.address?.state}`}
             </Typography>
           </Stack>
           <Stack>

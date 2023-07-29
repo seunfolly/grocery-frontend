@@ -92,14 +92,14 @@ const Categories = () => {
             {
               field: "id",
               headerName: "ID",
-              flex: 1,
+              width: 150,
               headerAlign: "center",
               align: "center",
             },
             {
               field: "name",
               headerName: "Name",
-              flex: 1,
+              width: 200,
               headerAlign: "center",
               align: "center",
 
@@ -118,7 +118,7 @@ const Categories = () => {
             {
               field: "visible",
               headerName: "Visible",
-              flex: 1,
+              width: 100,
               headerAlign: "center",
               align: "center",
               renderCell: ({ value, row }) => {

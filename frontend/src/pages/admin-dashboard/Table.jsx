@@ -3,6 +3,7 @@ const Table = ({ children }) => {
   return (
     <Box
       // height="85vh"
+      width="100%"
       sx={{
         "& .MuiDataGrid-root": {
           border: "none",
@@ -19,19 +20,16 @@ const Table = ({ children }) => {
         "& .MuiDataGrid-columnHeaders": {
           backgroundColor: "rgb(243, 245, 249)",
           borderBottom: "none",
-          paddingX: "15px",
+          // paddingX: "15px",
           outline: "none !important",
         },
         "& .MuiDataGrid-columnHeader:focus,& .MuiDataGrid-cell": {
           outline: "none !important",
         },
-        // MuiDataGrid-virtualScroller
+        "& .MuiDataGrid-footerContainer": {
+          borderTop: "none",
+        },
         "& .MuiDataGrid-virtualScroller": {
-          paddingX: "15px",
-          backgroundColor: "white !important",
-          height: "50vh !important",
-
-
           "&::-webkit-scrollbar": {
             height: "4px",
             width: "4px",
@@ -43,9 +41,6 @@ const Table = ({ children }) => {
             backgroundColor: "rgb(243, 245, 249)",
             borderRadius: "100px",
           },
-        },
-        "& .MuiDataGrid-footerContainer": {
-          borderTop: "none",
         },
         "& .MuiCheckbox-root": {},
         "& .MuiDataGrid-toolbarContainer .MuiButton-text": {},
@@ -63,8 +58,8 @@ const Table = ({ children }) => {
           color: " rgb(125, 135, 156) !important",
         },
         "& .comment-column--cell": {
-          fontSize: "12px !important"
-        }
+          fontSize: "12px !important",
+        },
       }}
     >
       <Grid container>
@@ -77,3 +72,22 @@ const Table = ({ children }) => {
 };
 
 export default Table;
+
+// MuiDataGrid-virtualScroller
+// "& .MuiDataGrid-virtualScroller": {
+//   paddingX: "15px",
+//   backgroundColor: "white !important",
+//   height: "50vh !important",
+
+//   "&::-webkit-scrollbar": {
+//     height: "4px",
+//     width: "4px",
+//   },
+//   "&::-webkit-scrollbar-track": {
+//     backgroundColor: "#344054",
+//   },
+//   "&::-webkit-scrollbar-thumb": {
+//     backgroundColor: "rgb(243, 245, 249)",
+//     borderRadius: "100px",
+//   },
+// },

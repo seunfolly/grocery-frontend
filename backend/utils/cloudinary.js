@@ -18,7 +18,7 @@ const cloudinaryUploadImg = async (fileToUploads, folder) => {
         } else {
           resolve({
             url: result.secure_url,
-            public_id: result.public_id,
+            public_id: result.public_id, 
           });
         }
       });

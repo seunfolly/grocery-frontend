@@ -3,6 +3,8 @@ import { Box, TextField, styled, MenuItem, IconButton } from "@mui/material";
 import axios from "axios";
 import { base_url } from "../../utils/baseUrl";
 import CloseIcon from "@mui/icons-material/Close";
+import useMediaQuery from "@mui/material/useMediaQuery";
+
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     borderRadius: "8px",
@@ -24,6 +26,8 @@ const Dropdown = ({
 }) => {
   const [renderKey, setRenderKey] = useState(0);
   const [touch, setTouched] = useState(false);
+  const isNonMobile = useMediaQuery("(min-width:968px)");
+
   const handleCategoryChange = (index, categoryId, setFieldValue) => {
     setRenderKey((prevKey) => prevKey + 1);
     const updatedSelectedCategories = selectedCategories.slice(0, index);
@@ -63,7 +67,10 @@ const Dropdown = ({
     const fieldName =
       index === categoryLevels.length - 1 ? field : `category-level-${index}`;
     return (
-      <Box position="relative">
+      <Box position="relative" sx={{
+        width: isNonMobile?  "250px" : "100%",
+
+      }}>
         <CustomTextField
           select
           label={`Select Category`}
@@ -84,7 +91,8 @@ const Dropdown = ({
             style: { fontSize: "15px" },
           }}
           sx={{
-            width: "250px",
+            width:  "100%",
+
           }}
         >
           {level.map((option) => (

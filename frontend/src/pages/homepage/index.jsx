@@ -19,6 +19,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { resetState } from "../../features/cart/cartSlice";
 import { resetState as resetOrderState } from "../../features/order/orderSlice";
 import { getCategories } from "../../features/category/categorySlice";
+import { getProducts } from "../../features/product/productSlice";
+
 import {
   CategoryOutlined,
   PersonOutlineOutlined,
@@ -54,6 +56,12 @@ const Homepage = () => {
       color: "white",
     },
   }));
+
+  useEffect(() => {
+    dispatch(getCategories(1));
+    dispatch(getProducts());
+
+ }, [dispatch]);
 
   useEffect(() => {
     if (reference) {

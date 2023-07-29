@@ -14,7 +14,7 @@ import AppsIcon from "@mui/icons-material/Apps";
 import { useDispatch } from "react-redux";
 import { logout, resetState } from "../../features/auth/authSlice";
 
-const SideBar = () => {
+const SideBar = ({ handleDrawerClose }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -128,60 +128,94 @@ const SideBar = () => {
           <MenuItem
             icon={<DashboardIcon />}
             component={<NavLink to={"/admin/"} />}
+            onClick={handleDrawerClose}
           >
             {" "}
             Dashboard{" "}
           </MenuItem>
           <SubMenu label="Products" icon={<CardGiftcardIcon />}>
-            <MenuItem component={<NavLink to="/admin/products" />}>
+            <MenuItem
+              component={<NavLink to="/admin/products" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Product List
             </MenuItem>
-            <MenuItem component={<NavLink to="/admin/product/create" />}>
+            <MenuItem
+              component={<NavLink to="/admin/product/create" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Create Product{" "}
             </MenuItem>
-            <MenuItem component={<NavLink to="/admin/product-reviews" />}>
+            <MenuItem
+              component={<NavLink to="/admin/product-reviews" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Review{" "}
             </MenuItem>
           </SubMenu>
           <SubMenu label="Categories" icon={<CategoryIcon />}>
-            <MenuItem component={<NavLink to="/admin/categories" />}>
+            <MenuItem
+              component={<NavLink to="/admin/categories" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Category List{" "}
             </MenuItem>
-            <MenuItem component={<NavLink to="/admin/category/create" />}>
+            <MenuItem
+              component={<NavLink to="/admin/category/create" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Create Category{" "}
             </MenuItem>
           </SubMenu>
           <SubMenu label="Brands" icon={<AppsIcon />}>
-            <MenuItem component={<NavLink to="/admin/brands" />}>
+            <MenuItem
+              component={<NavLink to="/admin/brands" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Brand List{" "}
             </MenuItem>
-            <MenuItem component={<NavLink to="/admin/brand/create" />}>
+            <MenuItem
+              component={<NavLink to="/admin/brand/create" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Create Brand
             </MenuItem>
           </SubMenu>
           <SubMenu label="Orders" icon={<BookIcon />}>
-            <MenuItem component={<NavLink to="/admin/orders" />}>
+            <MenuItem
+              component={<NavLink to="/admin/orders" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Order List{" "}
             </MenuItem>
-            <MenuItem component={<NavLink to="/admin/order" />}>
+            <MenuItem
+              component={<NavLink to="/admin/order" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Order Details
             </MenuItem>
           </SubMenu>
           <SubMenu label="Collection Addresses" icon={<PlaceIcon />}>
-            <MenuItem component={<NavLink to="/admin/addresses" />}>
+            <MenuItem
+              component={<NavLink to="/admin/addresses" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Address List
             </MenuItem>
-            <MenuItem component={<NavLink to="/admin/address/create" />}>
+            <MenuItem
+              component={<NavLink to="/admin/address/create" />}
+              onClick={handleDrawerClose}
+            >
               {" "}
               Create Address
             </MenuItem>
@@ -189,6 +223,7 @@ const SideBar = () => {
           <MenuItem
             icon={<PeopleAltIcon />}
             component={<NavLink to="/admin/customers" />}
+            onClick={handleDrawerClose}
           >
             {" "}
             Customer List{" "}

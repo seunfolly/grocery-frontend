@@ -104,7 +104,7 @@ const Orders = () => {
       year: "numeric",
     }),
     qty: order?.products.reduce((sum, product) => sum + product.count, 0),
-    address: `${order?.address.address} ${order?.address.state}`,
+    address: `${order?.address?.address} ${order?.address?.state}`,
     amount: `₦ ${order?.totalPrice.toLocaleString()}`,
 
     status: order?.orderStatus,

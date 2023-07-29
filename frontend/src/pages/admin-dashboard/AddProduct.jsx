@@ -46,7 +46,9 @@ const CustomTextField = styled(TextField)({
 const AddProduct = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const isNonMobile = useMediaQuery("(min-width:968px)");
+  const Mobile = useMediaQuery("(min-width:600px)");
+
   const [categoryLevels, setCategoryLevels] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [editMode, setEditMode] = useState(false);
@@ -67,7 +69,7 @@ const AddProduct = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(getCategories(1));
+    // dispatch(getCategories(1));
     dispatch(getBrands());
   }, []);
 
@@ -134,11 +136,11 @@ const AddProduct = () => {
       setSelectedFiles(productData?.images);
     }
   }, [productData]);
-  console.log(productData)
+  console.log(productData);
   return (
-    <Box bgcolor="background.paper" p={4}>
+    <Box bgcolor="background.paper" px={{ xs: 2, md: 4 }} py={{ xs: 4, md: 4 }}>
       <Stack spacing={3}>
-        <Typography variant="h6" fontSize="21px">
+        <Typography variant="h6" fontSize={{xs: "19px",  sm:"21px"}}>
           {id === "create" ? "Add New Product" : "Edit Product"}
         </Typography>
         <Paper
@@ -146,7 +148,7 @@ const AddProduct = () => {
           sx={{
             borderRadius: "8px",
             bgcolor: "white",
-            padding: 6,
+            padding: isNonMobile ? 6 : 3,
           }}
         >
           <Formik
@@ -210,7 +212,7 @@ const AddProduct = () => {
                       error={!!touched.name && !!errors.name}
                       helperText={touched.name && errors.name}
                       sx={{
-                        width: "250px",
+                        width: isNonMobile ? "250px" : "100%",
                       }}
                       InputLabelProps={{
                         style: { fontSize: "15px" },
@@ -231,7 +233,7 @@ const AddProduct = () => {
                       error={!!touched.brand && !!errors.brand}
                       helperText={touched.brand && errors.brand}
                       sx={{
-                        width: "250px",
+                        width: isNonMobile ? "250px" : "100%",
                       }}
                       InputLabelProps={{
                         style: { fontSize: "15px" },
@@ -492,10 +494,14 @@ const AddProduct = () => {
                     }}
                   />
                 </Box>
-                <Box mt="20px" sx={{
-                  display: "flex",
-                  gap: 4
-                }}>
+                <Box
+                  mt="20px"
+                  sx={{
+                    display: "flex",
+                    flexDirection: Mobile ? "row" : "column",
+                    gap: Mobile ? 4 : 1,
+                  }}
+                >
                   <FormControlLabel
                     control={
                       <Switch

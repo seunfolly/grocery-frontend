@@ -38,7 +38,7 @@ const CustomTextField = styled(TextField)({
 });
 
 const AddBrand = () => {
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const isNonMobile = useMediaQuery("(min-width:968px)");
   const { id } = useParams();
   const dispatch = useDispatch();
   const brandState = useSelector((state) => state.brand);
@@ -84,25 +84,27 @@ const AddBrand = () => {
   return (
     <Box
       bgcolor="background.paper"
-      p={4}
+      px={{ xs: 2, md: 4 }} py={{ xs: 4, md: 4 }}
       sx={{
         height: "calc(100vh - 75px)",
         boxSizing: "border-box",
       }}
     >
       <Stack spacing={3}>
-        <Typography variant="h6" fontSize="21px">
+        <Typography variant="h6" fontSize={{xs: "19px",  sm:"21px"}}>
           {id === "create" ? "Create Brand" : "Edit Brand"}
         </Typography>
         <Paper
           elevation={0}
+          
           sx={{
             borderRadius: "8px",
             bgcolor: "white",
-            padding: 6,
+            padding: isNonMobile ? 6 : 3,
             display: "flex",
             gap: "20px",
             flexDirection: "column",
+            height:  isNonMobile ? "auto":"300px"
           }}
         >
           <Formik
@@ -153,7 +155,8 @@ const AddBrand = () => {
                     error={!!touched.name && !!errors.name}
                     helperText={touched.name && errors.name}
                     InputLabelProps={{
-                      style: { fontSize: "15px" },
+                      width: isNonMobile ? "250px" : "100%",
+
                     }}
                   />
                 </Box>

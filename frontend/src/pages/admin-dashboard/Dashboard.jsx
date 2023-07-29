@@ -17,22 +17,22 @@ import Table from "./Table";
 import { useSelector, useDispatch } from "react-redux";
 import { getProducts } from "../../features/product/productSlice";
 import { getOrders } from "../../features/order/orderSlice";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 
 const orderColumns = [
-  { field: "id", headerName: "Order ID", flex: 1 },
+  { field: "id", headerName: "Order ID", width: 150 },
   {
     field: "qty",
     headerName: "Quantity",
-    width: 70,
-    headerAlign: "center",
-    align: "center",
+    width: 100,
+    // headerAlign: "center",
+    // align: "center",
   },
   {
     field: "status",
     headerName: "Payment",
-    flex: 1,
+    width: 200,
     renderCell: ({ value }) => {
       return (
         <Box>
@@ -61,14 +61,14 @@ const orderColumns = [
   {
     field: "amount",
     headerName: "Amount",
-    flex: 1,
+    width: 100,
     // headerAlign: "left",
     // align: "left",
   },
   {
     field: "action",
     headerName: "Action",
-    // flex: 1,
+    width: 300,
     headerAlign: "center",
     align: "center",
     renderCell: ({ row }) => (
@@ -169,6 +169,7 @@ const Dashboard = () => {
   const { user } = useSelector((state) => state.auth);
   const { products } = useSelector((state) => state.product);
   const { orders } = useSelector((state) => state.order);
+  const isNonMobile = useMediaQuery("(min-width:968px)");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -197,11 +198,53 @@ const Dashboard = () => {
     action: null,
   }));
   const filteredOrders = orders.filter((order) => order.isPaid === true);
+  const columns = [
+    { field: "id", headerName: "ID", width: 90 },
+    {
+      field: "firstName",
+      headerName: "First name",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "lastName",
+      headerName: "Last name",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "age",
+      headerName: "Age",
+      type: "number",
+      width: 110,
+      editable: true,
+    },
+    {
+      field: "fullName",
+      headerName: "Full name",
+      description: "This column has a value getter and is not sortable.",
+      sortable: false,
+      width: 160,
+      valueGetter: (params) =>
+        `${params.row.firstName || ""} ${params.row.lastName || ""}`,
+    },
+  ];
 
+  const rows = [
+    { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
+    { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
+    { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
+    { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
+    { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
+    { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
+    { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
+    { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
+    { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
+  ];
   return (
-    <Box bgcolor="background.paper" p={4}>
+    <Box bgcolor="background.paper" p={{ xs: 1.5, sm: 4 }}>
       <Grid container spacing={3}>
-        <Grid item md={6}>
+        <Grid xs={12} item md={6}>
           <Stack
             flex={1}
             bgcolor="white"
@@ -227,7 +270,7 @@ const Dashboard = () => {
 
             <Stack direction="row" justifyContent="space-between">
               <Stack spacing={2.5}>
-                {/* <Stack>
+                <Stack>
                   <Typography
                     variant="subtitle1"
                     fontSize="20px"
@@ -238,16 +281,16 @@ const Dashboard = () => {
                   <Typography variant="subtitle2" color="text.secondary">
                     Today’s Visit
                   </Typography>
-                </Stack> */}
+                </Stack>
                 <Stack>
                   <Typography
                     variant="subtitle1"
                     fontSize="20px"
                     fontWeight="700"
                   >
-                    
-                    {`₦ ${filteredOrders.reduce((sum, order) => sum + order.totalPrice, 0).toLocaleString()}`}
-
+                    {`₦ ${filteredOrders
+                      .reduce((sum, order) => sum + order.totalPrice, 0)
+                      .toLocaleString()}`}
                   </Typography>
                   <Typography variant="subtitle2" color="text.secondary">
                     Total sales
@@ -273,21 +316,20 @@ const Dashboard = () => {
           </Stack>
         </Grid>
 
-        <Grid item md={6}>
-          <Grid container flex={1} spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Grid container flex={1} spacing={3} sx={{}}>
             {mockData.map((item, index) => (
-              <Grid key={index} item md={6}>
+              <Grid key={index} item xs={12} sm={6}>
                 <Card1 {...item} />
               </Grid>
             ))}
           </Grid>
         </Grid>
       </Grid>
-
       <Box>
         <Grid container flex={1} spacing={3} mt={1}>
           {mockData2.map((item, index) => (
-            <Grid key={index} item md={3}>
+            <Grid key={index} item xs={12} sm={6} md={3}>
               <Card2 {...item} />
             </Grid>
           ))}
@@ -295,11 +337,13 @@ const Dashboard = () => {
       </Box>
 
       <Grid container mt={3} spacing={3}>
-        <Grid item md={7}>
+        <Grid item xs={12} lg={7}>
           <Paper
             elevation={0}
             sx={{
               bgcolor: "white",
+              overflowX: "auto",
+              width: "100%",
             }}
           >
             <Stack
@@ -341,7 +385,7 @@ const Dashboard = () => {
           </Paper>
         </Grid>
 
-        <Grid item md={5}>
+        <Grid item xs={12} lg={5}>
           <Paper
             elevation={0}
             sx={{

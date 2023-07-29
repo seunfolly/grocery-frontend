@@ -39,7 +39,8 @@ const CustomTextField = styled(TextField)({
 
 const AddCategory = () => {
   const { id } = useParams();
-  const isNonMobile = useMediaQuery("(min-width:600px)");
+  const isNonMobile = useMediaQuery("(min-width:968px)");
+  const Mobile = useMediaQuery("(min-width:600px)");
   const [categoryLevels, setCategoryLevels] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const dispatch = useDispatch();
@@ -60,7 +61,7 @@ const AddCategory = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(getCategories(1));
+     dispatch(getCategories(1));
   }, [dispatch]);
 
   useEffect(() => {
@@ -105,14 +106,14 @@ const AddCategory = () => {
   return (
     <Box
       bgcolor="background.paper"
-      p={4}
+      px={{ xs: 2, md: 4 }} py={{ xs: 4, md: 4 }}
       sx={{
         height: "calc(100vh - 75px)",
         boxSizing: "border-box",
       }}
     >
       <Stack spacing={3}>
-        <Typography variant="h6" fontSize="21px">
+        <Typography variant="h6" fontSize={{xs: "19px",  sm:"21px"}}>
           {id === "create" ? "Create Category" : "Edit Category"}
         </Typography>
         <Paper
@@ -120,7 +121,7 @@ const AddCategory = () => {
           sx={{
             borderRadius: "8px",
             bgcolor: "white",
-            padding: 6,
+            padding: isNonMobile ? 6 : 3,
             display: "flex",
             gap: "20px",
             flexDirection: "column",
@@ -206,7 +207,8 @@ const AddCategory = () => {
                       style: { fontSize: "15px" },
                     }}
                     sx={{
-                      width: "250px",
+                      width: isNonMobile ? "250px" : "100%",
+
                     }}
                   />
                 </Box>
@@ -332,6 +334,7 @@ const AddCategory = () => {
                     alignSelf: "start",
                     borderRadius: "8px",
                     alignItems: "center",
+                    mt: "20px",
 
                     "&:hover": {
                       backgroundColor: "#2756b6",

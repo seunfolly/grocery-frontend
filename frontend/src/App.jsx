@@ -15,8 +15,6 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import Cart from "./pages/cart";
 import { useDispatch, useSelector } from "react-redux";
 import { userCart, logout, resetState } from "./features/auth/authSlice";
-import { getProducts } from "./features/product/productSlice";
-import { getCategories } from "./features/category/categorySlice";
 import { getUserCart } from "./features/cart/cartSlice";
 import NotFound from "./pages/NotFound";
 import { Box, Typography } from "@mui/material";
@@ -32,14 +30,10 @@ function App() {
   const cart = useSelector((state) => state.cart);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useSelector((state) => state.auth);
-  const { products } = useSelector((state) => state.product);
-  const { categories } = useSelector((state) => state.category);
 
   const isInitialMount = useRef(true);
 
   useEffect(() => {
-    dispatch(getProducts());
-    dispatch(getCategories(1));
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
@@ -94,7 +88,7 @@ function App() {
 
   return (
     <>
-      {isLoading || (products.length <= 0 && categories.length <= 0) ? (
+      {isLoading ? (
         <Box
           sx={{
             width: "100vw",

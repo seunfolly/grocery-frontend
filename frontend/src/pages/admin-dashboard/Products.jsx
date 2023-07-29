@@ -62,12 +62,13 @@ const Products = () => {
     }
   }, [deletedProduct, isError]);
 
-  const filteredProducts = productState.products.filter((product) =>
-  product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  product.category.name.toLowerCase().includes(searchQuery.toLowerCase())||
-  product.brand.name.toLowerCase().includes(searchQuery.toLowerCase())||
-  product.productId.includes(searchQuery)
-);
+  const filteredProducts = productState.products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.productId.includes(searchQuery)
+  );
 
   const products = filteredProducts.map((product) => ({
     _id: product._id,
@@ -80,7 +81,6 @@ const Products = () => {
     action: null,
     price: product.salePrice ? product.salePrice : product.regularPrice,
     stock: product?.stock,
-
   }));
   return (
     <Stack spacing={3} bgcolor="background.paper" py={3}>
@@ -93,97 +93,101 @@ const Products = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      <Table>
-        <DataGrid
-          rows={products}
-          columns={[
-            {
-              field: "name",
-              headerName: "Name",
-              flex: 1,
-              renderCell: renderNameCell,
-            },
-            {
-              field: "category",
-              headerName: "Category",
-              width: 150,
-              renderCell: ({ value }) => (
-                <Chip label={value} sx={{ height: "25px" }} />
-              ),
-            },
-            {
-              field: "brand",
-              headerName: "Brand",
-              width: 150,
-              renderCell: ({ value }) => (
-                <Chip label={value} sx={{ height: "25px" }} />
-              ),
-            },
-            { field: "price", headerName: "Price", width: 150 },
-            { field: "stock", headerName: "Stock", width: 100 },
+      <Grid container>
+        <Grid item xs={12}>
+          <Table>
+            <DataGrid
+              rows={products}
+              columns={[
+                {
+                  field: "name",
+                  headerName: "Name",
+                  width: 200,
+                  renderCell: renderNameCell,
+                },
+                {
+                  field: "category",
+                  headerName: "Category",
+                  width: 150,
+                  renderCell: ({ value }) => (
+                    <Chip label={value} sx={{ height: "25px" }} />
+                  ),
+                },
+                {
+                  field: "brand",
+                  headerName: "Brand",
+                  width: 150,
+                  renderCell: ({ value }) => (
+                    <Chip label={value} sx={{ height: "25px" }} />
+                  ),
+                },
+                { field: "price", headerName: "Price", width: 150 },
+                { field: "stock", headerName: "Stock", width: 100 },
 
-            {
-              field: "publish",
-              headerName: "Published",
-              width: 120,
-              renderCell: ({ value, row }) => {
-                const [checked, setChecked] = useState(value);
+                {
+                  field: "publish",
+                  headerName: "Published",
+                  width: 120,
+                  renderCell: ({ value, row }) => {
+                    // const [checked, setChecked] = useState(value);
 
-                const handleSwitchChange = () => {
-                  const updatedRow = { ...row, publish: !checked };
-                  setChecked(!checked);
-                };
+                    // const handleSwitchChange = () => {
+                    //   const updatedRow = { ...row, publish: !checked };
+                    //   setChecked(!checked);
+                    // };
 
-                return (
-                  <Switch
-                    checked={checked}
-                    onChange={handleSwitchChange}
-                    sx={{
-                      "& .MuiSwitch-thumb": {
-                        color: "#2756b6",
-                      },
-                      "& .Mui-checked+.MuiSwitch-track": {
-                        backgroundColor: "#4e97fd !important",
-                      },
-                    }}
-                  />
-                );
-              },
-            },
+                    return (
+                      <Switch
+                        checked={value}
+                        // onChange={handleSwitchChange}
+                        sx={{
+                          "& .MuiSwitch-thumb": {
+                            color: "#2756b6",
+                          },
+                          "& .Mui-checked+.MuiSwitch-track": {
+                            backgroundColor: "#4e97fd !important",
+                          },
+                        }}
+                      />
+                    );
+                  },
+                },
 
-            {
-              field: "action",
-              headerName: "Action",
-              flex: 1,
-              headerAlign: "center",
-              align: "center",
-              renderCell: ({ row }) => (
-                <Stack direction="row">
-                  <Link to={`/admin/product/${row._id}`}>
-                    <IconButton aria-label="Edit">
-                      <EditIcon />
-                    </IconButton>
-                  </Link>
-                  <Link to={`/product/${row._id}`}>
-                    <IconButton aria-label="View">
-                      <RemoveRedEyeIcon />
-                    </IconButton>
-                  </Link>
-                  <IconButton
-                    aria-label="Delete"
-                    disabled={isLoading}
-                    onClick={() => {
-                      dispatch(deleteProduct(row._id));
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              ),
-            },
-          ]}
-        />
-      </Table>
+                {
+                  field: "action",
+                  headerName: "Action",
+                  width: 200,
+                  headerAlign: "center",
+                  align: "center",
+                  renderCell: ({ row }) => (
+                    <Stack direction="row">
+                      <Link to={`/admin/product/${row._id}`}>
+                        <IconButton aria-label="Edit">
+                          <EditIcon />
+                        </IconButton>
+                      </Link>
+                      <Link to={`/product/${row._id}`}>
+                        <IconButton aria-label="View">
+                          <RemoveRedEyeIcon />
+                        </IconButton>
+                      </Link>
+                      <IconButton
+                        aria-label="Delete"
+                        disabled={isLoading}
+                        onClick={() => {
+                          dispatch(deleteProduct(row._id));
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
+                  ),
+                },
+              ]}
+            />
+          </Table>
+        </Grid>
+      </Grid>
     </Stack>
   );
 };
