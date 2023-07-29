@@ -13,6 +13,7 @@ import ICard from "../../components/ui-elements/Card";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useNavigate } from "react-router-dom";
 
 function SampleNextArrow(props) {
   const { onClick } = props;
@@ -70,6 +71,7 @@ function SamplePrevArrow(props) {
 }
 
 const Offer = () => {
+  const navigate = useNavigate()
   return (
     <Box
       bgcolor="#FFF8E5"
@@ -100,6 +102,7 @@ const Offer = () => {
               25% Special Off Today Only for Vegetables
             </Typography>
             <Button
+             onClick={() => navigate("/store")}
               sx={{
                 textTransform: "none",
                 bgcolor: "primary.main",

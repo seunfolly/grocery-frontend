@@ -122,7 +122,6 @@ const Homepage = () => {
         <IconButton
           component="span"
           onClick={() => navigate("/cart")}
-          disabled={products.length < 1}
           style={{
             textDecoration: "none",
             flex: "1 1 0",
