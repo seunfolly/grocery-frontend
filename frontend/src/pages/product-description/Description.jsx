@@ -30,7 +30,7 @@ const Description = ({description}) => {
          <Typography variant="h6" mb={3}>
           Specification:
         </Typography> 
-        <Typography>
+        <Typography variant="subtitle2">
          {description}
         </Typography>
         </>

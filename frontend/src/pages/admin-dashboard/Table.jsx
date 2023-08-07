@@ -2,7 +2,6 @@ import { Box, Grid } from "@mui/material";
 const Table = ({ children }) => {
   return (
     <Box
-      // height="85vh"
       width="100%"
       sx={{
         "& .MuiDataGrid-root": {
@@ -30,6 +29,7 @@ const Table = ({ children }) => {
           borderTop: "none",
         },
         "& .MuiDataGrid-virtualScroller": {
+             height: "60vh !important",
           "&::-webkit-scrollbar": {
             height: "4px",
             width: "4px",
@@ -73,21 +73,3 @@ const Table = ({ children }) => {
 
 export default Table;
 
-// MuiDataGrid-virtualScroller
-// "& .MuiDataGrid-virtualScroller": {
-//   paddingX: "15px",
-//   backgroundColor: "white !important",
-//   height: "50vh !important",
-
-//   "&::-webkit-scrollbar": {
-//     height: "4px",
-//     width: "4px",
-//   },
-//   "&::-webkit-scrollbar-track": {
-//     backgroundColor: "#344054",
-//   },
-//   "&::-webkit-scrollbar-thumb": {
-//     backgroundColor: "rgb(243, 245, 249)",
-//     borderRadius: "100px",
-//   },
-// },

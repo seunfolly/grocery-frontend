@@ -19,7 +19,6 @@ const Reviews = ({ id }) => {
   const [value, setValue] = useState({ star: 0, comment: "" });
   const auth = useSelector((state) => state.auth);
   const { productData } = useSelector((state) => state.product);
-
   const { user } = auth;
   const addComment = (event) => {
     event.preventDefault();

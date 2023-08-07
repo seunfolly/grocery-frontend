@@ -14,7 +14,7 @@ const ReviewBox = ({ customer, image, comment }) => {
       sx={{
         boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
       }}
-      height={{ xs: "270px", sm: "200px" }}
+      height={{ xs: "300px", sm: "200px" }}
       display="flex"
       justifyContent="center"
     >

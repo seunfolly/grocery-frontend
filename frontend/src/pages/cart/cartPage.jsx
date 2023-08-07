@@ -85,7 +85,7 @@ const CartCard = ({ name, image, id, price, count, total }) => {
                   {`₦ ${price.toLocaleString()}`} X {count}
                 </Typography>
                 <Typography color="primary.main" variant="subtitle1">
-                  {`₦ ${total.toLocaleString()}`}
+                  {`₦ ${total?.toLocaleString()}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -130,11 +130,23 @@ const CartPage = ({ updateStepCompletion }) => {
   return (
     <Grid container spacing={3} mt={{ xs: 0, sm: 4 }}>
       <Grid item xs={12} md={8}>
-        <Stack spacing={2.5}>
-          {products.map((product, index) => (
-            <CartCard key={index} {...product} />
-          ))}
-        </Stack>
+        {products.length > 0 ? (
+          <Stack spacing={2.5}>
+            {products.map((product, index) => (
+              <CartCard key={index} {...product} />
+            ))}
+          </Stack>
+        ) : (
+          <Stack spacing={2}>
+            <Typography textAlign="center" variant="h6">
+              To proceed with the checkout, kindly add items to your cart first.
+            </Typography>
+            <Typography textAlign="center" variant="h5">
+              {" "}
+              Happy shopping!{" "}
+            </Typography>
+          </Stack>
+        )}
       </Grid>
 
       <Grid item xs={12} md={4}>

@@ -49,7 +49,7 @@ const Category = () => {
           direction="row"
           justifyContent="space-between"
           alignItems="center"
-          paddingY={topLevel ? 1 : 0.7}
+          paddingY={topLevel ? 0.8 : 0.7}
           sx={{ cursor: "pointer" }}
           onClick={() => toggleCategory(category._id)}
         >
@@ -59,7 +59,7 @@ const Category = () => {
           >
             <Typography
               color="#4B566B"
-              fontSize={topLevel ? "16px" : "14.5px"}
+              fontSize={topLevel ? "15px" : "14px"}
               sx={{
                 "&:hover": {
                   color: "#D23F57",
@@ -89,7 +89,11 @@ const Category = () => {
     );
   };
 
-  return <>{categories.map((category) => renderCategory(category, true))}</>;
+  return <Box>
+     <Typography variant="subtitle1" fontSize="15px" letterSpacing={2.5} >
+        CATEGORIES
+      </Typography>
+    {categories.map((category) => renderCategory(category, true))}</Box>;
 };
 
 export default Category;

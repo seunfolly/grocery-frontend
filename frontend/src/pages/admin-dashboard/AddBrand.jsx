@@ -191,7 +191,7 @@ const AddBrand = () => {
                 />
                 <Button
                   type="submit"
-                  disabled={!isValid || (!dirty && id === "create")}
+                  disabled={!isValid || (!dirty && id === "create") || isLoading}
                   sx={{
                     textTransform: "none",
                     bgcolor:
@@ -212,7 +212,8 @@ const AddBrand = () => {
                     },
                   }}
                 >
-                  Save Brand{" "}
+                                    {isLoading ? "Loading..." : "Save Brand"}
+
                 </Button>
               </form>
             )}

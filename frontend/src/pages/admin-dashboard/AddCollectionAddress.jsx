@@ -245,7 +245,7 @@ const AddCollectionAddress = () => {
                 </Box>
                 <Button
                   type="submit"
-                  disabled={!isValid || (!dirty && id === "create")}
+                  disabled={!isValid || (!dirty && id === "create") || isLoading}
                   // disabled={!isValid || (!dirty || !productData)}
 
                   sx={{
@@ -268,7 +268,7 @@ const AddCollectionAddress = () => {
                     },
                   }}
                 >
-                  {isLoading ? "Loading" : "Save Address"}
+                  {isLoading ? "Loading..." : "Save Address"}
                 </Button>
               </form>
             )}

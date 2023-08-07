@@ -319,7 +319,7 @@ const AddCategory = () => {
                 </div>
                 <Button
                   type="submit"
-                  disabled={!isValid || (!dirty && id === "create")}
+                  disabled={!isValid || (!dirty && id === "create") || isLoading}
                   sx={{
                     textTransform: "none",
                     bgcolor:
@@ -341,7 +341,8 @@ const AddCategory = () => {
                     },
                   }}
                 >
-                  Save Category{" "}
+                                    {isLoading ? "Loading..." : "Save Category"}
+
                 </Button>
               </form>
             )}

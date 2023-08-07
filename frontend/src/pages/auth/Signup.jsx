@@ -287,8 +287,11 @@ const Signup = () => {
                 disabled={!isValid || !dirty}
                 sx={{
                   textTransform: "none",
-                  bgcolor: "primary.main",
-                  color: "white",
+                  bgcolor:
+                    !isValid || isLoading || !dirty
+                      ? "#0000001f !important"
+                      : "primary.main",
+                  color: isLoading ? "#00000042 !important" : "white",
                   fontSize: "14px",
                   paddingY: "10px",
                   fontWeight: 600,
@@ -299,7 +302,7 @@ const Signup = () => {
                   },
                 }}
               >
-                Create Account
+               {isLoading? "Loading..." : "Create Account"}
               </Button>
             </form>
           )}

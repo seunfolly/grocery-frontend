@@ -59,6 +59,8 @@ export const Item = ({ title, Icon, details }) => {
         gap: "10px",
         border: "1px solid #dee2e6",
         borderRadius: "10px",
+        flexDirection: isNonMobile ? "row" : "column",
+        alignItems: isNonMobile ? "start" : "center"
       }}
     >
       <Icon
@@ -67,11 +69,12 @@ export const Item = ({ title, Icon, details }) => {
         }}
       />
       <Stack spacing={0.5}>
-        <Typography variant="h6" fontSize={{ xs: "15px", sm: "18px" }}>
+        <Typography variant="h6" fontSize={{ xs: "15px", sm: "18px" }} textAlign={{xs: "center", sm:"left"}}>
           {title}
         </Typography>
         <Typography
           variant="subtitle2"
+          textAlign={{xs: "center", sm:"left"}}
           fontSize={{ xs: "12px", sm: "14px" }}
           color="text.secondary"
         >

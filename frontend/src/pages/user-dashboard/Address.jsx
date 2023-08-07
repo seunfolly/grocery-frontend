@@ -26,7 +26,7 @@ import {
 import makeToast from "../../utils/toaster";
 import Header from "./Header";
 
-const Address = ({openDrawer}) => {
+const Address = ({ openDrawer }) => {
   const { id } = useParams();
   const isNonMobile = useMediaQuery("(min-width:968px)");
   const dispatch = useDispatch();
@@ -78,12 +78,11 @@ const Address = ({openDrawer}) => {
         link={`/user/addresses`}
       />
 
-
       <Paper
         elevation={0}
         sx={{
           bgcolor: "white",
-          paddingX: isNonMobile? 5: 2,
+          paddingX: isNonMobile ? 5 : 2,
           paddingY: 4,
         }}
       >
@@ -190,7 +189,7 @@ const Address = ({openDrawer}) => {
                 <Autocomplete
                   fullWidth
                   options={statesInNigeria}
-                  value={values.state} 
+                  value={values.state}
                   isOptionEqualToValue={(option, value) => option === value}
                   onChange={(event, newValue) => {
                     handleChange({
@@ -231,11 +230,15 @@ const Address = ({openDrawer}) => {
               </Box>
               <Button
                 type="submit"
+                disabled={!isValid || (!dirty && id === "new") || isLoading}
                 sx={{
                   mt: 4,
                   textTransform: "none",
-                  bgcolor: "primary.main",
-                  color: "white",
+                  bgcolor:
+                    !isValid || isLoading || (!dirty && id === "new")
+                      ? "#0000001f !important"
+                      : "primary.main",
+                  color: isLoading ? "#00000042 !important" : "white",
                   fontSize: "14px",
                   paddingX: "20px",
                   fontWeight: 500,
@@ -246,6 +249,8 @@ const Address = ({openDrawer}) => {
                   },
                 }}
               >
+                {/* {isLoading && !addressData  ? "Saving..." : id === "new" ? "Save Address" : "Save Changes"} */}
+
                 {id === "new" ? "Save Address" : "Save Changes"}
               </Button>
             </form>

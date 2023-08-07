@@ -85,31 +85,31 @@ const Customers = () => {
             {
               field: "name",
               headerName: "Name",
-              flex: 1,
+              width: 250,
               renderCell: renderNameCell,
             },
             {
               field: "phone",
               headerName: "Phone",
-              width: 150,
+              width: 200,
             },
             {
               field: "email",
               headerName: "Email",
-              flex: 1,
+              width: 300,
             },
             {
               field: "orders",
               headerName: "No Of Orders",
               headerAlign: "center",
               align: "center",
-              width: 120,
+              width: 150,
             },
 
             {
               field: "action",
               headerName: "Action",
-              width: 120,
+              width: 150,
               headerAlign: "center",
               align: "center",
               renderCell: ({ row }) => (

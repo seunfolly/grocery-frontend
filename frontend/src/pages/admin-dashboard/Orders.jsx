@@ -14,11 +14,14 @@ const columns = [
   {
     field: "qty",
     headerName: "Qty",
+    width: 100,
+    headerAlign: "center",
+    align: "center",
   },
   {
     field: "date",
     headerName: "Purchase Date",
-    width: 120,
+    width: 150,
     headerAlign: "center",
     align: "center",
   },
@@ -26,13 +29,14 @@ const columns = [
   {
     field: "address",
     headerName: "Billing Address",
-    flex: 1,
+    width: 300,
     headerAlign: "center",
     align: "center",
   },
   {
     field: "amount",
     headerName: "Amount",
+    width: 150,
   },
   {
     field: "status",

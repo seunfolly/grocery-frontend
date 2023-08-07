@@ -11,6 +11,7 @@ import {
   Button,
   IconButton,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Footer from "../../components/layouts/Footer";
@@ -32,9 +33,11 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { itemArray, Item, item1Array, Item1 } from "./data";
 
 const ProductDescription = () => {
+  const isNonMobile = useMediaQuery("(min-width:600px)");
   const [productDetails, setProductDetails] = useState(null);
   const [toggle, setToggle] = useState(false);
   const { id } = useParams();
@@ -123,255 +126,286 @@ const ProductDescription = () => {
       });
   };
 
-  return (
-    <>
-      <Header />
-
+  if (productDetails === null) {
+    return (
       <Box
         sx={{
           bgcolor: "#F6F9FC",
-          paddingY: "40px",
-          // paddingX: 1
+          height: "100vh",
         }}
       >
-        <Container maxWidth="lg">
-          <Grid container spacing={3}>
-            <Grid
-              item
-              xs={12}
-              md={6}
-              sx={{
-                gap: 1,
-              }}
-            >
-              <div>
-                <Slider {...settings} ref={mainSliderRef}>
-                  {productDetails?.images.map((image) => (
-                    <div key={image._id}>
-                      <img
-                        src={image?.url}
-                        alt={`Image ${image._id}`}
-                        style={{
-                          width: "100%",
-                        }}
-                      />
-                    </div>
-                  ))}
-                </Slider>
-                <Box
-                  mt={2}
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                >
-                  <Slider {...thumbnailSettings} ref={thumbnailSliderRef}>
+        <Header />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "500px",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    productDetails !== null && (
+      <>
+        <Header />
+
+        <Box
+          sx={{
+            bgcolor: "#F6F9FC",
+            paddingY: "40px",
+            // paddingX: 1
+          }}
+        >
+          <Container maxWidth="lg">
+            <Grid container spacing={3}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                sx={{
+                  gap: 1,
+                }}
+              >
+                <div>
+                  <Slider {...settings} ref={mainSliderRef}>
                     {productDetails?.images.map((image) => (
-                      <div key={image._id} className="thumbnail-item">
+                      <div key={image._id}>
                         <img
-                          src={image.url}
-                          alt={`Thumbnail ${image._id}`}
-                          className="desc-carousel-image"
-                          // style={{ width: "130px", height: "auto" }}
+                          src={image?.url}
+                          alt={`Image ${image._id}`}
+                          style={{
+                            width: "100%",
+                          }}
                         />
                       </div>
                     ))}
                   </Slider>
-                </Box>
-              </div>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Stack spacing={2}>
-                <Typography variant="h5">{productDetails?.name}</Typography>
-                <Stack direction="row" spacing={productDetails?.salePrice ? 2 : 0} alignItems="end">
-                  <Typography
-                    color="text.secondary"
-                    variant="subtitle2"
-                    fontSize="14px"
+                  <Box
+                    mt={2}
+                    sx={{
+                      cursor: "pointer",
+                    }}
                   >
-                    <del>
-                      {productDetails?.salePrice
-                        ? `₦  ${productDetails?.regularPrice}`
-                        : ""}
-                    </del>
-                  </Typography>
-                  <Typography variant="h5" color="primary.main">
-                    {`₦ ${
-                      productDetails &&
-                      (productDetails?.salePrice
-                        ? productDetails?.salePrice
-                        : productDetails?.regularPrice)
-                    }`}
-                  </Typography>
-                </Stack>
+                    <Slider {...thumbnailSettings} ref={thumbnailSliderRef}>
+                      {productDetails?.images.map((image) => (
+                        <div key={image._id} className="thumbnail-item">
+                          <img
+                            src={image.url}
+                            alt={`Thumbnail ${image._id}`}
+                            className="desc-carousel-image"
+                            // style={{ width: "130px", height: "auto" }}
+                          />
+                        </div>
+                      ))}
+                    </Slider>
+                  </Box>
+                </div>
+              </Grid>
 
-                <Stack direction="row" spacing={5}>
-                  <Stack spacing={0.3}>
-                    <Typography variant="subtitle1">Brand: </Typography>
-                    <Typography variant="subtitle1">Reference: </Typography>
-                    {productDetails?.stock <= 0 ? (
-                      <Typography
-                        variant="subtitle2"
-                        color="white"
-                        p={0.4}
-                        px={2}
-                        sx={{
-                          backgroundColor: "#E3364E",
-                          borderRadius: "10px",
-                          marginTop: "10px !important",
-                        }}
-                      >
-                        Out Of Stock
-                      </Typography>
-                    ) : (
-                      <Typography variant="subtitle1">In Stock: </Typography>
-                    )}
+              <Grid item xs={12} md={6}>
+                <Stack spacing={2}>
+                  <Typography variant="h5">{productDetails?.name}</Typography>
+                  <Stack
+                    direction="row"
+                    spacing={productDetails?.salePrice ? 2 : 0}
+                    alignItems="end"
+                  >
+                    <Typography
+                      color="text.secondary"
+                      variant="subtitle2"
+                      fontSize="14px"
+                    >
+                      <del>
+                        {productDetails?.salePrice
+                          ? `₦  ${productDetails?.regularPrice}`
+                          : ""}
+                      </del>
+                    </Typography>
+                    <Typography variant="h5" color="primary.main">
+                      {`₦ ${
+                        productDetails &&
+                        (productDetails?.salePrice
+                          ? productDetails?.salePrice
+                          : productDetails?.regularPrice)
+                      }`}
+                    </Typography>
                   </Stack>
-                  <Stack spacing={0.3}>
-                    <Typography variant="subtitle2">
-                      {productDetails?.brand?.name || "No Brand"}
-                    </Typography>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      {productDetails?.productId}
-                    </Typography>
-                    {productDetails?.stock > 0 && (
+
+                  <Stack direction="row" spacing={5}>
+                    <Stack spacing={0.3}>
+                      <Typography variant="subtitle1">Brand: </Typography>
+                      <Typography variant="subtitle1">Reference: </Typography>
+                      {productDetails?.stock <= 0 ? (
+                        <Typography
+                          variant="subtitle2"
+                          color="white"
+                          p={0.4}
+                          px={2}
+                          sx={{
+                            backgroundColor: "#E3364E",
+                            borderRadius: "10px",
+                            marginTop: "10px !important",
+                          }}
+                        >
+                          Out Of Stock
+                        </Typography>
+                      ) : (
+                        <Typography variant="subtitle1">In Stock: </Typography>
+                      )}
+                    </Stack>
+                    <Stack spacing={0.3}>
+                      <Typography variant="subtitle2">
+                        {productDetails?.brand?.name || "No Brand"}
+                      </Typography>
                       <Typography variant="subtitle2" color="text.secondary">
-                        {`${productDetails?.stock} Items`}
+                        {productDetails?.productId}
                       </Typography>
-                    )}
+                      {productDetails?.stock > 0 && (
+                        <Typography variant="subtitle2" color="text.secondary">
+                          {`${productDetails?.stock} Items`}
+                        </Typography>
+                      )}
+                    </Stack>
                   </Stack>
-                </Stack>
-                <Typography variant="subtitle2" color="text.secondary">
-                  {productDetails?.description}
-                </Typography>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {productDetails?.description}
+                  </Typography>
 
-                <Box
-                  sx={{
-                    padding: "13px 0",
-                    borderWidth: "1px 0",
-                    borderStyle: "dashed",
-                    borderColor: "#ddd",
-                    display: "flex",
-                    gap: "15px",
-                    // margin: 30px 0;
-                  }}
-                >
                   <Box
                     sx={{
-                      borderRadius: "8px",
-                      border: "1px solid #dee2e6",
-                      padding: "0 8px",
-                      width: "110px",
+                      padding: "13px 0",
+                      borderWidth: "1px 0",
+                      borderStyle: "dashed",
+                      borderColor: "#ddd",
                       display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
+                      gap: "15px",
+                      // margin: 30px 0;
                     }}
                   >
-                    <IconButton
-                      disabled={productDetails?.stock <= 0}
-                      onClick={() => handleRemoveCart(productDetails._id)}
+                    <Box
+                      sx={{
+                        borderRadius: "8px",
+                        border: "1px solid #dee2e6",
+                        padding: "0 8px",
+                        width: "110px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
                     >
-                      <ExpandMoreIcon
-                        sx={{
-                          cursor: "pointer",
-                          fontSize: "25px",
-                          "&:hover": {
-                            color: "#E3364E",
-                          },
-                        }}
-                      />
-                    </IconButton>
+                      <IconButton
+                        disabled={productDetails?.stock <= 0}
+                        onClick={() => handleRemoveCart(productDetails._id)}
+                      >
+                        <ExpandMoreIcon
+                          sx={{
+                            cursor: "pointer",
+                            fontSize: "25px",
+                            "&:hover": {
+                              color: "#E3364E",
+                            },
+                          }}
+                        />
+                      </IconButton>
 
-                    {cartProduct?.count && cartProduct?.count > 0 ? (
-                      <Typography variant="subtitle1">
-                        {cartProduct?.count}
-                      </Typography>
-                    ) : (
-                      0
-                    )}
+                      {cartProduct?.count && cartProduct?.count > 0 ? (
+                        <Typography variant="subtitle1">
+                          {cartProduct?.count}
+                        </Typography>
+                      ) : (
+                        0
+                      )}
 
-                    <IconButton
+                      <IconButton
+                        disabled={productDetails?.stock <= 0}
+                        onClick={() => handleAddToCart()}
+                      >
+                        <ExpandLessIcon
+                          sx={{
+                            fontSize: "25px",
+
+                            "&:hover": {
+                              color: "#E3364E",
+                            },
+                          }}
+                        />
+                      </IconButton>
+                    </Box>
+
+                    <Button
                       disabled={productDetails?.stock <= 0}
                       onClick={() => handleAddToCart()}
-                    >
-                      <ExpandLessIcon
-                        sx={{
-                          fontSize: "25px",
-
-                          "&:hover": {
-                            color: "#E3364E",
-                          },
-                        }}
-                      />
-                    </IconButton>
-                  </Box>
-
-                  <Button
-                    disabled={productDetails?.stock <= 0}
-                    onClick={() => handleAddToCart()}
-                    sx={{
-                      textTransform: "none",
-                      bgcolor: "primary.main",
-                      color: "white",
-                      fontSize: "14px",
-                      paddingX: "25px",
-                      fontWeight: 600,
-                      paddingY: "12px",
-                      alignSelf: "start",
-                      display: "flex",
-                      gap: "10px",
-                      borderRadius: "16px",
-                      "&:hover": {
-                        backgroundColor: "#E3364E",
-                      },
-                    }}
-                  >
-                    <ShoppingCartOutlinedIcon />
-                    <Typography variant="subtitle1"> Add To Cart</Typography>
-                  </Button>
-
-                  <Tooltip
-                    title={toggle ? "Remove from wishlist" : "Add to wishlist"}
-                  >
-                    <IconButton
-                      onClick={() => addToWishList()}
                       sx={{
-                        backgroundColor: toggle ? "#D23F57" : "#e9ecef",
+                        textTransform: "none",
+                        bgcolor: "primary.main",
+                        color: "white",
+                        fontSize: "14px",
+                        paddingX: isNonMobile ? "25px" : "13px",
+                        fontWeight: 600,
+                        paddingY: "12px",
+                        alignSelf: "start",
+                        display: "flex",
+                        gap: "10px",
                         borderRadius: "16px",
-                        paddingX: "12px",
-                        color: toggle ? "white" : "black",
                         "&:hover": {
-                          backgroundColor: "#D23F57",
-                          color: "white",
+                          backgroundColor: "#E3364E",
                         },
                       }}
                     >
-                      <FavoriteBorderIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-                <Stack direction="row" spacing={5}>
-                  <Stack spacing={0.3}>
-                    <Typography variant="subtitle1">Category: </Typography>
-                    <Typography variant="subtitle1">Tags: </Typography>
-                  </Stack>
-                  <Stack spacing={0.3}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      {productDetails?.category?.name}
-                    </Typography>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      {productDetails?.tags.join(", ")}
-                    </Typography>
-                  </Stack>
-                </Stack>
+                      <ShoppingCartOutlinedIcon />
+                      <Typography variant="subtitle1"> Add To Cart</Typography>
+                    </Button>
 
-                <Stack spacing={2}>
-                  {item1Array.map((item, index) => (
-                    <Item1 key={index} {...item} />
-                  ))}
-                </Stack>
+                    <Tooltip
+                      title={
+                        toggle ? "Remove from wishlist" : "Add to wishlist"
+                      }
+                    >
+                      <IconButton
+                        onClick={() => addToWishList()}
+                        sx={{
+                          backgroundColor: toggle ? "#D23F57" : "#e9ecef",
+                          borderRadius: "16px",
+                          paddingX: "12px",
+                          color: toggle ? "white" : "black",
+                          "&:hover": {
+                            backgroundColor: "#D23F57",
+                            color: "white",
+                          },
+                        }}
+                      >
+                        <FavoriteBorderIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                  <Stack direction="row" spacing={5}>
+                    <Stack spacing={0.3}>
+                      <Typography variant="subtitle1">Category: </Typography>
+                      <Typography variant="subtitle1">Tags: </Typography>
+                    </Stack>
+                    <Stack spacing={0.3}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        {productDetails?.category?.name}
+                      </Typography>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        {productDetails?.tags.join(", ")}
+                      </Typography>
+                    </Stack>
+                  </Stack>
 
-                {/* <Stack spacing={1} alignItems="center" direction="row">
+                  <Stack spacing={2}>
+                    {item1Array.map((item, index) => (
+                      <Item1 key={index} {...item} />
+                    ))}
+                  </Stack>
+
+                  {/* <Stack spacing={1} alignItems="center" direction="row">
                   <Typography variant="subtitle2">Rating:</Typography>
                   <Rating
                     value={productDetails?.totalstar || 2}
@@ -384,54 +418,55 @@ const ProductDescription = () => {
                   <Typography variant="subtitle2">{`(${productDetails?.totalrating})`}</Typography>
                 </Stack> */}
 
-                {/* </Stack> */}
-              </Stack>
-            </Grid>
-          </Grid>
-
-          <Grid
-            container
-            spacing={3}
-            sx={{
-              my: 6,
-            }}
-          >
-            {itemArray.map((item, index) => (
-              <Grid key={index} item xs={6} md={3}>
-                <Item {...item} />
+                  {/* </Stack> */}
+                </Stack>
               </Grid>
-            ))}
-          </Grid>
-          <Tab product={productDetails} />
+            </Grid>
 
-          <Stack
-            spacing={2}
-            sx={{
-              my: 7,
-            }}
-          >
-            <Typography variant="h6" fontSize="20px">
-              Related Products
-            </Typography>
             <Grid
               container
               spacing={3}
               sx={{
-                width: "calc(100% + 24px)",
-                marginLeft: "-24px !important",
+                my: 6,
               }}
             >
-              {productState.map((item) => (
-                <Grid item xs={12} sm={6} md={3} key={item._id}>
-                  <ICard {...item} />
+              {itemArray.map((item, index) => (
+                <Grid key={index} item xs={6} md={3}>
+                  <Item {...item} />
                 </Grid>
               ))}
             </Grid>
-          </Stack>
-        </Container>
-      </Box>
-      <Footer />
-    </>
+            <Tab product={productDetails} />
+
+            <Stack
+              spacing={2}
+              sx={{
+                my: 7,
+              }}
+            >
+              <Typography variant="h6" fontSize="20px">
+                Related Products
+              </Typography>
+              <Grid
+                container
+                spacing={3}
+                sx={{
+                  width: "calc(100% + 24px)",
+                  marginLeft: "-24px !important",
+                }}
+              >
+                {productState.map((item) => (
+                  <Grid item xs={12} sm={6} md={3} key={item._id}>
+                    <ICard {...item} />
+                  </Grid>
+                ))}
+              </Grid>
+            </Stack>
+          </Container>
+        </Box>
+        <Footer />
+      </>
+    )
   );
 };
 

@@ -244,12 +244,15 @@ const EditProfile = ({ openDrawer }) => {
               </Box>
               <Button
                 type="submit"
-                disabled={!isValid || isLoading}
+                disabled={!isValid || isLoading || !dirty}
                 sx={{
                   mt: 4,
                   textTransform: "none",
-                  bgcolor: "primary.main",
-                  color: "white",
+                  bgcolor:
+                    !isValid || isLoading || !dirty
+                      ? "#0000001f !important"
+                      : "primary.main",
+                  color: isLoading ? "#00000042 !important" : "white",
                   fontSize: "14px",
                   paddingX: "20px",
                   fontWeight: 500,
@@ -260,7 +263,7 @@ const EditProfile = ({ openDrawer }) => {
                   },
                 }}
               >
-                Save Changes
+                {isLoading ? "Saving..." : "Save Changes"}
               </Button>
             </form>
           )}

@@ -47,7 +47,12 @@ const CollectionAddress = () => {
     email: address?.email,
   }));
   return (
-    <Stack spacing={3} bgcolor="background.paper" py={3} textTransform="capitalize">
+    <Stack
+      spacing={3}
+      bgcolor="background.paper"
+      py={3}
+      textTransform="capitalize"
+    >
       <Header
         title={"Collection Addresses List"}
         placeholder="Search Address..."
@@ -62,35 +67,34 @@ const CollectionAddress = () => {
             {
               field: "name",
               headerName: "Name",
-              
-              flex: 1,
+              width: 150,
             },
             {
               field: "phone",
               headerName: "Phone Number",
-              flex: 1,
+              width: 150,
             },
             {
               field: "email",
               headerName: "Email Address",
-              flex: 1,
+              width: 250,
             },
             {
               field: "address",
               headerName: "Address",
 
-              flex: 1,
+              width: 250,
             },
             {
               field: "state",
               headerName: "State",
-              flex: 1,
+              width: 100,
             },
 
             {
               field: "action",
               headerName: "Action",
-              flex: 1,
+              width: 100,
               headerAlign: "center",
               align: "center",
               renderCell: ({ row }) => (

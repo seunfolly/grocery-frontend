@@ -11,11 +11,14 @@ import {
 import { Formik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import { login, resetState,resetLoggedInFlag } from "../../features/auth/authSlice";
+import {
+  login,
+  resetState,
+  resetLoggedInFlag,
+} from "../../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -40,20 +43,18 @@ const Login = () => {
   useEffect(() => {
     if (isSuccess && user && loggedFlag) {
       makeToast("success", "Login Sucessful!");
-      dispatch(resetLoggedInFlag())
-      if(user.role === "admin") {
+      dispatch(resetLoggedInFlag());
+      if (user.role === "admin") {
         navigate("/admin");
-      }else {
+      } else {
         navigate("/");
-
       }
-     
     }
     if (isError) {
       makeToast("error", message);
       dispatch(resetState());
     }
-  }, [isSuccess, isLoading, user,loggedFlag]);
+  }, [isSuccess, isLoading, user, loggedFlag]);
   return (
     <Box
       sx={{
@@ -71,13 +72,13 @@ const Login = () => {
           bgcolor: "white",
           radius: "8px",
           width: isNonMobile ? "500px" : "95%",
-          padding: isNonMobile ? "2rem 3rem": "2rem 2rem",
+          padding: isNonMobile ? "2rem 3rem" : "2rem 2rem",
           boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
         }}
       >
         <Formik
           onSubmit={(values, { resetForm }) => {
-            dispatch(login(values))
+            dispatch(login(values));
           }}
           initialValues={initialValues}
           validationSchema={loginSchema}
@@ -152,12 +153,16 @@ const Login = () => {
                 />
               </Box>
               <Button
-              type="submit"
-              disabled={!isValid || !dirty}
+                type="submit"
+                disabled={!isValid || !dirty}
                 sx={{
                   textTransform: "none",
-                  bgcolor: "primary.main",
-                  color: "white",
+
+                  bgcolor:
+                    !isValid || isLoading || !dirty
+                      ? "#0000001f !important"
+                      : "primary.main",
+                  color: isLoading ? "#00000042 !important" : "white",
                   fontSize: "14px",
                   paddingY: "10px",
                   fontWeight: 600,
@@ -168,7 +173,7 @@ const Login = () => {
                   },
                 }}
               >
-                Login
+                {isLoading ? "Loading..." : "Login"}
               </Button>
             </form>
           )}

@@ -2,15 +2,11 @@ import {
   Typography,
   Box,
   Stack,
-  Button,
   Paper,
   Avatar,
-  IconButton,
   Grid,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import MenuIcon from "@mui/icons-material/Menu";
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "./Header";
@@ -20,7 +16,7 @@ const Profile = ({ openDrawer }) => {
   const Mobile = useMediaQuery("(min-width:600px)");
 
   const auth = useSelector((state) => state.auth);
-  const { user } = auth;
+  const { orders, user } = auth;
   return (
     <Stack spacing={3}>
       <Header
@@ -30,65 +26,6 @@ const Profile = ({ openDrawer }) => {
         button="Edit Profile"
         link={`/user/profile/${user?._id}`}
       />
-      {/* <Stack direction="row" justifyContent="space-between" alignItems="start">
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          justifyContent="space-between"
-          alignItems="center"
-          width={{ xs: "auto", md: "100%" }}
-        >
-          <Stack
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            mb={{ xs: 1.5, md: 0 }}
-          >
-            <PersonIcon
-              sx={{
-                color: "#D23F57",
-                fontSize: "30px",
-              }}
-            />
-
-            <Typography variant="h5" fontSize="23px">
-              My Profile
-            </Typography>
-          </Stack>
-          <Link
-            to={`/user/profile/${user?._id}`}
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <Button
-              sx={{
-                textTransform: "none",
-                bgcolor: "#FCE9EC",
-                color: "primary.main",
-                fontSize: "subtitle2",
-                paddingX: "40px",
-                fontWeight: 600,
-                paddingY: "6px",
-                "&:hover": {
-                  backgroundColor: "rgba(210, 63, 87, 0.04)",
-                },
-              }}
-            >
-              Edit Profile
-            </Button>
-          </Link>
-        </Stack>
-
-        <IconButton
-           onClick={openDrawer}
-          sx={{
-            display: isNonMobile ? "none" : "inline-flex",
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
-      </Stack> */}
-
       <Grid container justifyContent="space-between">
         <Grid item xs={12} sm={6}>
           <Paper
@@ -144,7 +81,7 @@ const Profile = ({ openDrawer }) => {
             }}
           >
             <Typography color="primary.main" variant="h6">
-              {user?.orders}
+              {orders?.length || 0}
             </Typography>
             <Typography
               variant="subtitle2"

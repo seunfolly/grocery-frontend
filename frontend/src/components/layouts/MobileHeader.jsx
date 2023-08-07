@@ -72,7 +72,7 @@ const MobileHeader = ({
         </IconButton>
       </Box> */}
 
-      <Link to="/" style={{display: "flex"}}>
+      <Link to="/" style={{ display: "flex" }}>
         {/* <Box height="40px" width="auto"> */}
         <img
           src="https://bazaar.ui-lib.com/assets/images/logo2.svg"
@@ -91,9 +91,14 @@ const MobileHeader = ({
         }}
       >
         <IconButton
+          component="span"
           onClick={handleDrawerOpen}
           sx={{
             color: "black",
+            transition: "none !important",
+            "& .MuiTouchRipple-root": {
+              display: "none",
+            },
           }}
         >
           <SearchIcon />

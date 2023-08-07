@@ -568,7 +568,7 @@ const AddProduct = () => {
 
                 <Button
                   type="submit"
-                  disabled={!isValid || (!dirty && id === "create")}
+                  disabled={!isValid || (!dirty && id === "create") || isLoading}
                   // disabled={!isValid || (!dirty || !productData)}
 
                   sx={{
@@ -591,7 +591,7 @@ const AddProduct = () => {
                     },
                   }}
                 >
-                  {isLoading ? "Loading" : "Save Product"}
+                  {isLoading ? "Loading..." : "Save Product"}
                 </Button>
               </form>
             )}
