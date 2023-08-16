@@ -18,9 +18,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { resetState } from "../../features/cart/cartSlice";
 import { resetState as resetOrderState } from "../../features/order/orderSlice";
-import { getCategories } from "../../features/category/categorySlice";
+import axios from "axios";
+import { base_url } from "../../utils/baseUrl";
 import { getProducts } from "../../features/product/productSlice";
-
+import { getCategories } from "../../features/category/categorySlice";
 import {
   CategoryOutlined,
   PersonOutlineOutlined,
@@ -34,6 +35,7 @@ const Homepage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [visibleCategories, setVisibleCategories] = useState([]);
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
@@ -56,12 +58,22 @@ const Homepage = () => {
       color: "white",
     },
   }));
+  const getVisibleCategories = () => {
+    axios
+      .get(`${base_url}category?level=1&visible=true`)
+      .then((response) => {
+        setVisibleCategories(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
 
+  useEffect(() => {
+    getVisibleCategories();
+  }, []);
   useEffect(() => {
     dispatch(getCategories(1));
     dispatch(getProducts());
-
- }, [dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (reference) {
@@ -198,7 +210,7 @@ const Homepage = () => {
             },
           }}
         >
-          <Category />
+          <Category visibleCategories={visibleCategories} />
         </Box>
       </Drawer>
 
@@ -239,7 +251,7 @@ const Homepage = () => {
                     },
                   }}
                 >
-                  <Category />
+                  <Category visibleCategories={visibleCategories} />
                 </Box>
               </Grid>
               <Grid item xs={12} md={9}>

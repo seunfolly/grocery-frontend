@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import Comment from "./Comment";
 import Footer from "./Footer";
 import { Carousel, Carousel1, Carousel2 } from "./Carousel";
+import ScaleLoader from "react-spinners/PulseLoader";
 
 const Category = ({ name, image, _id }) => {
   return (
@@ -57,20 +58,32 @@ const Shop = () => {
         <Carousel2 />
         <Stack spacing={1}>
           <Typography variant="h5"> Shop By Category</Typography>
-          <Grid
-            container
-            spacing={3}
-            sx={{
-              width: "calc(100% + 24px)",
-              marginLeft: "-24px !important",
-            }}
-          >
-            {categories.map((item, index) => (
-              <Grid key={index} item xs={6} lg={4}>
-                <Category {...item} />
-              </Grid>
-            ))}
-          </Grid>
+
+          {categories.length === 0 ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="100px"
+            >
+              <ScaleLoader color="#00000042" />
+            </Box>
+          ) : (
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                width: "calc(100% + 24px)",
+                marginLeft: "-24px !important",
+              }}
+            >
+              {categories.map((item, index) => (
+                <Grid key={index} item xs={6} lg={4}>
+                  <Category {...item} />
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Stack>
 
         <Carousel

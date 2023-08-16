@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     fontSize: "14px",
@@ -63,14 +62,16 @@ const ResetPassword = () => {
         }}
       >
         <form>
-          <img
-            src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
-            alt="bazaar logo"
-            style={{
-              margin: "0 auto",
-              display: "block",
-            }}
-          />
+          <Link to={"/"} style={{ textDecoration: "none" }}>
+            <img
+              src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
+              alt="bazaar logo"
+              style={{
+                margin: "0 auto",
+                display: "block",
+              }}
+            />
+          </Link>
           <Typography variant="body2" mt={2} mb={4} textAlign="center">
             Reset your Password
           </Typography>

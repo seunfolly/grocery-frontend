@@ -136,7 +136,6 @@ const AddProduct = () => {
       setSelectedFiles(productData?.images);
     }
   }, [productData]);
-  console.log(productData);
   return (
     <Box bgcolor="background.paper" px={{ xs: 2, md: 4 }} py={{ xs: 4, md: 4 }}>
       <Stack spacing={3}>

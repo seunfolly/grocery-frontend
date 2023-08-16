@@ -10,6 +10,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import ICard from "../../components/ui-elements/Card";
+import ScaleLoader from "react-spinners/PulseLoader";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -71,7 +72,7 @@ function SamplePrevArrow(props) {
 }
 
 const Offer = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <Box
       bgcolor="#FFF8E5"
@@ -102,7 +103,7 @@ const Offer = () => {
               25% Special Off Today Only for Vegetables
             </Typography>
             <Button
-             onClick={() => navigate("/store")}
+              onClick={() => navigate("/store")}
               sx={{
                 textTransform: "none",
                 bgcolor: "primary.main",
@@ -152,8 +153,8 @@ export const Carousel = ({ title, productList }) => {
           slidesToShow: 2,
           slidesToScroll: 1,
           infinite: true,
-          dots: true
-        }
+          dots: true,
+        },
       },
       {
         breakpoint: 500,
@@ -161,24 +162,35 @@ export const Carousel = ({ title, productList }) => {
           slidesToShow: 1,
           slidesToScroll: 1,
           infinite: true,
-          dots: true
-        }
+          dots: true,
+        },
       },
-    ]
+    ],
   };
 
   return (
     <Stack spacing={3}>
       <Typography variant="h5">{title}</Typography>
-      <div>
-        <Slider {...settings}>
-          {productList.map((item, index) => (
-            <div key={index} className="carousel-card">
-              <ICard {...item} />
-            </div>
-          ))}
-        </Slider>
-      </div>
+      {productList.length === 0 ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100px"
+        >
+          <ScaleLoader color="#00000042" />
+        </Box>
+      ) : (
+        <div>
+          <Slider {...settings}>
+            {productList.map((item, index) => (
+              <div key={index} className="carousel-card">
+                <ICard {...item} />
+              </div>
+            ))}
+          </Slider>
+        </div>
+      )}
     </Stack>
   );
 };

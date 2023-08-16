@@ -4,25 +4,23 @@ import { Box, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { base_url } from "../../utils/baseUrl";
+import ScaleLoader from "react-spinners/PulseLoader";
 import axios from "axios";
 
-const Category = () => {
-  const [categories, setCategories] = useState([]);
-  const getCategories = () => {
-    axios
-      .get(`${base_url}category?level=1&visible=true`)
-      .then((response) => {
-        setCategories(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
+const Category = ({ visibleCategories }) => {
+  // const [categories, setCategories] = useState([]);
+  // const getCategories = () => {
+  //   axios
+  //     .get(`${base_url}category?level=1&visible=true`)
+  //     .then((response) => {
+  //       setCategories(response.data);
+  //     })
+  //     .catch((error) => console.log(error));
+  // };
 
-  useEffect(() => {
-    getCategories();
-  }, []);
-
-  // const { categories } = useSelector((state) => state.category);
-
+  // useEffect(() => {
+  //   getCategories();
+  // }, []);
   const [expandedCategories, setExpandedCategories] = useState([]);
 
   const toggleCategory = (categoryId) => {
@@ -88,12 +86,14 @@ const Category = () => {
       </Box>
     );
   };
-
-  return <Box>
-     <Typography variant="subtitle1" fontSize="15px" letterSpacing={2.5} >
+  return (
+    <Box>
+      <Typography variant="subtitle1" fontSize="15px" letterSpacing={2.5}>
         CATEGORIES
       </Typography>
-    {categories.map((category) => renderCategory(category, true))}</Box>;
+      {visibleCategories.map((category) => renderCategory(category, true))}
+    </Box>
+  );
 };
 
 export default Category;
