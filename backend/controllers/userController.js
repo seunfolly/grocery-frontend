@@ -148,7 +148,7 @@ const updatedUserProfile = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
   try {
-    const getUsers = await User.find();
+    const getUsers = await User.find().select('-password -passwordResetToken -passwordResetExpires -wishlist');
     res.status(200).json(getUsers);
   } catch (error) {
     throw new Error(error);
@@ -160,15 +160,15 @@ const getAUser = asyncHandler(async (req, res) => {
   validateMongoDbId(id);
 
   try {
-    const getaUser = await User.findById(id);
+    const getaUser = await User.findById(id).select('-password -passwordResetToken -passwordResetExpires -wishlist');
     if (!getaUser) {
       const error = new Error("User not found with this email");
       error.statusCode = 404;
       throw error;
     }
-    res.status(200).json({
+    res.status(200).json(
       getaUser,
-    });
+    );
   } catch (error) {
     throw new Error(error);
   }
@@ -214,7 +214,7 @@ const deleteAUser = asyncHandler(async (req, res) => {
 const getWishlist = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   try {
-    const findUser = await User.findById(_id).populate("wishlist");
+    const findUser = await User.findById({_id}, 'wishlist').populate("wishlist");
     res.json(findUser);
   } catch (error) {
     throw new Error(error);
