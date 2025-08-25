@@ -45,7 +45,7 @@ const Category = ({ name, image, _id }) => {
 
 const Shop = () => {
   const { products, isLoading } = useSelector((state) => state.product);
-  const { categories } = useSelector((state) => state.category);
+  const { categories, isLoading: categoryLoading } = useSelector((state) => state.category);
 
   const filteredProduct = products.filter(
     (product, index) =>
@@ -59,7 +59,7 @@ const Shop = () => {
         <Stack spacing={1}>
           <Typography variant="h5"> Shop By Category</Typography>
 
-          {categories.length === 0 ? (
+          {categoryLoading ? (
             <Box
               display="flex"
               justifyContent="center"
@@ -77,11 +77,21 @@ const Shop = () => {
                 marginLeft: "-24px !important",
               }}
             >
-              {categories.map((item, index) => (
+              {categories.length > 0 ? categories.map((item, index) => (
                 <Grid key={index} item xs={6} lg={4}>
                   <Category {...item} />
                 </Grid>
-              ))}
+                  )) : (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  height="100px"
+                  width="100%"
+                >
+                  <Typography variant="h6" textAlign="center">No categories found</Typography>
+                </Box>
+              )}
             </Grid>
           )}
         </Stack>
@@ -94,6 +104,7 @@ const Shop = () => {
         <Carousel
           title={"Snacks, Drinks, Dairy & More"}
           productList={filteredProduct}
+          isLoading={isLoading}
         />
         <Comment products={filteredProduct} />
         <Footer />

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dbConnect =  () => {
   try {
-    mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zchdj.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`);
+    mongoose.connect(process.env.MONGO);
 
     //  mongoose.connect(`mongodb://127.0.0.1/romax-ecommerce`);
     console.log("Database Connected Successfully");

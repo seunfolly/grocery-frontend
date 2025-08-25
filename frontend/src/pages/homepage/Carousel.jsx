@@ -137,7 +137,7 @@ const Offer = () => {
   );
 };
 
-export const Carousel = ({ title, productList }) => {
+export const Carousel = ({ title, productList, isLoading }) => {
   const settings = {
     dots: true,
     infinite: true,
@@ -171,14 +171,23 @@ export const Carousel = ({ title, productList }) => {
   return (
     <Stack spacing={3}>
       <Typography variant="h5">{title}</Typography>
-      {productList.length === 0 ? (
+      {isLoading ? (
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
           height="100px"
         >
-          <ScaleLoader color="#00000042" />
+          <ScaleLoader color="#00000042" height={10} width={10} />
+        </Box>
+      ) : productList.length === 0 ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100px"
+        >
+          <Typography variant="h6" textAlign="center">No products found</Typography>
         </Box>
       ) : (
         <div>
