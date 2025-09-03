@@ -1,112 +1,155 @@
-import { useEffect } from "react";
-import { Box, Stack, Grid, Typography, CircularProgress } from "@mui/material";
+import { useEffect, useState } from "react";
+import {
+  Box,
+  Stack,
+  Grid,
+  Typography,
+  CircularProgress,
+  Card,
+  CardActionArea,
+  CardMedia,
+  CardContent,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Comment from "./Comment";
-import Footer from "./Footer";
 import { Carousel, Carousel1, Carousel2 } from "./Carousel";
-import ScaleLoader from "react-spinners/PulseLoader";
+import PropTypes from "prop-types";
 
 const Category = ({ name, image, _id }) => {
   return (
-    <Link
-      to={`/store?category=${_id}`}
-      style={{
-        textDecoration: "none",
-      }}
-    >
-      <Box
-        flexDirection={{ xs: "column", sm: "row" }}
+    <Grid item xs={6} sm={4} md={3} lg={2.4}>
+      <Card
         sx={{
-          bgcolor: "white",
-          paddingX: "15px",
-          paddingY: "15px",
-
-          borderRadius: "8px",
-          display: "flex",
-          gap: "12px",
-          alignItems: "center",
-          boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
+          borderRadius: "12px",
+          boxShadow: "0px 2px 8px rgba(0,0,0,0.08)",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            transform: "translateY(-6px)",
+            boxShadow: "0px 8px 20px rgba(0,0,0,0.15)",
+          },
         }}
       >
-        <img
-          src={image?.url}
-          alt={name}
-          style={{ width: "70px", height: "70px", borderRadius: "8px" }}
-        />
-
-        <Typography variant="subtitle1" color="#4B566B" sx={{}}>
-          {name}
-        </Typography>
-      </Box>
-    </Link>
+        <CardActionArea
+          component={Link}
+          to={`/store?category=${_id}`}
+          sx={{ height: "100%", textDecoration: "none" }}
+        >
+          <CardMedia
+            component="img"
+            height="160"
+            image={image?.url}
+            alt={name}
+            sx={{
+              objectFit: "cover",
+              borderTopLeftRadius: "12px",
+              borderTopRightRadius: "12px",
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.05)",
+              },
+            }}
+          />
+          <CardContent
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              py: 2,
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              color="text.primary"
+              textAlign="center"
+            >
+              {name}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Grid>
   );
+};
+
+Category.propTypes = {
+  name: PropTypes.string.isRequired,
+  image: PropTypes.shape({
+    url: PropTypes.string,
+  }),
+  _id: PropTypes.string.isRequired,
 };
 
 const Shop = () => {
   const { products, isLoading } = useSelector((state) => state.product);
-  const { categories, isLoading: categoryLoading } = useSelector((state) => state.category);
+  const { categories, isLoading: categoryLoading } = useSelector(
+    (state) => state.category
+  );
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!categoryLoading && !isLoading) {
+      const timeout = setTimeout(() => setLoading(false), 800);
+      return () => clearTimeout(timeout);
+    }
+  }, [categoryLoading, isLoading]);
 
   const filteredProduct = products.filter(
-    (product, index) =>
+    (product) =>
       product.stock > 0 || (product.stock <= 0 && product.reStock === true)
   );
 
   return (
     <Box>
-      <Stack spacing={6}>
+      <Stack spacing={8}>
         <Carousel2 />
-        <Stack spacing={1}>
-          <Typography variant="h5"> Shop By Category</Typography>
+        <Stack spacing={3}>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            color="text.primary"
+            textAlign="center"
+          >
+            Shop by Category
+          </Typography>
 
-          {categoryLoading ? (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100px"
-            >
-              <ScaleLoader color="#00000042" />
+          {loading ? (
+            <Box display="flex" justifyContent="center" py={6}>
+              <CircularProgress size={48} thickness={4} color="error" />
             </Box>
-          ) : (
+          ) : categories.length > 0 ? (
             <Grid
               container
               spacing={3}
-              sx={{
-                width: "calc(100% + 24px)",
-                marginLeft: "-24px !important",
-              }}
+              justifyContent="center"
+              alignItems="stretch"
             >
-              {categories.length > 0 ? categories.map((item, index) => (
-                <Grid key={index} item xs={6} lg={4}>
-                  <Category {...item} />
-                </Grid>
-                  )) : (
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  height="100px"
-                  width="100%"
-                >
-                  <Typography variant="h6" textAlign="center">No categories found</Typography>
-                </Box>
-              )}
+              {categories.map((item) => (
+                <Category key={item._id} {...item} />
+              ))}
             </Grid>
+          ) : (
+            <Box display="flex" justifyContent="center" py={6}>
+              <Typography variant="h6" color="text.secondary">
+                No categories found
+              </Typography>
+            </Box>
           )}
         </Stack>
         <Carousel
-          title={"Best Selling in Your Area"}
+          title="🔥 Best Selling in Your Area"
           productList={filteredProduct}
         />
         <Carousel1 />
         <Carousel
-          title={"Snacks, Drinks, Dairy & More"}
+          title="🥤 Snacks, Drinks, Dairy & More"
           productList={filteredProduct}
           isLoading={isLoading}
         />
         <Comment products={filteredProduct} />
-        <Footer />
+        {/* <Footer /> */}
       </Stack>
     </Box>
   );

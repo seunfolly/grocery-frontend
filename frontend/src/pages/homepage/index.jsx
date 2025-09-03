@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Box,
-  Stack,
   Container,
   IconButton,
   Typography,
@@ -56,7 +55,7 @@ const Homepage = () => {
     axios
       .get(`${base_url}category?level=1&visible=true`)
       .then((response) => {
-        setVisibleCategories(response.data);
+        setVisibleCategories(response.data || []);
       })
       .catch((error) => console.log(error));
   };
@@ -87,10 +86,10 @@ const Homepage = () => {
           justifyContent: "space-around",
           alignItems: "center",
           height: "70px",
-          background: "rgba(255,255,255,0.9)",
-          backdropFilter: "blur(10px)",
+          background: "rgba(255,255,255,0.95)",
+          backdropFilter: "blur(12px)",
           borderTop: "1px solid #e5e7eb",
-          boxShadow: "0 -2px 10px rgba(0,0,0,0.08)",
+          boxShadow: "0 -3px 12px rgba(0,0,0,0.08)",
           zIndex: 1200,
         }}
       >
@@ -166,10 +165,10 @@ const Homepage = () => {
         anchor="left"
         sx={{
           "& .MuiPaper-root": {
-            width: 280,
+            width: 300,
             background: "#fff",
             borderRadius: "0 12px 12px 0",
-            boxShadow: "2px 0 12px rgba(0,0,0,0.1)",
+            boxShadow: "2px 0 12px rgba(0,0,0,0.12)",
           },
         }}
       >
@@ -187,17 +186,17 @@ const Homepage = () => {
         paddingBottom={{ xs: "90px", md: "40px" }}
         sx={{ bgcolor: "#F9FAFB" }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Grid container spacing={3}>
             <Grid item md={3} display={{ xs: "none", md: "block" }}>
               <Box
                 bgcolor="white"
                 py={3}
                 px={2.5}
-                borderRadius="12px"
+                borderRadius="16px"
                 sx={{
                   height: "calc(100vh - 120px)",
-                  boxShadow: "0px 2px 8px rgba(0,0,0,0.08)",
+                  boxShadow: "0px 3px 10px rgba(0,0,0,0.1)",
                   position: "sticky",
                   top: "90px",
                   overflowY: "auto",
@@ -205,13 +204,13 @@ const Homepage = () => {
                     width: "6px",
                   },
                   "&::-webkit-scrollbar-thumb": {
-                    background: "#e5e7eb",
+                    background: "#d1d5db",
                     borderRadius: "100px",
                   },
                 }}
               >
                 <Typography
-                  variant="subtitle1"
+                  variant="h6"
                   fontWeight={700}
                   color="text.primary"
                   mb={2}
@@ -222,7 +221,14 @@ const Homepage = () => {
               </Box>
             </Grid>
             <Grid item xs={12} md={9}>
-              <Shop />
+              <Box
+                bgcolor="white"
+                borderRadius="16px"
+                p={3}
+                boxShadow="0px 3px 10px rgba(0,0,0,0.08)"
+              >
+                <Shop />
+              </Box>
             </Grid>
           </Grid>
         </Container>

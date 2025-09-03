@@ -2,26 +2,25 @@ import { useState } from "react";
 import {
   Box,
   Stack,
-  Menu,
-  MenuItem,
   Container,
   IconButton,
   Badge,
   styled,
   Typography,
-  Divider,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonAdd from "@mui/icons-material/PersonAdd";
-import SearchInput from "../forms/SearchInput";
 import { Link, useNavigate } from "react-router-dom";
-import Cart from "./Cart";
-import { logout } from "../../features/auth/authSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
+import Cart from "./Cart";
 import MobileHeader from "./MobileHeader";
+import SearchInput from "../forms/SearchInput";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -29,26 +28,22 @@ const Header = () => {
   const { products } = useSelector((state) => state.cart);
   const user = useSelector((state) => state.auth.user);
 
-  const StyledBadge = styled(Badge)(({ theme }) => ({
-    "& .MuiBadge-badge": {
-      right: "-6px",
-      top: "-6px",
-      backgroundColor:
-        products.length > 0 ? theme.palette.primary.main : "transparent",
-      color: "white",
-      fontWeight: 600,
-      fontSize: "0.75rem",
-      minWidth: "18px",
-      height: "18px",
-      borderRadius: "50%",
-    },
-  }));
-
   const [cartOpen, setCartOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const StyledBadge = styled(Badge)(() => ({
+    "& .MuiBadge-badge": {
+      right: "-7px",
+      top: "-7px",
+      backgroundColor: products.length > 0 ? "#D23F57" : "transparent",
+      padding: "0 6px",
+      color: "white",
+    },
+  }));
+
   const handleCartOpen = () => setCartOpen(true);
   const handleCartClose = () => setCartOpen(false);
+
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
@@ -60,13 +55,12 @@ const Header = () => {
 
   return (
     <Box
-      py={{ xs: 1, md: 0.7 }}
       sx={{
         bgcolor: "white",
-        zIndex: 1000,
+        zIndex: 50,
         position: "sticky",
         top: 0,
-        boxShadow: "0px 2px 6px rgba(0,0,0,0.08)",
+        borderBottom: "1px solid #F0F0F0",
       }}
     >
       <Container maxWidth="lg">
@@ -75,100 +69,103 @@ const Header = () => {
           direction="row"
           justifyContent="space-between"
           alignItems="center"
+          height={{ xs: 60, md: 72 }}
+          spacing={2}
           display={{ xs: "none", lg: "flex" }}
         >
           {/* Logo */}
-          <Link to="/" style={{ display: "flex", alignItems: "center" }}>
-            <Box
-              component="img"
-              src="https://bazaar.ui-lib.com/assets/images/logo2.svg"
-              alt="Logo"
-              sx={{
-                height: 40,
-                cursor: "pointer",
-                transition: "transform 0.2s",
-                "&:hover": { transform: "scale(1.05)" },
-              }}
-            />
+          <Link to="/">
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <img
+                src="https://bazaar.ui-lib.com/assets/images/logo2.svg"
+                alt="logo"
+                style={{ height: "36px" }}
+              />
+            </Box>
           </Link>
 
           {/* Search */}
-          <Box sx={{ maxWidth: "680px", flex: 1, mx: 3 }}>
+          <Box sx={{ flex: 1, maxWidth: "670px" }}>
             <SearchInput />
           </Box>
 
-          {/* User + Cart */}
+          {/* Right Side (User + Cart) */}
           <Stack direction="row" spacing={2} alignItems="center">
             {/* User Menu */}
             <div>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <IconButton
-                  onClick={handleClick}
                   sx={{
                     bgcolor: "#F3F5F9",
-                    color: "rgba(0,0,0,0.6)",
+                    color: "rgba(0, 0, 0, 0.54)",
                     width: 45,
                     height: 45,
-                    borderRadius: "12px",
-                    transition: "all 0.2s",
-                    "&:hover": {
-                      bgcolor: "primary.light",
-                      color: "primary.main",
-                    },
                   }}
+                  onClick={handleClick}
                 >
                   <PersonOutlineOutlinedIcon />
                 </IconButton>
                 {user && (
-                  <Typography fontWeight={600} textTransform="capitalize">
+                  <Typography
+                    fontSize="14px"
+                    fontWeight={500}
+                    textTransform="capitalize"
+                  >
                     Hi, {user?.fullName.split(" ")[0]}
                   </Typography>
                 )}
               </Stack>
 
+              {/* Dropdown Menu */}
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                transformOrigin={{ vertical: "top", horizontal: "left" }}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
                 sx={{
-                  mt: 1,
-                  "& .MuiList-root": { width: 220, p: 0.5 },
+                  marginTop: "10px",
+                  "& .MuiList-root": {
+                    width: 200,
+                  },
                 }}
               >
                 {user && (
                   <Link
                     to="/user/profile"
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    style={{
+                      textDecoration: "none",
+                      color: "#2b3445",
+                    }}
                   >
-                    <MenuItem
-                      onClick={handleClose}
-                      sx={{ borderRadius: "8px", mb: 0.5 }}
-                    >
-                      <PersonAdd fontSize="small" />
-                      <Typography ml={1}>My Dashboard</Typography>
+                    <MenuItem onClick={handleClose}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <PersonAdd fontSize="small" />
+                        <Typography>My Dashboard</Typography>
+                      </Stack>
                     </MenuItem>
                   </Link>
                 )}
 
-                <Divider sx={{ my: 0.5 }} />
-
                 {user ? (
-                  <MenuItem
-                    onClick={handleLogout}
-                    sx={{ borderRadius: "8px", color: "error.main" }}
-                  >
-                    <LogoutIcon fontSize="small" />
-                    <Typography ml={1}>Logout</Typography>
+                  <MenuItem onClick={handleLogout}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <LogoutIcon fontSize="small" />
+                      <Typography>Logout</Typography>
+                    </Stack>
                   </MenuItem>
                 ) : (
-                  <MenuItem
-                    onClick={() => navigate("/login")}
-                    sx={{ borderRadius: "8px", color: "primary.main" }}
-                  >
-                    <LoginIcon fontSize="small" />
-                    <Typography ml={1}>Login</Typography>
+                  <MenuItem onClick={() => navigate("/login")}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <LoginIcon fontSize="small" />
+                      <Typography>Login</Typography>
+                    </Stack>
                   </MenuItem>
                 )}
               </Menu>
@@ -179,15 +176,9 @@ const Header = () => {
               onClick={handleCartOpen}
               sx={{
                 bgcolor: "#F3F5F9",
-                color: "rgba(0,0,0,0.6)",
+                color: "rgba(0, 0, 0, 0.54)",
                 width: 45,
                 height: 45,
-                borderRadius: "12px",
-                transition: "all 0.2s",
-                "&:hover": {
-                  bgcolor: "primary.light",
-                  color: "primary.main",
-                },
               }}
             >
               <StyledBadge
@@ -202,6 +193,7 @@ const Header = () => {
           </Stack>
         </Stack>
 
+        {/* Mobile Header */}
         <MobileHeader
           handleCartOpen={handleCartOpen}
           handleClick={handleClick}
