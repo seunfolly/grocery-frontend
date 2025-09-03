@@ -95,7 +95,6 @@ const Shop = () => {
             </Grid>
           )}
         </Stack>
-
         <Carousel
           title={"Best Selling in Your Area"}
           productList={filteredProduct}

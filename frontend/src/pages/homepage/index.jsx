@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Stack,
-  Avatar,
   Container,
   IconButton,
   Typography,
@@ -10,11 +9,12 @@ import {
   Badge,
   Grid,
   Drawer,
+  Divider,
 } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Category from "./Category";
 import Shop from "./Shop";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { resetState } from "../../features/cart/cartSlice";
 import { resetState as resetOrderState } from "../../features/order/orderSlice";
@@ -28,7 +28,6 @@ import {
   HomeOutlined,
   ShoppingBagOutlined,
 } from "@mui/icons-material";
-import { Link } from "react-router-dom";
 
 const Homepage = () => {
   const location = useLocation();
@@ -36,28 +35,23 @@ const Homepage = () => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [visibleCategories, setVisibleCategories] = useState([]);
-  const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
 
-  const handleDrawerClose = () => {
-    setDrawerOpen(false);
-  };
-  const queryParams = new URLSearchParams(location.search);
-  const reference = queryParams.get("reference");
   const { products } = useSelector((state) => state.cart);
   const user = useSelector((state) => state.auth.user);
 
+  const queryParams = new URLSearchParams(location.search);
+  const reference = queryParams.get("reference");
+
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
-      // right: "-4x",
-      // top: "-4px",
-      backgroundColor: products.length > 0 ? "#D23F57" : "transparent",
-      // border: `2px solid ${theme.palette.background.paper}`,
+      backgroundColor:
+        products.length > 0 ? theme.palette.primary.main : "transparent",
       padding: "0 6px",
       color: "white",
+      fontWeight: 600,
     },
   }));
+
   const getVisibleCategories = () => {
     axios
       .get(`${base_url}category?level=1&visible=true`)
@@ -74,7 +68,6 @@ const Homepage = () => {
     dispatch(getCategories(1));
     dispatch(getProducts());
   }, [dispatch]);
-
   useEffect(() => {
     if (reference) {
       dispatch(resetState());
@@ -88,61 +81,52 @@ const Homepage = () => {
         display={{ xs: "flex", md: "none" }}
         sx={{
           position: "fixed",
-          width: "100vw",
+          bottom: 0,
           left: 0,
           right: 0,
-          bottom: 0,
           justifyContent: "space-around",
           alignItems: "center",
-          zIndex: "1000",
-          height: "64px",
-          backgroundColor: "#fff",
-          boxShadow: "0px 1px 4px 3px rgba(0, 0, 0, 0.1)",
+          height: "70px",
+          background: "rgba(255,255,255,0.9)",
+          backdropFilter: "blur(10px)",
+          borderTop: "1px solid #e5e7eb",
+          boxShadow: "0 -2px 10px rgba(0,0,0,0.08)",
+          zIndex: 1200,
         }}
       >
         <Link
           to="/"
           style={{
             textDecoration: "none",
-            flex: "1 1 0",
+            flex: 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#2b3445",
             flexDirection: "column",
+            color: "#374151",
           }}
         >
-          <HomeOutlined />
-          <Typography fontSize="13px">Home</Typography>
+          <HomeOutlined fontSize="medium" />
+          <Typography fontSize="12px" fontWeight={500}>
+            Home
+          </Typography>
         </Link>
         <IconButton
-          component="span"
-          onClick={handleDrawerOpen}
-          style={{
-            flex: "1 1 0",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#2b3445",
+          onClick={() => setDrawerOpen(true)}
+          sx={{
+            flex: 1,
             flexDirection: "column",
+            color: "#374151",
           }}
         >
-          {" "}
-          <CategoryOutlined />
-          <Typography fontSize="13px">Category</Typography>
+          <CategoryOutlined fontSize="medium" />
+          <Typography fontSize="12px" fontWeight={500}>
+            Category
+          </Typography>
         </IconButton>
         <IconButton
-          component="span"
           onClick={() => navigate("/cart")}
-          style={{
-            textDecoration: "none",
-            flex: "1 1 0",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#2b3445",
-            flexDirection: "column",
-          }}
+          sx={{ flex: 1, flexDirection: "column", color: "#374151" }}
         >
           <StyledBadge
             badgeContent={products.reduce(
@@ -150,115 +134,97 @@ const Homepage = () => {
               0
             )}
           >
-            <ShoppingBagOutlined />
+            <ShoppingBagOutlined fontSize="medium" />
           </StyledBadge>
-
-          <Typography fontSize="13px">Cart</Typography>
+          <Typography fontSize="12px" fontWeight={500}>
+            Cart
+          </Typography>
         </IconButton>
         {user && (
           <Link
             to="/user/profile"
             style={{
               textDecoration: "none",
-              flex: "1 1 0",
+              flex: 1,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#2b3445",
               flexDirection: "column",
+              color: "#374151",
             }}
           >
-            <PersonOutlineOutlined />
-            <Typography fontSize="13px" textTransform="capitalize">{`${
-              user?.fullName.split(" ")[0]
-            }`}</Typography>
+            <PersonOutlineOutlined fontSize="medium" />
+            <Typography fontSize="12px" fontWeight={500}>
+              {user?.fullName.split(" ")[0]}
+            </Typography>
           </Link>
         )}
       </Box>
-
       <Drawer
         open={drawerOpen}
-        onClose={handleDrawerClose}
+        onClose={() => setDrawerOpen(false)}
         anchor="left"
-        bgcolor="white"
         sx={{
-          zIndex: "1200",
           "& .MuiPaper-root": {
-            backgroundColor: "white",
+            width: 280,
+            background: "#fff",
+            borderRadius: "0 12px 12px 0",
+            boxShadow: "2px 0 12px rgba(0,0,0,0.1)",
           },
         }}
       >
-        <Box
-          bgcolor="white"
-          py={3}
-          px={2.2}
-          borderRadius="5px"
-          sx={{
-            width: "250px",
-            height: "100vh",
-
-            overflowY: "scroll",
-            "&::-webkit-scrollbar": {
-              width: "5px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "transparent",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#ebeff7",
-              borderRadius: "100px",
-            },
-          }}
-        >
+        <Box p={3} sx={{ height: "100vh", overflowY: "auto" }}>
+          <Typography variant="h6" fontWeight={700} mb={2} color="primary">
+            Categories
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
           <Category visibleCategories={visibleCategories} />
         </Box>
       </Drawer>
-
       <Header />
       <Box
-        paddingTop={{ xs: "12px", sm: "30px" }}
-        paddingBottom={{ xs: "90px", md: "30px" }}
-        sx={{
-          bgcolor: "#F6F9FC",
-        }}
+        paddingTop={{ xs: "16px", sm: "32px" }}
+        paddingBottom={{ xs: "90px", md: "40px" }}
+        sx={{ bgcolor: "#F9FAFB" }}
       >
         <Container maxWidth="lg">
-          <Stack direction="row" position="relative">
-            <Grid container spacing={{ xs: 0, md: 4 }} position="relative">
-              <Grid item md={3} display={{ xs: "none", md: "block" }}>
-                <Box
-                  bgcolor="white"
-                  py={3}
-                  px={2.2}
-                  borderRadius="5px"
-                  sx={{
-                    // width: "278px",
-                    // minWidth: "278px",
-                    height: "calc(100vh - 140px)",
-                    boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
-                    position: "sticky",
-                    top: "80px",
-                    overflowY: "scroll",
-                    "&::-webkit-scrollbar": {
-                      width: "5px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "transparent",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      background: "#ebeff7",
-                      borderRadius: "100px",
-                    },
-                  }}
+          <Grid container spacing={3}>
+            <Grid item md={3} display={{ xs: "none", md: "block" }}>
+              <Box
+                bgcolor="white"
+                py={3}
+                px={2.5}
+                borderRadius="12px"
+                sx={{
+                  height: "calc(100vh - 120px)",
+                  boxShadow: "0px 2px 8px rgba(0,0,0,0.08)",
+                  position: "sticky",
+                  top: "90px",
+                  overflowY: "auto",
+                  "&::-webkit-scrollbar": {
+                    width: "6px",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#e5e7eb",
+                    borderRadius: "100px",
+                  },
+                }}
+              >
+                <Typography
+                  variant="subtitle1"
+                  fontWeight={700}
+                  color="text.primary"
+                  mb={2}
                 >
-                  <Category visibleCategories={visibleCategories} />
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={9}>
-                <Shop />
-              </Grid>
+                  Categories
+                </Typography>
+                <Category visibleCategories={visibleCategories} />
+              </Box>
             </Grid>
-          </Stack>
+            <Grid item xs={12} md={9}>
+              <Shop />
+            </Grid>
+          </Grid>
         </Container>
       </Box>
     </Box>

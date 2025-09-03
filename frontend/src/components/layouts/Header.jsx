@@ -9,7 +9,7 @@ import {
   Badge,
   styled,
   Typography,
-  ListItemIcon,
+  Divider,
 } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
@@ -19,7 +19,7 @@ import PersonAdd from "@mui/icons-material/PersonAdd";
 import SearchInput from "../forms/SearchInput";
 import { Link, useNavigate } from "react-router-dom";
 import Cart from "./Cart";
-import { logout, resetState } from "../../features/auth/authSlice";
+import { logout } from "../../features/auth/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import MobileHeader from "./MobileHeader";
 
@@ -27,34 +27,30 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { products } = useSelector((state) => state.cart);
-
   const user = useSelector((state) => state.auth.user);
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
     "& .MuiBadge-badge": {
-      right: "-7px",
-      top: "-7px",
-      backgroundColor: products.length > 0 ? "#D23F57" : "transparent",
-      // border: `2px solid ${theme.palette.background.paper}`,
-      padding: "0 6px",
+      right: "-6px",
+      top: "-6px",
+      backgroundColor:
+        products.length > 0 ? theme.palette.primary.main : "transparent",
       color: "white",
+      fontWeight: 600,
+      fontSize: "0.75rem",
+      minWidth: "18px",
+      height: "18px",
+      borderRadius: "50%",
     },
   }));
-  const [cartOpen, setCartOpen] = useState(false);
-  const handleCartOpen = () => {
-    setCartOpen(true);
-  };
 
-  const handleCartClose = () => {
-    setCartOpen(false);
-  };
+  const [cartOpen, setCartOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
+  const handleCartOpen = () => setCartOpen(true);
+  const handleCartClose = () => setCartOpen(false);
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -64,54 +60,69 @@ const Header = () => {
 
   return (
     <Box
-      py={{xs:1, md: 0.7}}
+      py={{ xs: 1, md: 0.7 }}
       sx={{
         bgcolor: "white",
-        zIndex: 50,
+        zIndex: 1000,
         position: "sticky",
         top: 0,
+        boxShadow: "0px 2px 6px rgba(0,0,0,0.08)",
       }}
     >
       <Container maxWidth="lg">
+        {/* Desktop Header */}
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
           display={{ xs: "none", lg: "flex" }}
         >
-          <Link to="/">
-            <Box>
-              <img src="https://bazaar.ui-lib.com/assets/images/logo2.svg" />
-            </Box>
+          {/* Logo */}
+          <Link to="/" style={{ display: "flex", alignItems: "center" }}>
+            <Box
+              component="img"
+              src="https://bazaar.ui-lib.com/assets/images/logo2.svg"
+              alt="Logo"
+              sx={{
+                height: 40,
+                cursor: "pointer",
+                transition: "transform 0.2s",
+                "&:hover": { transform: "scale(1.05)" },
+              }}
+            />
           </Link>
 
-          <Box
-            component="div"
-            sx={{
-              maxWidth: "670px",
-              flex: 1,
-            }}
-          >
+          {/* Search */}
+          <Box sx={{ maxWidth: "680px", flex: 1, mx: 3 }}>
             <SearchInput />
           </Box>
-          <Stack direction="row" spacing={2}>
+
+          {/* User + Cart */}
+          <Stack direction="row" spacing={2} alignItems="center">
+            {/* User Menu */}
             <div>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <IconButton
+                  onClick={handleClick}
                   sx={{
                     bgcolor: "#F3F5F9",
-                    color: "rgba(0, 0, 0, 0.54)",
-                    width: "45px",
-                    height: "45px",
+                    color: "rgba(0,0,0,0.6)",
+                    width: 45,
+                    height: 45,
+                    borderRadius: "12px",
+                    transition: "all 0.2s",
+                    "&:hover": {
+                      bgcolor: "primary.light",
+                      color: "primary.main",
+                    },
                   }}
-                  onClick={handleClick}
                 >
                   <PersonOutlineOutlinedIcon />
                 </IconButton>
                 {user && (
-                  <Typography textTransform="capitalize">{`Hi, ${
-                    user?.fullName.split(" ")[0]
-                  }`}</Typography>
+                  <Typography fontWeight={600} textTransform="capitalize">
+                    Hi, {user?.fullName.split(" ")[0]}
+                  </Typography>
                 )}
               </Stack>
 
@@ -119,64 +130,64 @@ const Header = () => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "center",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
                 sx={{
-                  marginTop: "10px",
-                  "& .MuiList-root": {
-                    width: "200px",
-                  },
+                  mt: 1,
+                  "& .MuiList-root": { width: 220, p: 0.5 },
                 }}
               >
-                <Link
-                  to="/user/profile"
-                  style={{
-                    textDecoration: "none",
-                    color: "#2b3445",
-                  }}
-                >
-                  {user && (
-                    <MenuItem onClick={handleClose}>
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <PersonAdd fontSize="small" />
-                        <Typography>My Dashbord</Typography>
-                      </Stack>
+                {user && (
+                  <Link
+                    to="/user/profile"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <MenuItem
+                      onClick={handleClose}
+                      sx={{ borderRadius: "8px", mb: 0.5 }}
+                    >
+                      <PersonAdd fontSize="small" />
+                      <Typography ml={1}>My Dashboard</Typography>
                     </MenuItem>
-                  )}
-                </Link>
+                  </Link>
+                )}
+
+                <Divider sx={{ my: 0.5 }} />
 
                 {user ? (
-                  <MenuItem onClick={handleLogout}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <LogoutIcon fontSize="small" />
-                      <Typography>Logout</Typography>
-                    </Stack>{" "}
+                  <MenuItem
+                    onClick={handleLogout}
+                    sx={{ borderRadius: "8px", color: "error.main" }}
+                  >
+                    <LogoutIcon fontSize="small" />
+                    <Typography ml={1}>Logout</Typography>
                   </MenuItem>
                 ) : (
-                  <MenuItem onClick={() => navigate("/login")}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <LoginIcon fontSize="small" />
-                      <Typography>Login</Typography>
-                    </Stack>{" "}
+                  <MenuItem
+                    onClick={() => navigate("/login")}
+                    sx={{ borderRadius: "8px", color: "primary.main" }}
+                  >
+                    <LoginIcon fontSize="small" />
+                    <Typography ml={1}>Login</Typography>
                   </MenuItem>
                 )}
               </Menu>
             </div>
 
+            {/* Cart */}
             <IconButton
               onClick={handleCartOpen}
               sx={{
                 bgcolor: "#F3F5F9",
-                color: "rgba(0, 0, 0, 0.54)",
-                width: "45px",
-
-                height: "45px",
+                color: "rgba(0,0,0,0.6)",
+                width: 45,
+                height: 45,
+                borderRadius: "12px",
+                transition: "all 0.2s",
+                "&:hover": {
+                  bgcolor: "primary.light",
+                  color: "primary.main",
+                },
               }}
             >
               <StyledBadge
@@ -190,6 +201,7 @@ const Header = () => {
             </IconButton>
           </Stack>
         </Stack>
+
         <MobileHeader
           handleCartOpen={handleCartOpen}
           handleClick={handleClick}
@@ -198,6 +210,8 @@ const Header = () => {
           anchorEl={anchorEl}
         />
       </Container>
+
+      {/* Cart Drawer */}
       <Cart open={cartOpen} onClose={handleCartClose} />
     </Box>
   );
