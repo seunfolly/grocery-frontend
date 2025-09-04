@@ -77,7 +77,6 @@ const Footer = () => {
   return (
     <Box bgcolor="#141850" color="white" pt={6} pb={3} px={{ xs: 3, md: 8 }}>
       <Grid container spacing={6}>
-        {/* Brand + Description */}
         <Grid item xs={12} md={4}>
           <Stack spacing={2}>
             <Box>
@@ -108,7 +107,6 @@ const Footer = () => {
           </Stack>
         </Grid>
 
-        {/* Quick Links */}
         <Grid item xs={12} md={4}>
           <Typography variant="subtitle1" fontWeight={600} mb={2}>
             Quick Links
@@ -129,8 +127,6 @@ const Footer = () => {
             ))}
           </Stack>
         </Grid>
-
-        {/* Payment Methods */}
         <Grid item xs={12} md={4}>
           <Typography variant="subtitle1" fontWeight={600} mb={2}>
             Secure Payments
@@ -157,11 +153,7 @@ const Footer = () => {
           </Stack>
         </Grid>
       </Grid>
-
-      {/* Divider */}
       <Divider sx={{ bgcolor: "rgba(255,255,255,0.2)", my: 4 }} />
-
-      {/* Bottom bar */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="space-between"

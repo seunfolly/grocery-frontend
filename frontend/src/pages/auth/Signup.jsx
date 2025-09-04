@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Typography,
   Box,
@@ -26,9 +26,6 @@ const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     fontSize: "14px",
     height: "45px",
-    "& fieldset": {},
-    "&:hover fieldset": {},
-    "&.Mui-focused fieldset": {},
   },
   "& .MuiInputLabel-root": {
     fontSize: "14px",
@@ -41,13 +38,10 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleToggleConfirmPassword = () => {
+  const handleTogglePassword = () => setShowPassword(!showPassword);
+  const handleToggleConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
-  };
+
   const auth = useSelector((state) => state.auth);
   const { isSuccess, message, isError, isLoading, user, loggedFlag } = auth;
   const navigate = useNavigate();
@@ -55,16 +49,15 @@ const Signup = () => {
 
   useEffect(() => {
     if (isSuccess && user && loggedFlag) {
-      makeToast("success", "Signing up was Sucessful!");
+      makeToast("success", "Signup Successful!");
       dispatch(resetLoggedInFlag());
-      // resetFormRef.current();
       navigate("/");
     }
     if (isError) {
       makeToast("error", message);
       dispatch(resetState());
     }
-  }, [isSuccess, isLoading, user, loggedFlag]);
+  }, [isSuccess, isError, user, loggedFlag, dispatch, navigate, message]);
 
   return (
     <Box
@@ -81,16 +74,15 @@ const Signup = () => {
         elevation={0}
         sx={{
           bgcolor: "white",
-          radius: "8px",
+          borderRadius: "10px",
           width: isNonMobile ? "500px" : "95%",
-          padding: isNonMobile ? "2rem 3rem" : "2rem 2rem",
+          padding: isNonMobile ? "2.5rem 3rem" : "2rem",
           boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
         }}
       >
         <Formik
           onSubmit={(values, { resetForm }) => {
-            const { confirmPassword, ...updatedValues } = values;
-            dispatch(signup(updatedValues));
+            dispatch(signup(values));
             resetFormRef.current = resetForm;
           }}
           initialValues={initialValues}
@@ -103,31 +95,29 @@ const Signup = () => {
             handleBlur,
             handleChange,
             handleSubmit,
-
             isValid,
             dirty,
           }) => (
             <form onSubmit={handleSubmit}>
-               <Link to={"/"} style={{ textDecoration: "none" }}>
+              <Link to={"/"} style={{ textDecoration: "none" }}>
                 <img
                   src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
                   alt="bazaar logo"
                   style={{
                     margin: "0 auto",
                     display: "block",
+                    width: "120px",
                   }}
                 />
               </Link>
+
               <Typography variant="body2" mt={1} mb={4} textAlign="center">
                 Create Your Account
               </Typography>
+
+              {/* Full Name */}
               <Box mb={2}>
-                <Typography
-                  variant="subtitle1"
-                  fontSize="12px"
-                  color="#4b566b"
-                  mb={1.5}
-                >
+                <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Full Name
                 </Typography>
                 <CustomTextField
@@ -144,13 +134,10 @@ const Signup = () => {
                   helperText={touched.fullName && errors.fullName}
                 />
               </Box>
+
+              {/* Email */}
               <Box mb={2}>
-                <Typography
-                  variant="subtitle1"
-                  fontSize="12px"
-                  color="#4b566b"
-                  mb={1.5}
-                >
+                <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Email
                 </Typography>
                 <CustomTextField
@@ -167,14 +154,11 @@ const Signup = () => {
                   helperText={touched.email && errors.email}
                 />
               </Box>
+
+              {/* Phone */}
               <Box mb={2}>
-                <Typography
-                  variant="subtitle1"
-                  fontSize="12px"
-                  color="#4b566b"
-                  mb={1.5}
-                >
-                  Phone number
+                <Typography fontSize="12px" color="#4b566b" mb={1.5}>
+                  Phone Number
                 </Typography>
                 <CustomTextField
                   fullWidth
@@ -190,13 +174,10 @@ const Signup = () => {
                   helperText={touched.phone && errors.phone}
                 />
               </Box>
+
+              {/* Password */}
               <Box mb={2}>
-                <Typography
-                  variant="subtitle1"
-                  fontSize="12px"
-                  color="#4b566b"
-                  mb={1.5}
-                >
+                <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Password
                 </Typography>
                 <CustomTextField
@@ -219,17 +200,10 @@ const Signup = () => {
                         sx={{ padding: 0, marginRight: "10px" }}
                       >
                         {showPassword ? (
-                          <Visibility
-                            sx={{
-                              fontSize: "20px",
-                            }}
-                          />
+                          <Visibility sx={{ fontSize: "20px" }} />
                         ) : (
                           <VisibilityOff
-                            sx={{
-                              fontSize: "20px",
-                              color: "#DAE1E7",
-                            }}
+                            sx={{ fontSize: "20px", color: "#DAE1E7" }}
                           />
                         )}
                       </IconButton>
@@ -237,13 +211,10 @@ const Signup = () => {
                   }}
                 />
               </Box>
+
+              {/* Confirm Password */}
               <Box mb={2}>
-                <Typography
-                  variant="subtitle1"
-                  fontSize="12px"
-                  color="#4b566b"
-                  mb={1.5}
-                >
+                <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Confirm Password
                 </Typography>
                 <CustomTextField
@@ -266,17 +237,10 @@ const Signup = () => {
                         sx={{ padding: 0, marginRight: "10px" }}
                       >
                         {showConfirmPassword ? (
-                          <Visibility
-                            sx={{
-                              fontSize: "20px",
-                            }}
-                          />
+                          <Visibility sx={{ fontSize: "20px" }} />
                         ) : (
                           <VisibilityOff
-                            sx={{
-                              fontSize: "20px",
-                              color: "#DAE1E7",
-                            }}
+                            sx={{ fontSize: "20px", color: "#DAE1E7" }}
                           />
                         )}
                       </IconButton>
@@ -284,6 +248,8 @@ const Signup = () => {
                   }}
                 />
               </Box>
+
+              {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={!isValid || !dirty}
@@ -298,26 +264,35 @@ const Signup = () => {
                   paddingY: "10px",
                   fontWeight: 600,
                   width: "100%",
-                  marginTop: "50px",
+                  mt: 5,
+                  borderRadius: "8px",
+                  transition: "all 0.3s ease",
                   "&:hover": {
                     backgroundColor: "#E3364E",
                   },
                 }}
               >
-               {isLoading? "Loading..." : "Create Account"}
+                {isLoading ? "Loading..." : "Create Account"}
               </Button>
             </form>
           )}
         </Formik>
 
-        <Stack direction="row" spacing={1} justifyContent="center" mt={2}>
-          <Typography variant="subtitle2">Already have an account?</Typography>
+        {/* Link to login */}
+        <Stack direction="row" spacing={1} justifyContent="center" mt={3}>
+          <Typography>Already have an account?</Typography>
           <Link to={"/login"} style={{ textDecoration: "none" }}>
             <Typography
-              variant="subtitle1"
-              color="#2b3445"
+              fontWeight={600}
+              color="primary.main"
               sx={{
-                borderBottom: "1.5px solid #2b3445",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  color: "primary.dark",
+                  borderBottom: "2px solid",
+                  borderColor: "primary.dark",
+                },
               }}
             >
               Login
@@ -353,6 +328,7 @@ const userSchema = yup.object().shape({
       return this.parent.password === value;
     }),
 });
+
 const initialValues = {
   fullName: "",
   email: "",

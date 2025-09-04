@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import {
   Typography,
   Box,
@@ -6,6 +6,8 @@ import {
   Button,
   Paper,
   TextField,
+  InputAdornment,
+  CircularProgress,
   styled,
 } from "@mui/material";
 import { Formik } from "formik";
@@ -19,19 +21,26 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import makeToast from "../../utils/toaster";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-const CustomTextField = styled(TextField)({
+const CustomTextField = styled(TextField)(() => ({
   "& .MuiOutlinedInput-root": {
     fontSize: "14px",
-    height: "45px",
-    "& fieldset": {},
-    "&:hover fieldset": {},
-    "&.Mui-focused fieldset": {},
+    "& fieldset": {
+      borderRadius: "10px",
+    },
+    "&:hover fieldset": {
+      borderColor: "#1976d2",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#1976d2",
+    },
   },
   "& .MuiInputLabel-root": {
     fontSize: "14px",
   },
-});
+}));
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -42,42 +51,39 @@ const Login = () => {
 
   useEffect(() => {
     if (isSuccess && user && loggedFlag) {
-      makeToast("success", "Login Sucessful!");
+      makeToast("success", "Login Successful!");
       dispatch(resetLoggedInFlag());
-      if (user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      navigate(user.role === "admin" ? "/admin" : "/");
     }
     if (isError) {
       makeToast("error", message);
       dispatch(resetState());
     }
-  }, [isSuccess, isLoading, user, loggedFlag]);
+  }, [isSuccess, isError, user, loggedFlag, dispatch, navigate, message]);
+
   return (
     <Box
       sx={{
+        minHeight: "100vh",
+        bgcolor: "#f4f6f8",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        flexDirection: "column",
-        height: "100vh",
-        bgcolor: "#F6F9FC",
+        p: 2,
       }}
     >
       <Paper
-        elevation={0}
+        elevation={4}
         sx={{
           bgcolor: "white",
-          radius: "8px",
-          width: isNonMobile ? "500px" : "95%",
-          padding: isNonMobile ? "2rem 3rem" : "2rem 2rem",
-          boxShadow: "rgba(3, 0, 71, 0.09) 0px 8px 45px",
+          borderRadius: "16px",
+          width: isNonMobile ? "420px" : "100%",
+          p: isNonMobile ? 5 : 3,
+          boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
         }}
       >
         <Formik
-          onSubmit={(values, { resetForm }) => {
+          onSubmit={(values) => {
             dispatch(login(values));
           }}
           initialValues={initialValues}
@@ -94,127 +100,131 @@ const Login = () => {
             dirty,
           }) => (
             <form onSubmit={handleSubmit}>
-              <Link to={"/"} style={{ textDecoration: "none" }}>
+              <Link to="/" style={{ textDecoration: "none" }}>
                 <img
                   src="https://bazaar.ui-lib.com/assets/images/bazaar-black-sm.svg"
                   alt="bazaar logo"
                   style={{
                     margin: "0 auto",
                     display: "block",
+                    width: "120px",
                   }}
                 />
               </Link>
-
-              <Typography variant="body2" mt={1} mb={4} textAlign="center">
-                Welcome To Bazaar
+              <Typography
+                variant="h6"
+                mt={3}
+                mb={4}
+                textAlign="center"
+                fontWeight={600}
+                color="text.primary"
+              >
+                Welcome Back 👋
               </Typography>
-
-              <Box mb={2}>
-                <Typography
-                  variant="subtitle1"
-                  fontSize="12px"
-                  color="#4b566b"
-                  mb={1.5}
-                >
-                  Email Or Phone number
-                </Typography>
+              <Box mb={3}>
                 <CustomTextField
                   fullWidth
                   variant="outlined"
                   type="text"
+                  label="Email or Phone"
                   placeholder="maria@romax.com"
-                  size="small"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.emailOrPhone}
                   name="emailOrPhone"
                   error={!!touched.emailOrPhone && !!errors.emailOrPhone}
                   helperText={touched.emailOrPhone && errors.emailOrPhone}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailOutlinedIcon color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Box>
-              <Box mb={2}>
-                <Typography
-                  variant="subtitle1"
-                  fontSize="12px"
-                  color="#4b566b"
-                  mb={1.5}
-                >
-                  Password
-                </Typography>
+              <Box mb={3}>
                 <CustomTextField
                   fullWidth
                   variant="outlined"
                   type="password"
+                  label="Password"
                   placeholder="*********"
-                  size="small"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.password}
                   name="password"
                   error={!!touched.password && !!errors.password}
                   helperText={touched.password && errors.password}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlinedIcon color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Box>
               <Button
                 type="submit"
-                disabled={!isValid || !dirty}
+                disabled={!isValid || !dirty || isLoading}
                 sx={{
                   textTransform: "none",
-
-                  bgcolor:
-                    !isValid || isLoading || !dirty
-                      ? "#0000001f !important"
-                      : "primary.main",
-                  color: isLoading ? "#00000042 !important" : "white",
-                  fontSize: "14px",
-                  paddingY: "10px",
+                  borderRadius: "10px",
+                  bgcolor: "primary.main",
+                  color: "white",
+                  fontSize: "15px",
                   fontWeight: 600,
+                  py: 1.5,
                   width: "100%",
-                  marginTop: "10px",
                   "&:hover": {
-                    backgroundColor: "#E3364E",
+                    backgroundColor: "primary.dark",
                   },
                 }}
               >
-                {isLoading ? "Loading..." : "Login"}
+                {isLoading ? (
+                  <CircularProgress size={22} sx={{ color: "white" }} />
+                ) : (
+                  "Login"
+                )}
               </Button>
             </form>
           )}
         </Formik>
-
-        <Stack direction="row" spacing={1} justifyContent="center" mt={3}>
-          <Typography variant="subtitle2">Don't have account?</Typography>
-          <Link to={"/signup"} style={{ textDecoration: "none" }}>
+        <Stack direction="row" spacing={1} justifyContent="center" mt={6}>
+          <Typography>Don’t have an account?</Typography>
+          <Link to="/signup" style={{ textDecoration: "none" }}>
             <Typography
-              variant="subtitle1"
-              color="#2b3445"
+              fontWeight={600}
+              color="primary.main"
               sx={{
-                borderBottom: "1.5px solid #2b3445",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  color: "primary.dark",
+                  borderBottom: "2px solid",
+                  borderColor: "primary.dark",
+                },
               }}
             >
               Sign Up
             </Typography>
           </Link>
         </Stack>
-
-        <Stack
-          direction="row"
-          spacing={1}
-          justifyContent="center"
-          mt={3}
-          sx={{
-            bgcolor: "#f3f5f9",
-            paddingY: "20px",
-            borderRadius: "5px",
-          }}
-        >
-          <Typography variant="subtitle2">Forgot your password?</Typography>
-          <Link to={"/forgot-password"} style={{ textDecoration: "none" }}>
+        <Stack direction="row" spacing={1} justifyContent="center" mt={2}>
+          <Typography>Forgot your password?</Typography>
+          <Link to="/forgot-password" style={{ textDecoration: "none" }}>
             <Typography
-              variant="subtitle1"
-              color="#2b3445"
+              fontWeight={600}
+              color="primary.main"
               sx={{
-                borderBottom: "1.5px solid #2b3445",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  color: "primary.dark",
+                  borderBottom: "2px solid",
+                  borderColor: "primary.dark",
+                },
               }}
             >
               Reset It
@@ -238,10 +248,12 @@ const loginSchema = yup.object().shape({
       return isValidEmail || isValidPhone;
     })
     .required("Email or phone number is required"),
-  password: yup.string().required("required"),
+  password: yup.string().required("Password is required"),
 });
+
 const initialValues = {
   emailOrPhone: "",
   password: "",
 };
+
 export default Login;
