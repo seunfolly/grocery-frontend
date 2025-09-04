@@ -114,8 +114,6 @@ const Signup = () => {
               <Typography variant="body2" mt={1} mb={4} textAlign="center">
                 Create Your Account
               </Typography>
-
-              {/* Full Name */}
               <Box mb={2}>
                 <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Full Name
@@ -134,8 +132,6 @@ const Signup = () => {
                   helperText={touched.fullName && errors.fullName}
                 />
               </Box>
-
-              {/* Email */}
               <Box mb={2}>
                 <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Email
@@ -154,8 +150,6 @@ const Signup = () => {
                   helperText={touched.email && errors.email}
                 />
               </Box>
-
-              {/* Phone */}
               <Box mb={2}>
                 <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Phone Number
@@ -174,8 +168,6 @@ const Signup = () => {
                   helperText={touched.phone && errors.phone}
                 />
               </Box>
-
-              {/* Password */}
               <Box mb={2}>
                 <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Password
@@ -211,8 +203,6 @@ const Signup = () => {
                   }}
                 />
               </Box>
-
-              {/* Confirm Password */}
               <Box mb={2}>
                 <Typography fontSize="12px" color="#4b566b" mb={1.5}>
                   Confirm Password
@@ -248,8 +238,6 @@ const Signup = () => {
                   }}
                 />
               </Box>
-
-              {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={!isValid || !dirty}
@@ -277,8 +265,6 @@ const Signup = () => {
             </form>
           )}
         </Formik>
-
-        {/* Link to login */}
         <Stack direction="row" spacing={1} justifyContent="center" mt={3}>
           <Typography>Already have an account?</Typography>
           <Link to={"/login"} style={{ textDecoration: "none" }}>

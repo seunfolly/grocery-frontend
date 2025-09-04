@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
   Box,
@@ -12,7 +13,6 @@ import {
   CardContent,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 
 const fallbackCategories = [
   { _id: "electronics", name: "Electronics", children: [] },
@@ -22,7 +22,7 @@ const fallbackCategories = [
   { _id: "beauty", name: "Beauty & Personal Care", children: [] },
 ];
 
-const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
+const Category = ({ visibleCategories, loading, productsByCategory }) => {
   const [expandedCategories, setExpandedCategories] = useState([]);
 
   const toggleCategory = (categoryId) => {
@@ -38,19 +38,22 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
 
   const renderProducts = (categoryId) => {
     const products = productsByCategory[categoryId] || [];
-
-    if (products.length === 0) return null;
+    if (!products.length) return null;
 
     return (
-      <Grid container spacing={1} mt={1}>
+      <Grid container spacing={2} mt={1}>
         {products.slice(0, 6).map((product) => (
-          <Grid item xs={6} key={product._id}>
+          <Grid item xs={6} sm={4} md={3} key={product._id}>
             <Card
               sx={{
                 boxShadow: "none",
                 border: "1px solid #f0f0f0",
-                borderRadius: "8px",
-                "&:hover": { boxShadow: "0px 2px 6px rgba(0,0,0,0.12)" },
+                borderRadius: "10px",
+                "&:hover": {
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  transform: "translateY(-2px)",
+                },
+                transition: "all 0.3s ease",
               }}
             >
               <Link
@@ -59,14 +62,18 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
               >
                 <CardMedia
                   component="img"
-                  height="90"
+                  height="120"
                   image={product.image}
                   alt={product.name}
-                  sx={{ objectFit: "cover" }}
+                  sx={{
+                    objectFit: "cover",
+                    borderTopLeftRadius: "10px",
+                    borderTopRightRadius: "10px",
+                  }}
                 />
                 <CardContent sx={{ p: 1 }}>
                   <Typography
-                    variant="caption"
+                    variant="body2"
                     color="text.primary"
                     noWrap
                     fontWeight={500}
@@ -74,12 +81,12 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
                     {product.name}
                   </Typography>
                   <Typography
-                    variant="caption"
+                    variant="body2"
                     color="primary"
                     fontWeight={600}
                     display="block"
                   >
-                    ${product.price}
+                    ${product.price.toFixed(2)}
                   </Typography>
                 </CardContent>
               </Link>
@@ -92,6 +99,7 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
 
   const renderCategory = (category, topLevel = false) => {
     const hasChildren = category.children && category.children.length > 0;
+    const hasProducts = !!productsByCategory[category._id]?.length;
     const isExpanded = isCategoryExpanded(category._id);
 
     return (
@@ -101,11 +109,12 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
           justifyContent="space-between"
           alignItems="center"
           px={1}
-          py={topLevel ? 1.2 : 0.8}
+          py={topLevel ? 1.5 : 1}
           sx={{
             cursor: "pointer",
-            borderRadius: "6px",
-            "&:hover": { bgcolor: "#f5f5f5" },
+            borderRadius: "8px",
+            "&:hover": { bgcolor: "#f7f7f7" },
+            transition: "background-color 0.3s ease",
           }}
           onClick={() => toggleCategory(category._id)}
         >
@@ -114,25 +123,22 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
             style={{ textDecoration: "none", flexGrow: 1 }}
           >
             <Typography
-              variant="body2"
-              fontSize={topLevel ? "15px" : "14px"}
-              fontWeight={topLevel ? 600 : 400}
-              color="#4B566B"
-              sx={{
-                "&:hover": { color: "#D23F57" },
-                display: "block",
-              }}
+              variant="body1"
+              fontSize={topLevel ? "16px" : "14px"}
+              fontWeight={topLevel ? 600 : 500}
+              color="#2C3E50"
+              sx={{ "&:hover": { color: "#E3364E" }, display: "block" }}
             >
               {category.name}
             </Typography>
           </Link>
 
-          {(hasChildren || productsByCategory[category._id]) && (
+          {(hasChildren || hasProducts) && (
             <ChevronRightIcon
               sx={{
                 fontSize: 20,
                 color: "#555",
-                transition: "transform 0.25s ease-in-out",
+                transition: "transform 0.3s ease",
                 transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
               }}
             />
@@ -140,7 +146,7 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
         </Stack>
 
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-          <Box ml={2} mt={0.5}>
+          <Box ml={2} mt={1}>
             {hasChildren &&
               category.children.map((subcategory) =>
                 renderCategory(subcategory, false)
@@ -153,7 +159,7 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
   };
 
   const categoriesToShow =
-    visibleCategories && visibleCategories.length > 0
+    visibleCategories && visibleCategories.length
       ? visibleCategories
       : fallbackCategories;
 
@@ -164,9 +170,9 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
           display="flex"
           justifyContent="center"
           alignItems="center"
-          height="100px"
+          height="150px"
         >
-          <CircularProgress size={24} thickness={4} />
+          <CircularProgress size={28} thickness={4} />
         </Box>
       ) : (
         categoriesToShow.map((category) => renderCategory(category, true))
@@ -182,7 +188,7 @@ Category.propTypes = {
 };
 
 Category.defaultProps = {
-  visibleCategories: [],
+  visibleCategories: fallbackCategories,
   loading: false,
   productsByCategory: {},
 };

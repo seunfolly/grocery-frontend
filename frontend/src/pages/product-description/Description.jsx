@@ -1,40 +1,31 @@
-// import { Typography } from "@mui/material"
-// const Description = () => {
+import PropTypes from "prop-types";
+import { Typography, Box } from "@mui/material";
 
-//     return (
-//         <>
-//          <Typography variant="h6" mb={3}>
-//           Specification:
-//         </Typography>
-//         <Typography variant="subtitle2">Brand: Beats</Typography>
-//         <Typography variant="subtitle2">Model: S450</Typography>
-//         <Typography variant="subtitle2">Wireless Bluetooth Headset</Typography>
-//         <Typography variant="subtitle2">
-//           FM Frequency Response: 87.5 – 108 MHz
-//         </Typography>
-//         <Typography variant="subtitle2">
-//           Feature: FM Radio, Card Supported (Micro SD / TF)
-//         </Typography>
-//         <Typography variant="subtitle2">Made In China</Typography></>
-//     )
-// }
+const Description = ({ description }) => {
+  if (!description) return null;
 
-// export default Description
+  return (
+    <Box mb={3}>
+      <Typography variant="h6" gutterBottom>
+        Specification:
+      </Typography>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ lineHeight: 1.6 }}
+      >
+        {description}
+      </Typography>
+    </Box>
+  );
+};
 
+Description.propTypes = {
+  description: PropTypes.string,
+};
 
-import { Typography } from "@mui/material"
-const Description = ({description}) => {
+Description.defaultProps = {
+  description: "",
+};
 
-    return (
-        <>
-         <Typography variant="h6" mb={3}>
-          Specification:
-        </Typography> 
-        <Typography variant="subtitle2">
-         {description}
-        </Typography>
-        </>
-    )
-}
-
-export default Description
+export default Description;
