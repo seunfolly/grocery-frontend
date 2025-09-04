@@ -61,10 +61,10 @@ const Header = () => {
         position: "sticky",
         top: 0,
         borderBottom: "1px solid #F0F0F0",
+        py:1,
       }}
     >
-      <Container maxWidth="lg">
-        {/* Desktop Header */}
+      <Container maxWidth="xl">
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -73,7 +73,6 @@ const Header = () => {
           spacing={2}
           display={{ xs: "none", lg: "flex" }}
         >
-          {/* Logo */}
           <Link to="/">
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <img
@@ -83,15 +82,10 @@ const Header = () => {
               />
             </Box>
           </Link>
-
-          {/* Search */}
           <Box sx={{ flex: 1, maxWidth: "670px" }}>
             <SearchInput />
           </Box>
-
-          {/* Right Side (User + Cart) */}
           <Stack direction="row" spacing={2} alignItems="center">
-            {/* User Menu */}
             <div>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <IconButton
@@ -193,7 +187,6 @@ const Header = () => {
           </Stack>
         </Stack>
 
-        {/* Mobile Header */}
         <MobileHeader
           handleCartOpen={handleCartOpen}
           handleClick={handleClick}

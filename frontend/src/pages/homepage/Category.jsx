@@ -14,22 +14,22 @@ import {
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
-// Define fallback products (15-20 dummy items)
-const fallbackProducts = Array.from({ length: 18 }).map((_, index) => ({
-  _id: `fallback-${index}`,
-  name: `Sample Product ${index + 1}`,
-  price: (Math.random() * 100 + 10).toFixed(2),
-  image: `https://picsum.photos/200/200?random=${index + 1}`,
-}));
+const fallbackCategories = [
+  { _id: "electronics", name: "Electronics", children: [] },
+  { _id: "fashion", name: "Fashion", children: [] },
+  { _id: "home-kitchen", name: "Home & Kitchen", children: [] },
+  { _id: "sports", name: "Sports & Outdoors", children: [] },
+  { _id: "beauty", name: "Beauty & Personal Care", children: [] },
+];
 
 const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
   const [expandedCategories, setExpandedCategories] = useState([]);
 
   const toggleCategory = (categoryId) => {
-    setExpandedCategories((prevExpanded) =>
-      prevExpanded.includes(categoryId)
-        ? prevExpanded.filter((id) => id !== categoryId)
-        : [...prevExpanded, categoryId]
+    setExpandedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
     );
   };
 
@@ -37,8 +37,9 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
     expandedCategories.includes(categoryId);
 
   const renderProducts = (categoryId) => {
-    // Use products from Redux or fallback
-    const products = productsByCategory[categoryId] || fallbackProducts;
+    const products = productsByCategory[categoryId] || [];
+
+    if (products.length === 0) return null;
 
     return (
       <Grid container spacing={1} mt={1}>
@@ -104,9 +105,7 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
           sx={{
             cursor: "pointer",
             borderRadius: "6px",
-            "&:hover": {
-              bgcolor: "#f5f5f5",
-            },
+            "&:hover": { bgcolor: "#f5f5f5" },
           }}
           onClick={() => toggleCategory(category._id)}
         >
@@ -128,7 +127,7 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
             </Typography>
           </Link>
 
-          {(hasChildren || true) && ( // always expandable since fallback exists
+          {(hasChildren || productsByCategory[category._id]) && (
             <ChevronRightIcon
               sx={{
                 fontSize: 20,
@@ -142,19 +141,21 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
 
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
           <Box ml={2} mt={0.5}>
-            {/* Subcategories */}
             {hasChildren &&
               category.children.map((subcategory) =>
                 renderCategory(subcategory, false)
               )}
-
-            {/* Products (real or fallback) */}
             {renderProducts(category._id)}
           </Box>
         </Collapse>
       </Box>
     );
   };
+
+  const categoriesToShow =
+    visibleCategories && visibleCategories.length > 0
+      ? visibleCategories
+      : fallbackCategories;
 
   return (
     <Box>
@@ -167,25 +168,23 @@ const Category = ({ visibleCategories, loading, productsByCategory = {} }) => {
         >
           <CircularProgress size={24} thickness={4} />
         </Box>
-      ) : visibleCategories && visibleCategories.length > 0 ? (
-        visibleCategories.map((category) => renderCategory(category, true))
       ) : (
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          sx={{ mt: 2, textAlign: "center" }}
-        >
-          No categories available
-        </Typography>
+        categoriesToShow.map((category) => renderCategory(category, true))
       )}
     </Box>
   );
 };
 
 Category.propTypes = {
-  visibleCategories: PropTypes.array.isRequired,
+  visibleCategories: PropTypes.array,
   loading: PropTypes.bool,
   productsByCategory: PropTypes.object,
+};
+
+Category.defaultProps = {
+  visibleCategories: [],
+  loading: false,
+  productsByCategory: {},
 };
 
 export default Category;

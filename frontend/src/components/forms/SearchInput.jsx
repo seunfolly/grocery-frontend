@@ -9,35 +9,40 @@ import {
   Autocomplete,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { base_url } from "../../utils/baseUrl";
+import PropTypes from "prop-types";
 
 const SearchInput = ({ handleDrawerClose, drawerOpen }) => {
   const [value, setValue] = useState("");
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
-  const handleInputChange = (event) => {
-    const inputValue = event.target.value;
-    setValue(inputValue);
-  };
-  const handleOptionSelect = (event, option) => {
-    setValue(option);
-    if (option !== null) {
-      navigate(`/store?search=${option}`);
-      if (drawerOpen) {
+  // ✅ Fetch products once
+  useEffect(() => {
+    axios
+      .get(`${base_url}product`)
+      .then((response) => setProducts(response.data))
+      .catch((error) => console.error("Error fetching products:", error));
+  }, []);
+
+  // ✅ Shared search handler
+  const performSearch = (query) => {
+    if (query && query.trim() !== "") {
+      navigate(`/store?search=${encodeURIComponent(query)}`);
+      setValue("");
+      if (drawerOpen && typeof handleDrawerClose === "function") {
         handleDrawerClose();
       }
     }
   };
 
-  const handleSearch = () => {
-    navigate(`/store?search=${value}`);
-    setValue("");
-    if (drawerOpen) {
-      handleDrawerClose();
-    }
+  const handleOptionSelect = (event, option) => {
+    if (option) performSearch(option);
+  };
+
+  const handleSearchClick = () => {
+    performSearch(value);
   };
 
   const filterOptions = (options, { inputValue }) => {
@@ -49,18 +54,6 @@ const SearchInput = ({ handleDrawerClose, drawerOpen }) => {
     return [];
   };
 
-  const getProducts = () => {
-    axios
-      .get(`${base_url}product`)
-      .then((response) => {
-        setProducts(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
-  useEffect(() => {
-    getProducts();
-  }, []);
-
   return (
     <Box py={2}>
       <Autocomplete
@@ -68,39 +61,33 @@ const SearchInput = ({ handleDrawerClose, drawerOpen }) => {
         options={products?.map((option) => option.name)}
         filterOptions={filterOptions}
         value={value}
+        onInputChange={(event, newValue) => setValue(newValue)}
         onChange={handleOptionSelect}
         renderInput={(params) => (
           <TextField
             {...params}
             placeholder="Searching for"
             variant="outlined"
-            onChange={handleInputChange}
             InputProps={{
               ...params.InputProps,
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon
-                    sx={{
-                      fontSize: "1.25rem",
-                      color: "#7D879C",
-                    }}
-                  />
+                  <SearchIcon sx={{ fontSize: "1.25rem", color: "#7D879C" }} />
                 </InputAdornment>
               ),
               endAdornment: (
                 <InputAdornment position="end">
                   <Button
-                    onClick={handleSearch}
+                    onClick={handleSearchClick}
                     sx={{
                       textTransform: "none",
                       bgcolor: "#E3364E",
                       color: "white",
-                      paddingX: "40px",
+                      px: "40px",
                       fontSize: "14px",
                       letterSpacing: "1px",
-                      paddingY: "8px",
+                      py: "8px",
                       borderLeft: "1px solid #7D879C",
-                      justifyContent: "space-between",
                       borderTopRightRadius: "1200px",
                       borderBottomRightRadius: "1200px",
                       height: "100%",
@@ -116,7 +103,6 @@ const SearchInput = ({ handleDrawerClose, drawerOpen }) => {
             }}
             sx={{
               width: "100%",
-              paddingRight: 0,
               "& .MuiOutlinedInput-root": {
                 borderRadius: "1200px",
                 padding: "0px 0px 0px 20px !important",
@@ -140,4 +126,8 @@ const SearchInput = ({ handleDrawerClose, drawerOpen }) => {
   );
 };
 
+SearchInput.propTypes = {
+  handleDrawerClose: PropTypes.func,
+  drawerOpen: PropTypes.bool,
+};
 export default SearchInput;

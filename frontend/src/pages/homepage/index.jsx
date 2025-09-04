@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Box,
-  Container,
   IconButton,
   Typography,
   styled,
@@ -11,6 +10,7 @@ import {
   Divider,
 } from "@mui/material";
 import Header from "../../components/layouts/Header";
+import Footer from "../../components/layouts/Footer";
 import Category from "./Category";
 import Shop from "./Shop";
 import { useLocation, useNavigate, Link } from "react-router-dom";
@@ -63,16 +63,18 @@ const Homepage = () => {
   useEffect(() => {
     getVisibleCategories();
   }, []);
+
   useEffect(() => {
     dispatch(getCategories(1));
     dispatch(getProducts());
   }, [dispatch]);
+
   useEffect(() => {
     if (reference) {
       dispatch(resetState());
       dispatch(resetOrderState());
     }
-  }, [reference]);
+  }, [reference, dispatch]);
 
   return (
     <Box>
@@ -183,56 +185,55 @@ const Homepage = () => {
       <Header />
       <Box
         paddingTop={{ xs: "16px", sm: "32px" }}
-        paddingBottom={{ xs: "90px", md: "40px" }}
-        sx={{ bgcolor: "#F9FAFB" }}
+        sx={{ bgcolor: "#F9FAFB", width: "100%" }}
       >
-        <Container maxWidth="xl">
-          <Grid container spacing={3}>
-            <Grid item md={3} display={{ xs: "none", md: "block" }}>
-              <Box
-                bgcolor="white"
-                py={3}
-                px={2.5}
-                borderRadius="16px"
-                sx={{
-                  height: "calc(100vh - 120px)",
-                  boxShadow: "0px 3px 10px rgba(0,0,0,0.1)",
-                  position: "sticky",
-                  top: "90px",
-                  overflowY: "auto",
-                  "&::-webkit-scrollbar": {
-                    width: "6px",
-                  },
-                  "&::-webkit-scrollbar-thumb": {
-                    background: "#d1d5db",
-                    borderRadius: "100px",
-                  },
-                }}
+        <Grid container spacing={3} px={{ xs: 2, md: 4 }}>
+          <Grid item md={3} display={{ xs: "none", md: "block" }}>
+            <Box
+              bgcolor="white"
+              py={3}
+              px={2.5}
+              borderRadius="16px"
+              sx={{
+                height: "calc(100vh - 120px)",
+                boxShadow: "0px 3px 10px rgba(0,0,0,0.1)",
+                position: "sticky",
+                top: "90px",
+                overflowY: "auto",
+                "&::-webkit-scrollbar": {
+                  width: "6px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "#d1d5db",
+                  borderRadius: "100px",
+                },
+              }}
+            >
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                color="text.primary"
+                mb={2}
               >
-                <Typography
-                  variant="h6"
-                  fontWeight={700}
-                  color="text.primary"
-                  mb={2}
-                >
-                  Categories
-                </Typography>
-                <Category visibleCategories={visibleCategories} />
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={9}>
-              <Box
-                bgcolor="white"
-                borderRadius="16px"
-                p={3}
-                boxShadow="0px 3px 10px rgba(0,0,0,0.08)"
-              >
-                <Shop />
-              </Box>
-            </Grid>
+                Categories
+              </Typography>
+              <Category visibleCategories={visibleCategories} />
+            </Box>
           </Grid>
-        </Container>
+          <Grid item xs={12} md={9}>
+            <Box
+              bgcolor="white"
+              borderRadius="16px"
+              p={3}
+              boxShadow="0px 3px 10px rgba(0,0,0,0.08)"
+              sx={{ width: "100%" }}
+            >
+              <Shop />
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
+      <Footer />
     </Box>
   );
 };
