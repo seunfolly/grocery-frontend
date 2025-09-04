@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
 import {
   Stack,
   Typography,
   FormGroup,
-  Checkbox,
   FormControlLabel,
-  Divider,
+  Checkbox,
 } from "@mui/material";
+import PropTypes from "prop-types";
 
 const Features = ({
   sales,
@@ -16,51 +15,61 @@ const Features = ({
   featured,
   setFeatured,
 }) => {
+  const handleChange = (setter) => (event) => {
+    setter(event.target.checked);
+  };
+
   return (
-    <>
+    <Stack spacing={1} pb={1}>
+      <Typography variant="subtitle1" fontSize="15px" fontWeight={600}>
+        Features
+      </Typography>
       <FormGroup>
         <FormControlLabel
           control={
             <Checkbox
-              value={sales}
-              onChange={(e) => {
-                const sales = e.target.checked;
-                setSales(sales);
-              }}
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
+              checked={sales}
+              onChange={handleChange(setSales)}
+              sx={{ "& .MuiSvgIcon-root": { fontSize: 24 } }}
+              color="primary"
             />
           }
-          label=" Sales"
+          label="Sales"
         />
         <FormControlLabel
           control={
             <Checkbox
-              value={stock}
-              onChange={(e) => {
-                const stock = e.target.checked;
-                setStock(stock);
-              }}
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
+              checked={stock}
+              onChange={handleChange(setStock)}
+              sx={{ "& .MuiSvgIcon-root": { fontSize: 24 } }}
+              color="primary"
             />
           }
-          label=" In Stock"
-        />{" "}
+          label="In Stock"
+        />
         <FormControlLabel
           control={
             <Checkbox
-              value={featured}
-              onChange={(e) => {
-                const featured = e.target.checked;
-                setFeatured(featured);
-              }}
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 25 } }}
+              checked={featured}
+              onChange={handleChange(setFeatured)}
+              sx={{ "& .MuiSvgIcon-root": { fontSize: 24 } }}
+              color="primary"
             />
           }
-          label=" Featured"
+          label="Featured"
         />
       </FormGroup>
-    </>
+    </Stack>
   );
+};
+
+Features.propTypes = {
+  sales: PropTypes.bool.isRequired,
+  setSales: PropTypes.func.isRequired,
+  stock: PropTypes.bool.isRequired,
+  setStock: PropTypes.func.isRequired,
+  featured: PropTypes.bool.isRequired,
+  setFeatured: PropTypes.func.isRequired,
 };
 
 export default Features;

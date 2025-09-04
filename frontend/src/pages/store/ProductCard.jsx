@@ -1,5 +1,4 @@
-import { useState } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
 import {
   Box,
   Stack,
@@ -7,228 +6,142 @@ import {
   IconButton,
   Button,
   Typography,
-  Rating,
   Paper,
+  Rating,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import { Link } from "react-router-dom";
-import { base_url } from "../../utils/baseUrl";
-import { useDispatch, useSelector } from "react-redux";
 import {
-  increaseQuantity,
-  addToCart,
-  decreaseQuantity,
-} from "../../features/cart/cartSlice";
-import makeToast from "../../utils/toaster";
-import BlockIcon from "@mui/icons-material/Block";
+  Add as AddIcon,
+  Remove as RemoveIcon,
+  Favorite as FavoriteIcon,
+  FavoriteBorder as FavoriteBorderIcon,
+  ShoppingCartOutlined as ShoppingCartOutlinedIcon,
+  Block as BlockIcon,
+} from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({
-  images,
+  id,
   name,
+  images,
   regularPrice,
   salePrice,
   description,
-  _id,
   stock,
-  totalstar,
+  totalStar,
+  count,
+  onAddToCart,
+  onRemoveFromCart,
+  onToggleWishlist,
+  wishlist,
 }) => {
-  const [toggle, setToggle] = useState(false);
-  const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.cart);
-  const product = products.find((product) => product.id === _id);
-  const auth = useSelector((state) => state.auth);
-  const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        id: _id,
-        image: images[0]?.url,
-        price: salePrice ? salePrice : regularPrice,
-        name: name,
-      })
-    );
-    makeToast("success", "Added to Cart");
-  };
-
-  const handleRemoveCart = () => {
-    dispatch(decreaseQuantity(_id));
-    makeToast("error", "Remove from Cart");
-  };
-  const addToWishList = () => {
-    axios
-      .put(`${base_url}product/wishlist/${_id}`, null, {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NWZjYjY0N2E0NjAwZmY3ODdkMzVlYSIsImlhdCI6MTY4NTkwMTgyMywiZXhwIjoxNjg1OTg4MjIzfQ.PKKRF6IAhg5h60BNswWjoEfc5eioGvBQoAzB9i8OP7M`,
-        },
-      })
-      .then((response) => {
-        // makeToast("success", "Product Added to WishList");
-        setToggle(!toggle);
-      })
-      .catch((error) => {
-        makeToast("error", "You must be logged. Sign in");
-      });
-  };
   return (
     <Paper
-      elevation={0}
+      elevation={1}
       sx={{
-        bgcolor: "white",
-        borderRadius: "8px",
-        paddingY: 2,
-        paddingX: 3,
+        borderRadius: 2,
+        p: 2,
         position: "relative",
+        transition: "transform 0.3s, box-shadow 0.3s",
+        "&:hover": { transform: "translateY(-4px)", boxShadow: 4 },
       }}
     >
       <IconButton
-        onClick={() => addToWishList()}
+        onClick={onToggleWishlist}
         sx={{
           position: "absolute",
-          top: "15px",
-          right: "15px",
-          color: toggle ? "#D23F57" : "rgba(0, 0, 0, 0.54)",
+          top: 12,
+          right: 12,
+          color: wishlist ? "#E3364E" : "rgba(0,0,0,0.5)",
         }}
       >
-        {toggle ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        {wishlist ? <FavoriteIcon /> : <FavoriteBorderIcon />}
       </IconButton>
 
-      <Grid container alignItems="center">
+      <Grid container spacing={2} alignItems="center">
         <Grid item xs={12} sm={5} md={4} lg={3}>
-          <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-            <Box
-              width="195px"
-              height="195px"
-              margin={{ xs: "0 auto", sm: "0" }}
-            >
-              <img src={images[0].url} alt={name} style={{ width: "100%" }} />
+          <Link to={`/product/${id}`} style={{ textDecoration: "none" }}>
+            <Box width="100%" height="195px" textAlign="center">
+              <img
+                src={images[0]?.url || ""}
+                alt={name}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                }}
+              />
             </Box>
           </Link>
         </Grid>
+
         <Grid item xs={12} sm={7} md={8} lg={9}>
-          <Stack spacing={1.1}>
-            <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-              <Typography
-                variant="body2"
-                color="#373F50"
-                textAlign={{ xs: "center", sm: "left" }}
-              >
+          <Stack spacing={1}>
+            <Link to={`/product/${id}`} style={{ textDecoration: "none" }}>
+              <Typography variant="subtitle1" color="text.primary">
                 {name}
               </Typography>
             </Link>
 
-            {/* <Rating value={totalstar || 0} readOnly />
-             */}
-            <Link to={`/product/${_id}`} style={{ textDecoration: "none" }}>
-              <Typography
-                variant="subtitle2"
-                color="text.secondary"
-                mt={1}
-                textAlign={{ xs: "center", sm: "left" }}
-              >
-                {description}
-              </Typography>
-            </Link>
+            {totalStar > 0 && (
+              <Rating value={totalStar} readOnly size="small" />
+            )}
+            <Typography variant="body2" color="text.secondary">
+              {description}
+            </Typography>
 
-            <Stack
-              spacing={1}
-              direction="row"
-              mt={1}
-              alignItems="center"
-              alignSelf="center"
-            >
-              <Typography color="primary.main" variant="subtitle1">
-                {`₦ ${
-                  salePrice
-                    ? salePrice.toLocaleString()
-                    : regularPrice.toLocaleString()
-                }`}
+            <Stack direction="row" spacing={1} mt={1} alignItems="center">
+              <Typography color="primary.main" fontWeight={600}>
+                ₦ {salePrice ?? regularPrice}
               </Typography>
-              <Typography color="text.secondary" variant="subtitle1">
-                <del>
-                  {salePrice ? `₦  ${regularPrice.toLocaleString()}` : ""}
-                </del>
-              </Typography>
+              {salePrice && (
+                <Typography
+                  color="text.secondary"
+                  sx={{ textDecoration: "line-through" }}
+                >
+                  ₦ {regularPrice}
+                </Typography>
+              )}
+            </Stack>
+
+            <Stack direction="row" spacing={1} mt={1} alignItems="center">
               {stock <= 0 ? (
                 <Button
-                  disabled={true}
+                  disabled
+                  startIcon={<BlockIcon />}
                   sx={{
                     textTransform: "none",
-                    bgcolor: "#0000001f",
-                    // color: "rgba(0, 0, 0, 0.26) !important",
-                    fontSize: "14px",
-                    paddingX: "20px",
-                    fontWeight: 500,
-                    paddingY: "8px",
-                    alignSelf: "start",
-                    borderRadius: "50px",
-                    gap: 1,
-                    cursor: "not-allowed",
+                    bgcolor: "#f0f0f0",
+                    color: "rgba(0,0,0,0.5)",
+                    borderRadius: 3,
+                    px: 2,
                   }}
                 >
-                  <BlockIcon
-                    sx={{
-                      fontSize: "20px",
-                    }}
-                  />
-                  <Typography variant="subtitle1"> BACK SOON</Typography>{" "}
+                  Out of Stock
                 </Button>
-              ) : product?.count > 0 ? (
-                <Stack alignItems="center" direction="row" spacing={2}>
-                  <Button
-                    onClick={() => handleRemoveCart()}
-                    variant="outlined"
-                    sx={{
-                      padding: "1px",
-                      minWidth: 0,
-                      alignItems: "center",
-                      textAlign: "center",
-                    }}
-                  >
-                    <RemoveIcon />
+              ) : count > 0 ? (
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Button onClick={onRemoveFromCart} size="small">
+                    <RemoveIcon fontSize="small" />
                   </Button>
-
-                  <Typography>{product?.count}</Typography>
-
-                  <Button
-                    onClick={() => handleAddToCart()}
-                    variant="outlined"
-                    sx={{
-                      padding: "1px",
-                      minWidth: 0,
-                    }}
-                  >
-                    <AddIcon />
+                  <Typography>{count}</Typography>
+                  <Button onClick={onAddToCart} size="small">
+                    <AddIcon fontSize="small" />
                   </Button>
                 </Stack>
               ) : (
                 <Button
-                  onClick={() => handleAddToCart()}
+                  onClick={onAddToCart}
+                  startIcon={<ShoppingCartOutlinedIcon />}
                   sx={{
                     textTransform: "none",
                     bgcolor: "primary.main",
-                    color: "white",
-                    fontSize: "14px",
-                    paddingX: "20px",
-                    fontWeight: 500,
-                    paddingY: "8px",
-                    alignSelf: "start",
-                    borderRadius: "50px",
-                    gap: 1,
-
-                    "&:hover": {
-                      backgroundColor: "#E3364E",
-                    },
+                    color: "#fff",
+                    borderRadius: 3,
+                    px: 2,
+                    "&:hover": { bgcolor: "#E3364E" },
                   }}
                 >
-                  <ShoppingCartOutlinedIcon
-                    sx={{
-                      fontSize: "20px",
-                    }}
-                  />
-                  <Typography variant="subtitle1"> Add To Cart</Typography>{" "}
+                  Add to Cart
                 </Button>
               )}
             </Stack>
@@ -237,6 +150,39 @@ const ProductCard = ({
       </Grid>
     </Paper>
   );
+};
+
+ProductCard.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      url: PropTypes.string,
+    })
+  ),
+  regularPrice: PropTypes.number.isRequired,
+  salePrice: PropTypes.number,
+  description: PropTypes.string,
+  stock: PropTypes.number,
+  totalStar: PropTypes.number,
+  count: PropTypes.number,
+  onAddToCart: PropTypes.func,
+  onRemoveFromCart: PropTypes.func,
+  onToggleWishlist: PropTypes.func,
+  wishlist: PropTypes.bool,
+};
+
+ProductCard.defaultProps = {
+  images: [],
+  salePrice: null,
+  description: "",
+  stock: 0,
+  totalStar: 0,
+  count: 0,
+  onAddToCart: () => {},
+  onRemoveFromCart: () => {},
+  onToggleWishlist: () => {},
+  wishlist: false,
 };
 
 export default ProductCard;

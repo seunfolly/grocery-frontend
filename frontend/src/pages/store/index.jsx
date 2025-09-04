@@ -1,15 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Stack,
-  Avatar,
-  Grid,
-  Container,
-  IconButton,
-  Box,
-  Divider,
-  styled,
-  Drawer,
-} from "@mui/material";
+import { Grid, Box, Divider, styled, Drawer, Container } from "@mui/material";
 import Header from "../../components/layouts/Header";
 import Footer from "../../components/layouts/Footer";
 import Products from "./Products";
@@ -19,12 +9,12 @@ import Range from "./Range";
 import Brand from "./Brand";
 import Rating from "./Rating";
 import Features from "./Features";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { getProducts } from "../../features/product/productSlice";
 
 const CustomDivider = styled(Divider)`
-  margin: 16px 0px 24px;
+  margin: 16px 0 24px;
   border-width: 0px 0px thin;
   border-style: solid;
   border-color: rgb(243, 245, 249);
@@ -36,59 +26,35 @@ const Store = () => {
   const queryParams = new URLSearchParams(location.search);
   const category = queryParams.get("category");
   const search = queryParams.get("search");
+
   const [activeIcon, setActiveIcon] = useState("apps");
   const [rating, setRating] = useState(null);
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [sort, setSort] = useState("relevance");
-  const [pageLoaded, setPageLoaded] = useState(false);
   const [sales, setSales] = useState(null);
   const [featured, setFeatured] = useState(null);
   const [stock, setStock] = useState(null);
-  const [pCategory, setPCategory] = useState(null);
-  const [drawer, setDrawer] = useState(false);
-  const openDrawer = () => {
-    setDrawer(true);
-  };
+  const [pCategory] = useState(category || null);
 
-  const closeDrawer = () => {
-    setDrawer(false);
-  };
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = () => setDrawerOpen((prev) => !prev);
 
   useEffect(() => {
-    if (category) {
-      setPCategory(category);
-    }
-    if (!pageLoaded) {
-      setPageLoaded(true);
-      return;
-    }
-    if (
-      rating !== null ||
-      minPrice !== null ||
-      maxPrice !== null ||
-      (selectedBrands && selectedBrands.length > 0) ||
-      sort !== null ||
-      sales !== null ||
-      featured !== null ||
-      stock !== null ||
-      pCategory !== null
-    ) {
-      dispatch(
-        getProducts({
-          rating,
-          minPrice,
-          maxPrice,
-          selectedBrands,
-          sort,
-          sales,
-          featured,
-          stock,
-          pCategory,
-        })
-      );
-    }
+    dispatch(
+      getProducts({
+        rating,
+        minPrice,
+        maxPrice,
+        selectedBrands,
+        sort,
+        sales,
+        featured,
+        stock,
+        pCategory,
+      })
+    );
   }, [
     rating,
     minPrice,
@@ -99,67 +65,69 @@ const Store = () => {
     featured,
     stock,
     pCategory,
-    category,
     dispatch,
   ]);
+
+  const Filters = () => (
+    <Box
+      p={3}
+      bgcolor="white"
+      borderRadius={2}
+      sx={{ boxShadow: "0 1px 3px rgba(3,0,71,0.09)" }}
+    >
+      <Category pCategory={pCategory} closeDrawer={toggleDrawer} />
+      <CustomDivider />
+      <Range
+        minPrice={minPrice}
+        maxPrice={maxPrice}
+        setMinPrice={setMinPrice}
+        setMaxPrice={setMaxPrice}
+      />
+      <CustomDivider />
+      <Brand
+        selectedBrands={selectedBrands}
+        setSelectedBrands={setSelectedBrands}
+      />
+      <CustomDivider />
+      <Features
+        sales={sales}
+        setSales={setSales}
+        featured={featured}
+        setFeatured={setFeatured}
+        stock={stock}
+        setStock={setStock}
+      />
+      <CustomDivider />
+      <Rating rating={rating} setRating={setRating} />
+    </Box>
+  );
 
   return (
     <>
       <Header />
+
       <Box
-        px={{ xs: 0, sm: 0 }}
         sx={{
           bgcolor: "#F6F9FC",
-          paddingY: "40px",
+          py: 3,
+          width: "100%",
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Sort
             activeIcon={activeIcon}
             setActiveIcon={setActiveIcon}
             sort={sort}
             setSort={setSort}
-            openDrawer={openDrawer}
+            openDrawer={toggleDrawer}
           />
-          <Grid container spacing={3} marginTop={4}>
+          <Grid container spacing={3} mt={1}>
+            {/* Desktop Filters */}
             <Grid item md={3} display={{ xs: "none", md: "block" }}>
-              <Box
-                bgcolor="white"
-                p={3}
-                borderRadius="5px"
-                sx={{
-                  boxShadow: "0px 1px 3px rgba(3, 0, 71, 0.09)",
-                }}
-              >
-                <Category pCategory={pCategory} />
-                <CustomDivider />
-                <Range
-                  minPrice={minPrice}
-                  maxPrice={maxPrice}
-                  setMinPrice={setMinPrice}
-                  setMaxPrice={setMaxPrice}
-                />
-                <CustomDivider />
-
-                <Brand
-                  selectedBrands={selectedBrands}
-                  setSelectedBrands={setSelectedBrands}
-                />
-                <CustomDivider />
-
-                <Features
-                  sales={sales}
-                  setSales={setSales}
-                  featured={featured}
-                  setFeatured={setFeatured}
-                  stock={stock}
-                  setStock={setStock}
-                />
-                <CustomDivider />
-
-                <Rating rating={rating} setRating={setRating} />
-              </Box>
+              <Filters />
             </Grid>
+
+            {/* Products */}
             <Grid item xs={12} md={9}>
               <Products
                 activeIcon={activeIcon}
@@ -171,69 +139,36 @@ const Store = () => {
         </Container>
       </Box>
 
+      {/* Mobile Drawer */}
       <Drawer
-        open={drawer}
-        onClose={closeDrawer}
+        open={drawerOpen}
+        onClose={toggleDrawer}
         anchor="left"
-        bgcolor="white"
         sx={{
-          zIndex: "1200",
           "& .MuiPaper-root": {
-            backgroundColor: "white",
+            width: 320,
+            bgcolor: "white",
           },
         }}
       >
         <Box
-          bgcolor="white"
-          py={3}
-          px={2.2}
-          borderRadius="5px"
           sx={{
-            width: "300px",
-            height: "100vh",
-
-            overflowY: "scroll",
-            "&::-webkit-scrollbar": {
-              width: "5px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "transparent",
-            },
+            width: "100%",
+            height: "100%",
+            overflowY: "auto",
+            py: 2,
+            px: 2,
+            "&::-webkit-scrollbar": { width: 5 },
             "&::-webkit-scrollbar-thumb": {
-              background: "#ebeff7",
-              borderRadius: "100px",
+              bgcolor: "#ebeff7",
+              borderRadius: 100,
             },
           }}
         >
-          <Category pCategory={pCategory}  closeDrawer={closeDrawer}/>
-          <CustomDivider />
-          <Range
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
-          />
-          <CustomDivider />
-
-          <Brand
-            selectedBrands={selectedBrands}
-            setSelectedBrands={setSelectedBrands}
-          />
-          <CustomDivider />
-
-          <Features
-            sales={sales}
-            setSales={setSales}
-            featured={featured}
-            setFeatured={setFeatured}
-            stock={stock}
-            setStock={setStock}
-          />
-          <CustomDivider />
-
-          <Rating rating={rating} setRating={setRating} />
+          <Filters />
         </Box>
       </Drawer>
+
       <Footer />
     </>
   );
