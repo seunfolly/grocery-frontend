@@ -1,190 +1,300 @@
 import {
   Typography,
   Box,
-  Link,
+  Link as MuiLink,
   Stack,
-  Avatar,
-  Icon,
-  Container,
   Grid,
+  Icon,
+  Divider,
+  Container,
 } from "@mui/material";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-const arrayLinks = [
-  {
-    head: "About",
-    link1: "Careers",
-    link2: "Our Stores",
-    link3: "Our Cares",
-    link4: "Terms & Condition",
-    link5: "Privacy Policy",
-  },
-  {
-    head: "Customer Care",
-    link1: "Help Center",
-    link2: "How To Buy",
-    link3: "Track Your Order",
-    link4: "Corporate & Bulk Purcashing",
-    link5: "Returns & Refunds",
-  },
-];
-
-const iconArray = [
-  "fa-brands fa-facebook-f",
-  "fa-brands fa-twitter",
-  "fa-brands fa-google",
-  "fa-brands fa-youtube",
-  "fa-brands fa-instagram",
-];
-const IconSvg = ({ className }) => {
-  return (
-    <Avatar
-      sx={{
-        bgcolor: "#161d2b",
-        width: "25px",
-        height: "25px",
-        padding: "3px",
-      }}
-    >
-      <Icon
-        className={className}
-        sx={{
-          fontSize: "12px",
-        }}
-      />
-    </Avatar>
-  );
+const companyInfo = {
+  logo: "https://bazaar.ui-lib.com/assets/images/logo.svg",
+  description:
+    "Your one-stop online store for everything you love. Fast delivery, best prices, and quality guaranteed.",
+  address: "70 Washington Square South, New York, NY 10012, United States",
+  email: "uilib.help@gmail.com",
+  phone: "+1 1123 456 780",
 };
 
-const CustomLinks = ({ head, link1, link2, link3, link4, link5 }) => {
-  return (
-    <Stack spacing={1.7}>
-      <Typography variant="h6" color="white">
-        {head}
-      </Typography>
-      <Link
-        href="#"
-        underline="none"
-        color="#AEB4BE"
-        variant="subtitle2"
-        sx={{
-          "&:hover": {
-            color: "#fff",
-          },
-        }}
-      >
-        {link1}
-      </Link>
-      <Link
-        href="#"
-        underline="none"
-        color="#AEB4BE"
-        variant="subtitle2"
-        sx={{
-          "&:hover": {
-            color: "#fff",
-          },
-        }}
-      >
-        {link2}
-      </Link>
-      <Link
-        href="#"
-        underline="none"
-        color="#AEB4BE"
-        variant="subtitle2"
-        sx={{
-          "&:hover": {
-            color: "#fff",
-          },
-        }}
-      >
-        {link3}
-      </Link>
-      <Link
-        href="#"
-        underline="none"
-        color="#AEB4BE"
-        variant="subtitle2"
-        sx={{
-          "&:hover": {
-            color: "#fff",
-          },
-        }}
-      >
-        {link4}
-      </Link>
-      <Link
-        href="#"
-        underline="none"
-        color="#AEB4BE"
-        variant="subtitle2"
-        sx={{
-          "&:hover": {
-            color: "#fff",
-          },
-        }}
-      >
-        {link5}
-      </Link>
-    </Stack>
-  );
+const quickLinks = [
+  { title: "Careers", url: "/careers" },
+  { title: "Our Stores", url: "/stores" },
+  { title: "Our Cares", url: "/cares" },
+  { title: "Terms & Conditions", url: "/terms" },
+  { title: "Privacy Policy", url: "/privacy" },
+];
+
+const customerCareLinks = [
+  { title: "Help Center", url: "/help" },
+  { title: "How To Buy", url: "/buy" },
+  { title: "Track Your Order", url: "/track" },
+  { title: "Corporate & Bulk Purchasing", url: "/corporate" },
+  { title: "Returns & Refunds", url: "/returns" },
+];
+
+const socialIcons = [
+  { iconClass: "fa-brands fa-facebook-f", url: "https://facebook.com" },
+  { iconClass: "fa-brands fa-twitter", url: "https://twitter.com" },
+  { iconClass: "fa-brands fa-google", url: "https://google.com" },
+  { iconClass: "fa-brands fa-youtube", url: "https://youtube.com" },
+  { iconClass: "fa-brands fa-instagram", url: "https://instagram.com" },
+];
+
+const payments = [
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png",
+    alt: "Visa",
+  },
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png",
+    alt: "Mastercard",
+  },
+  {
+    src: "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg",
+    alt: "PayPal",
+  },
+];
+
+const SocialIcon = ({ iconClass, url, ariaLabel }) => (
+  <MuiLink
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={ariaLabel}
+    sx={{
+      bgcolor: "rgba(255,255,255,0.08)",
+      width: 40,
+      height: 40,
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      textDecoration: "none",
+      transition: "all 0.3s ease",
+      "&:hover": {
+        bgcolor: "rgba(255,255,255,0.25)",
+        transform: "scale(1.1)",
+      },
+    }}
+  >
+    <Icon className={iconClass} sx={{ fontSize: 16, color: "white" }} />
+  </MuiLink>
+);
+
+SocialIcon.propTypes = {
+  iconClass: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
+  ariaLabel: PropTypes.string,
+};
+
+SocialIcon.defaultProps = {
+  ariaLabel: "social link",
 };
 
 const Footer = () => {
   return (
-    <Box bgcolor="secondary.dark" py={{xs:8,md:12}} px={{ xs: 1.5, sm: 0 }}>
-      <Container maxWidth="lg">
-        <Grid container spacing={5}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Stack>
+    <Box
+      component="footer"
+      sx={{
+        bgcolor: "secondary.dark",
+        color: "white",
+        pt: 8,
+        pb: 5,
+        width: "100%",
+      }}
+    >
+      <Container maxWidth="xl">
+        <Grid container spacing={8} justifyContent="space-between">
+          <Grid item xs={12} md={4}>
+            <Stack
+              spacing={2}
+              alignItems={{ xs: "center", sm: "flex-start" }}
+              textAlign={{ xs: "center", sm: "left" }}
+            >
               <Box>
-                <img src="	https://bazaar.ui-lib.com/assets/images/logo.svg" />
+                <img
+                  src={companyInfo.logo}
+                  alt="Brand Logo"
+                  style={{ height: 48 }}
+                />
               </Box>
-              <Typography
-                variant="subtitle2"
-                color="#AEB4BE"
-                lineHeight={1.75}
+              <Typography color="rgba(255,255,255,0.7)" maxWidth="90%">
+                {companyInfo.description}
+              </Typography>
+              <Stack spacing={0.8} mt={1}>
+                <Typography color="rgba(255,255,255,0.6)">
+                  📍 {companyInfo.address}
+                </Typography>
+                <Typography color="rgba(255,255,255,0.6)">
+                  ✉️ {companyInfo.email}
+                </Typography>
+                <Typography color="rgba(255,255,255,0.6)">
+                  ☎️ {companyInfo.phone}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={1.5}
                 mt={2}
+                justifyContent={{ xs: "center", sm: "flex-start" }}
               >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor
-                libero id et, in gravida. Sit diam duis mauris nulla cursus.
-                Erat et lectus vel ut sollicitudin elit at amet.
-              </Typography>
-            </Stack>
-          </Grid>
-          {arrayLinks.map((link, index) => (
-            <Grid item xs={12} sm={6} md={2.25}>
-              <CustomLinks key={index} {...link} />
-            </Grid>
-          ))}
-          <Grid item xs={12} sm={6} md={3.5}>
-            <Stack spacing={1.7}>
-              <Typography variant="h6" color="white">
-                Contact Us
-              </Typography>
-              <Typography color="#AEB4BE" variant="subtitle2">
-                70 Washington Square South, New York, NY 10012, United States
-              </Typography>
-              <Typography color="#AEB4BE" variant="subtitle2">
-                Email: uilib.help@gmail.com
-              </Typography>
-              <Typography color="#AEB4BE" variant="subtitle2">
-                Phone: +1 1123 456 780{" "}
-              </Typography>
-              <Stack direction="row" spacing={2}>
-                {iconArray.map((icon, index) => (
-                  <IconSvg key={index} className={icon} />
+                {socialIcons.map(({ iconClass, url }, idx) => (
+                  <SocialIcon
+                    key={idx}
+                    iconClass={iconClass}
+                    url={url}
+                    ariaLabel={iconClass.split(" ").pop()?.replace("fa-", "")}
+                  />
                 ))}
               </Stack>
             </Stack>
           </Grid>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={2.5}
+            textAlign={{ xs: "center", sm: "left" }}
+          >
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              mb={2}
+              sx={{ letterSpacing: 0.3 }}
+            >
+              About
+            </Typography>
+            <Stack spacing={1} alignItems={{ xs: "center", sm: "flex-start" }}>
+              {quickLinks.map((link, idx) => (
+                <MuiLink
+                  key={idx}
+                  component={Link}
+                  to={link.url}
+                  underline="none"
+                  color="rgba(255,255,255,0.7)"
+                  fontSize="14px"
+                  sx={{
+                    "&:hover": { color: "#fff", transform: "translateX(4px)" },
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  {link.title}
+                </MuiLink>
+              ))}
+            </Stack>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={2.5}
+            textAlign={{ xs: "center", sm: "left" }}
+          >
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              mb={2}
+              sx={{ letterSpacing: 0.3 }}
+            >
+              Customer Care
+            </Typography>
+            <Stack spacing={1} alignItems={{ xs: "center", sm: "flex-start" }}>
+              {customerCareLinks.map((link, idx) => (
+                <MuiLink
+                  key={idx}
+                  component={Link}
+                  to={link.url}
+                  underline="none"
+                  color="rgba(255,255,255,0.7)"
+                  fontSize="14px"
+                  sx={{
+                    "&:hover": { color: "#fff", transform: "translateX(4px)" },
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  {link.title}
+                </MuiLink>
+              ))}
+            </Stack>
+          </Grid>
+          <Grid item xs={12} md={3} textAlign={{ xs: "center", sm: "left" }}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={600}
+              mb={2}
+              sx={{ letterSpacing: 0.3 }}
+            >
+              Secure Payments
+            </Typography>
+            <Stack
+              direction="row"
+              spacing={2}
+              justifyContent={{ xs: "center", sm: "flex-start" }}
+              flexWrap="wrap"
+            >
+              {payments.map(({ src, alt }, idx) => (
+                <Box
+                  key={idx}
+                  component="img"
+                  src={src}
+                  alt={alt}
+                  sx={{
+                    height: 30,
+                    filter: "brightness(0) invert(1)",
+                    opacity: 0.9,
+                    transition: "all 0.3s ease",
+                    "&:hover": { opacity: 1, transform: "scale(1.05)" },
+                  }}
+                />
+              ))}
+            </Stack>
+          </Grid>
         </Grid>
-
-        {/* <Stack flex={1} direction="row" justifyContent="space-between">
-            {arrayLinks.map((link, index) => (
-              <CustomLinks key={index} {...link} />
-            ))}
-          </Stack> */}
+        <Divider sx={{ bgcolor: "rgba(255,255,255,0.15)", my: 5 }} />
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={2}
+        >
+          <Typography
+            color="rgba(255,255,255,0.6)"
+            fontSize="14px"
+            textAlign="center"
+          >
+            © {new Date().getFullYear()} Bazaar. All rights reserved.
+          </Typography>
+          <Stack
+            direction="row"
+            spacing={3}
+            justifyContent={{ xs: "center", sm: "flex-start" }}
+          >
+            <MuiLink
+              component={Link}
+              to="/privacy"
+              underline="none"
+              color="rgba(255,255,255,0.7)"
+              fontSize="14px"
+              sx={{ "&:hover": { color: "#fff" } }}
+            >
+              Privacy Policy
+            </MuiLink>
+            <MuiLink
+              component={Link}
+              to="/terms"
+              underline="none"
+              color="rgba(255,255,255,0.7)"
+              fontSize="14px"
+              sx={{ "&:hover": { color: "#fff" } }}
+            >
+              Terms & Conditions
+            </MuiLink>
+          </Stack>
+        </Stack>
       </Container>
     </Box>
   );
