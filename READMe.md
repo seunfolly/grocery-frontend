@@ -45,8 +45,8 @@ Follow these instructions to set up and run the project locally on your machine.
 
 ### Prerequisites
 
-* Node.js (v16 or later)
-* npm or yarn
+* Node.js (v20 or later)
+* npm
 
 ### Installation & Setup
 
@@ -70,7 +70,7 @@ Follow these instructions to set up and run the project locally on your machine.
 
     ```env
     # .env.local
-    VITE_API_BASE_URL=http://localhost:5000/api
+    VITE_API_BASE_URL=http://localhost:8000/api
     ```
 
 5.  **Run the development server:**
